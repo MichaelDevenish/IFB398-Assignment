@@ -49,11 +49,11 @@ namespace CapstoneLayoutTest
 
             running = true;
             mediaElement.Play();
-
-            DrawXAxis(ymax, xdatamax, xstep);
-            DrawYAxis(xmax, ydatamax, ystep);
-            DrawGraphText("Minutes", canGraph.Width / 2, (canGraph.Height - YMIN + 10));
-            DrawGraphText("moves", 0, ((canGraph.Height - YMIN) / 2) - 10);
+            canGraph.XAxisName = "Minutes";
+            canGraph.YAxisName = "Moves";
+            canGraph.DrawGraph();
+            //canGraph.DrawXAxis(ymax, xdatamax, xstep);
+            //canGraph.DrawYAxis(xmax, ydatamax, ystep);
             DrawDataPoints(xdatamax, ydatamax, pointsArray, brushes);
         }
 
@@ -77,33 +77,6 @@ namespace CapstoneLayoutTest
             }
         }
 
-        private void DrawXAxis(double ymax, double xdatamax, double xstep)
-        {
-            GeometryGroup xaxis_geom = new GeometryGroup();
-            xaxis_geom.Children.Add(new LineGeometry(new Point(XMIN, ymax), new Point(canGraph.Width, ymax)));
-            for (double x = 0; x <= xdatamax; x += xstep)
-            {
-                double point = (((canGraph.Width - XMIN) / xdatamax) * (x)) + XMIN;
-                xaxis_geom.Children.Add(new LineGeometry(new Point(point, ymax - 5), new Point(point, ymax)));
-                DrawGraphText(x.ToString(), point - 2, (canGraph.Height - YMIN));
-            }
-            DrawLine(xaxis_geom, 1, Brushes.Black);
-        }
-
-        private void DrawYAxis(double xmax, double ydatamax, double ystep)
-        {
-            GeometryGroup yaxis_geom = new GeometryGroup();
-            for (double y = 0; y <= ydatamax; y += ystep)
-            {
-                if (y != 0)
-                {
-                    double point = (canGraph.Height - YMIN) - (((canGraph.Height - YMIN) / ydatamax) * (y));
-                    yaxis_geom.Children.Add(new LineGeometry(new Point(xmax, point), new Point(XMIN, point)));
-                    DrawGraphText(y.ToString(), XMIN - 20, (point - 8));
-                }
-            }
-            DrawLine(yaxis_geom, 0.5, Brushes.Gray);
-        }
 
         private void CreateGraphPoint(List<Button> buttons, double xpoint, double ypoint, Brush br, int currentMinute)
         {
@@ -160,25 +133,6 @@ namespace CapstoneLayoutTest
             polyline.Points = points;
             return polyline;
 
-        }
-
-        private void DrawGraphText(string x, double LeftPoint, double TopPoint)
-        {
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = x;
-            textBlock.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-            Canvas.SetLeft(textBlock, LeftPoint);
-            Canvas.SetTop(textBlock, TopPoint);
-            canGraph.Children.Add(textBlock);
-        }
-
-        private void DrawLine(GeometryGroup axis_geom, double thickness, SolidColorBrush brush)
-        {
-            System.Windows.Shapes.Path axis_path = new System.Windows.Shapes.Path();
-            axis_path.StrokeThickness = thickness;
-            axis_path.Stroke = brush;
-            axis_path.Data = axis_geom;
-            canGraph.Children.Add(axis_path);
         }
 
         private void mediaElement_MouseUp(object sender, MouseButtonEventArgs e)
