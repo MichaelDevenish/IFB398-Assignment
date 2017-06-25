@@ -36,6 +36,8 @@
             <MenuItem Header="_About"/>
         </Menu>
         <control:TestGraph Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
+            <Label x:Name="label" Content="Left" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="323"/>
+            <Label x:Name="label_Copy" Content="Right" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="346"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="383" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="373" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="423" Width="195" ToolTip="Walking"/>
@@ -75,8 +77,6 @@
             <Rectangle Fill="Salmon" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="433" Width="84" ToolTip="Lifting"/>
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="20" Width="20" ToolTip="Not shown" RenderTransformOrigin="0.25,1" Canvas.Top="326"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="20" Canvas.Top="349" Width="20" ToolTip="Not shown"/>
-            <Label x:Name="label" Content="Left" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="323"/>
-            <Label x:Name="label_Copy" Content="Right" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="346"/>
             <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="432" Width="681" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -121,8 +121,9 @@
             <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="171" Canvas.Top="443" Width="27" ToolTip="Unidentified"/>
             <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="453" Width="681" RenderTransformOrigin="0.5,0.5"/>
             <Rectangle Fill="Gray" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="433" Width="28" ToolTip="Unidentified"/>
-            <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal"/>
         </control:TestGraph>
+        
+        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="10,368,702,114"/>
         <Grid HorizontalAlignment="Left" Height="328" Margin="10,35,0,0" VerticalAlignment="Top" Width="588" RenderTransformOrigin="0.5,0.5">
             <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="330" Width="588" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
 
