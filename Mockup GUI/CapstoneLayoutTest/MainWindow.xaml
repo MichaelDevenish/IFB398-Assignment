@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CapstoneLayoutTest"
+        xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
         Title="MainWindow" Height="530" Width="1308"
         Loaded="Window_Loaded" Closing="Window_Closing">
@@ -34,8 +35,7 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-
-        <Canvas Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
+        <control:TestGraph Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="383" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="373" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="423" Width="195" ToolTip="Walking"/>
@@ -122,7 +122,7 @@
             <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="453" Width="681" RenderTransformOrigin="0.5,0.5"/>
             <Rectangle Fill="Gray" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="433" Width="28" ToolTip="Unidentified"/>
             <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal"/>
-        </Canvas>
+        </control:TestGraph>
         <Grid HorizontalAlignment="Left" Height="328" Margin="10,35,0,0" VerticalAlignment="Top" Width="588" RenderTransformOrigin="0.5,0.5">
             <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="330" Width="588" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
 
