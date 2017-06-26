@@ -12,17 +12,26 @@ namespace DataGraph
 {
     public class GraphNode
     {
-        Button nodeButton;
-        int x;
-        int y;
-        public GraphNode(int x, int y, Brush brush)
+        private Button nodeButton;
+        private string nodeName;
+        private double x;
+        private double y;
+
+        public string NodeName { get { return nodeName; } }
+
+        public GraphNode(double x, double y, string activityName)
         {
+            this.nodeName = activityName;
             nodeButton = new Button();
             nodeButton.Width = 10;
             nodeButton.Height = 10;
-            nodeButton.Background = brush;
             this.x = x;
             this.y = y;
+        }
+
+        public void SetButtonColour(Brush brush)
+        {
+            nodeButton.Background = brush;
         }
 
         public void AddButtonClick(RoutedEventHandler click)
@@ -33,10 +42,10 @@ namespace DataGraph
         {
             nodeButton.MouseEnter += hover;
         }
-        public int[] GetCoords()
+        public double[] GetCoords()
         {
-            return new int[] { x, y };
+            return new double[] { x, y };
         }
-        
+
     }
 }

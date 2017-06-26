@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataGraph;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -41,40 +42,56 @@ namespace CapstoneLayoutTest
         {
             double xmax = canGraph.Width;
             double ymax = canGraph.Height - YMIN;
-            double xdatamax = 20; double ydatamax = 80;
-            double xstep = 1; double ystep = 10;
-            double[,,] pointsArray = { { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 },{ 4, 10 }, { 5, 30 },{ 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } }
-                                     , { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 },{ 4, 20 }, { 5, 30 },{ 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } } };//future turn this into a list of objects with an assigned image
+            double xdatamax = 20; double ydatamax = 60;
+
+            double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 61 } };
+            double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
+            GraphDataset left = BuildDataset("left", leftArray, Brushes.SteelBlue);//new GraphDataset("left", Brushes.SteelBlue);
+            GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange);
+
             Brush[] brushes = { Brushes.SteelBlue, Brushes.Orange };
 
             running = true;
             mediaElement.Play();
+            canGraph.AddDataset(left);
+            canGraph.AddDataset(right);
             canGraph.XAxisName = "Minutes";
             canGraph.YAxisName = "Moves";
+            canGraph.XDivisor = 1;
+            canGraph.YDivisor = 10;
             canGraph.DrawGraph();
-            //canGraph.DrawXAxis(ymax, xdatamax, xstep);
-            //canGraph.DrawYAxis(xmax, ydatamax, ystep);
-            DrawDataPoints(xdatamax, ydatamax, pointsArray, brushes);
+            DrawDataPoints(xdatamax, ydatamax, leftArray, brushes[0]);
+            DrawDataPoints(xdatamax, ydatamax, rightArray, brushes[1]);
         }
 
-        private void DrawDataPoints(double xdatamax, double ydatamax, double[,,] pointsArray, Brush[] brushes)
-        {
-            for (int data_set = 0; data_set < brushes.Length; data_set++)
-            {
-                List<Button> buttons = new List<Button>();
-                PointCollection points = new PointCollection();
-                for (int a = 0; a <= pointsArray.GetUpperBound(1); a++)
-                {
-                    double xpoint = (((canGraph.Width - XMIN) / xdatamax) * (pointsArray[data_set, a, 0])) + XMIN;
-                    double ypoint = (canGraph.Height - YMIN) - (((canGraph.Height - YMIN) / ydatamax) * (pointsArray[data_set, a, 1]));
-                    points.Add(new Point(xpoint, ypoint));
-                    CreateGraphPoint(buttons, xpoint, ypoint, brushes[data_set], a);
-                }
 
-                Polyline polyline = GeneratePolyline(brushes, data_set, points);
-                canGraph.Children.Add(polyline);
-                foreach (Button b in buttons) canGraph.Children.Add(b);
+        private GraphDataset BuildDataset(string name, double[,] data, Brush brush)
+        {
+            GraphDataset temp = new GraphDataset(name, brush);
+            for (int i = 0; i <= data.GetUpperBound(0); i++)
+            {
+                GraphNode node = new GraphNode(data[i, 0], data[i, 1], "test");
+                temp.AddNode(node);
             }
+            return temp;
+        }
+
+        private void DrawDataPoints(double xdatamax, double ydatamax, double[,] pointsArray, Brush brush)
+        {
+            List<Button> buttons = new List<Button>();
+            PointCollection points = new PointCollection();
+            for (int a = 0; a <= pointsArray.GetUpperBound(0); a++)
+            {
+                double xpoint = (((canGraph.Width - XMIN) / xdatamax) * (pointsArray[a, 0])) + XMIN;
+                double ypoint = (canGraph.Height - YMIN) - (((canGraph.Height - YMIN) / ydatamax) * (pointsArray[a, 1]));
+                points.Add(new Point(xpoint, ypoint));
+                CreateGraphPoint(buttons, xpoint, ypoint, brush, a);
+            }
+
+            Polyline polyline = GeneratePolyline(brush, points);
+            canGraph.Children.Add(polyline);
+            foreach (Button b in buttons) canGraph.Children.Add(b);
+
         }
 
 
@@ -125,11 +142,11 @@ namespace CapstoneLayoutTest
             return img;
         }
 
-        private static Polyline GeneratePolyline(Brush[] brushes, int data_set, PointCollection points)
+        private static Polyline GeneratePolyline(Brush brush, PointCollection points)
         {
             Polyline polyline = new Polyline();
             polyline.StrokeThickness = 3;
-            polyline.Stroke = brushes[data_set];
+            polyline.Stroke = brush;
             polyline.Points = points;
             return polyline;
 
