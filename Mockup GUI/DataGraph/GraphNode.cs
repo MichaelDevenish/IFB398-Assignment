@@ -14,24 +14,30 @@ namespace DataGraph
     {
         private Button nodeButton;
         private string nodeName;
-        private double x;
-        private double y;
+        private double horizontalValue;
+        private double verticleValue;
 
         public string NodeName { get { return nodeName; } }
+        public Button NodeButton { get { return nodeButton; } }
 
-        public GraphNode(double x, double y, string activityName)
+        public GraphNode(double horizontalValue, double verticleValue, string nodeName)
         {
-            this.nodeName = activityName;
+            this.nodeName = nodeName;
             nodeButton = new Button();
             nodeButton.Width = 10;
             nodeButton.Height = 10;
-            this.x = x;
-            this.y = y;
+            this.horizontalValue = horizontalValue;
+            this.verticleValue = verticleValue;
         }
 
         public void SetButtonColour(Brush brush)
         {
             nodeButton.Background = brush;
+        }
+
+        public void SetButtonStyle(Style style)
+        {
+            nodeButton.Style = style;
         }
 
         public void AddButtonClick(RoutedEventHandler click)
@@ -44,7 +50,7 @@ namespace DataGraph
         }
         public double[] GetCoords()
         {
-            return new double[] { x, y };
+            return new double[] { horizontalValue, verticleValue };
         }
 
     }
