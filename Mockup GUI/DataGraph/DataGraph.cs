@@ -40,6 +40,7 @@ namespace DataGraph
 
         public void DisableSummariser()
         {
+
             summariser = false;
         }
 
@@ -60,6 +61,7 @@ namespace DataGraph
             double ydatamax = 0;
             List<string> nodeNames = new List<string>();
 
+
             if (datasets != null)
             {
                 foreach (GraphDataset data in datasets)
@@ -71,6 +73,7 @@ namespace DataGraph
                         if (XY[1] > ydatamax) ydatamax = XY[1];
                         if (!nodeNames.Contains(node.NodeName)) nodeNames.Add(node.NodeName);
                     }
+
                 }
                 xdatamax = Math.Ceiling(xdatamax / xDivisor) * xDivisor;
                 ydatamax = Math.Ceiling(ydatamax / yDivisor) * yDivisor;
@@ -89,6 +92,40 @@ namespace DataGraph
             DrawYAxis(ydatamax);
             if (xAxisName != "") DrawGraphText(xAxisName, Width / 2, (Height - ymin + 10));
             if (yAxisName != "") DrawGraphText(yAxisName, 0, ((Height - ymin) / 2) - 10);
+
+            if (datasets != null)
+            {
+                foreach (GraphDataset data in datasets)
+                {
+                    PointCollection points = new PointCollection();
+                    foreach (GraphNode node in data.Nodes)
+                    {
+                        double xpoint = (((Width - XMIN) / xdatamax) * node.GetCoords()[0]) + XMIN;
+                        double ypoint = (Height - ymin) - (((Height - ymin) / ydatamax) * node.GetCoords()[1]);
+                        points.Add(new Point(xpoint, ypoint));
+                        SetLeft(node.NodeButton, xpoint - 5);
+                        SetTop(node.NodeButton, ypoint - 5);
+                        node.SetButtonStyle(FindResource("CircleButton") as Style);
+                    }
+                    Polyline polyline = GeneratePolyline(data.Colour, points);
+                    Children.Add(polyline);
+                    foreach (GraphNode node in data.Nodes)
+                    {
+                        Children.Add(node.NodeButton);
+                    }
+                }
+            }
+
+        }
+
+        private static Polyline GeneratePolyline(Brush brush, PointCollection points)
+        {
+            Polyline polyline = new Polyline();
+            polyline.StrokeThickness = 3;
+            polyline.Stroke = brush;
+            polyline.Points = points;
+            return polyline;
+
         }
 
         private void DrawXAxis(double xdatamax)
