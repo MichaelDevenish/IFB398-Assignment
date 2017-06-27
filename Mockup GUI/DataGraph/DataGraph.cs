@@ -20,7 +20,7 @@ namespace DataGraph
     {
         const double XMIN = 80;
 
-        private double ymin = 110;//dependant on how many lower items there are (no larger if there are > 4) and if the activity summariser is enabled
+        private double ymin = 115;//dependant on how many lower items there are (no larger if there are > 4) and if the activity summariser is enabled
         private List<GraphDataset> datasets;
         private int xDivisor = 1;
         private int yDivisor = 1;
@@ -59,7 +59,7 @@ namespace DataGraph
         {
             double xdatamax = 0;
             double ydatamax = 0;
-            List<string> nodeNames = new List<string>(); //add occurrences to get priority
+            Dictionary<string, int> nodeNames = new Dictionary<string, int>(); //add occurrences to get priority
 
             if (datasets != null)
             {
@@ -70,49 +70,66 @@ namespace DataGraph
                         double[] XY = node.GetCoords();
                         if (XY[0] > xdatamax) xdatamax = XY[0];
                         if (XY[1] > ydatamax) ydatamax = XY[1];
-                        if (!nodeNames.Contains(node.NodeName)) nodeNames.Add(node.NodeName);
+
+                        if (!nodeNames.ContainsKey(node.NodeName)) nodeNames.Add(node.NodeName, 1);
+                        else nodeNames[node.NodeName] = nodeNames[node.NodeName] + 1;
                     }
 
                 }
                 xdatamax = Math.Ceiling(xdatamax / xDivisor) * xDivisor;
                 ydatamax = Math.Ceiling(ydatamax / yDivisor) * yDivisor;
-                DrawSummariser(nodeNames);
+                //DrawSummariser(nodeNames);
             }
 
             DrawXAxis(xdatamax);
             DrawYAxis(ydatamax);
-            if (xAxisName != "") DrawGraphText(xAxisName, Width / 2, (Height - ymin + 10));
+
+            if (xAxisName != "") DrawGraphText(xAxisName, Width / 2, (Height - ymin + 15));
             if (yAxisName != "") DrawGraphText(yAxisName, 0, ((Height - ymin) / 2) - 10);
-
-            if (datasets != null)
-            {
-                int keyOffset = 0;
-                foreach (GraphDataset data in datasets)
-                {
-                    keyOffset = AddDataToKey(keyOffset, data);
-
-                    PointCollection points = new PointCollection();
-                    foreach (GraphNode node in data.Nodes)
-                    {
-                        double xpoint = (((Width - XMIN) / xdatamax) * node.GetCoords()[0]) + XMIN;
-                        double ypoint = (Height - ymin) - (((Height - ymin) / ydatamax) * node.GetCoords()[1]);
-                        points.Add(new Point(xpoint, ypoint));
-                        SetLeft(node.NodeButton, xpoint - 5);
-                        SetTop(node.NodeButton, ypoint - 5);
-                        node.SetButtonStyle(FindResource("CircleButton") as Style);
-                    }
-                    Polyline polyline = GeneratePolyline(data.Colour, points);
-                    Children.Add(polyline);
-                    foreach (GraphNode node in data.Nodes)
-                    {
-                        Children.Add(node.NodeButton);
-                    }
-                }
-            }
-
+            if (datasets != null) DrawDatasets(xdatamax, ydatamax);
         }
 
-        private void DrawSummariser(List<string> nodeNames)
+        private void DrawDatasets(double xdatamax, double ydatamax)
+        {
+            int keyOffset = 0;
+            foreach (GraphDataset data in datasets)
+            {
+                keyOffset = AddDataToKey(keyOffset, data);
+                DrawNodesForDataset(xdatamax, ydatamax, data);
+                DrawButtonsForDataset(data);
+            }
+        }
+
+        private void DrawButtonsForDataset(GraphDataset data)
+        {
+            foreach (GraphNode node in data.Nodes)
+            {
+                node.SetButtonStyle(FindResource("CircleButton") as Style);
+                Children.Add(node.NodeButton);
+            }
+        }
+
+        private void DrawNodesForDataset(double xdatamax, double ydatamax, GraphDataset data)
+        {
+            PointCollection points = new PointCollection();
+            foreach (GraphNode node in data.Nodes)
+            {
+                points.Add(SetupNodePosition(xdatamax, ydatamax, node));
+            }
+            Polyline polyline = GeneratePolyline(data.Colour, points);
+            Children.Add(polyline);
+        }
+
+        private Point SetupNodePosition(double xdatamax, double ydatamax, GraphNode node)
+        {
+            double xpoint = (((Width - XMIN) / xdatamax) * node.GetCoords()[0]) + XMIN;
+            double ypoint = (Height - ymin) - (((Height - ymin) / ydatamax) * node.GetCoords()[1]);
+            SetLeft(node.NodeButton, xpoint - 5);
+            SetTop(node.NodeButton, ypoint - 5);
+            return new Point(xpoint, ypoint);
+        }
+
+        private void DrawSummariser(Dictionary<string, int> nodeNames)
         {
             ymin = 110;
             if (summariser == false)
