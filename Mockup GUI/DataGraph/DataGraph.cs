@@ -18,7 +18,7 @@ namespace DataGraph
 
     public class TestGraph : Canvas
     {
-        const double XMIN = 60;
+        const double XMIN = 80;
 
         private double ymin = 110;//dependant on how many lower items there are (no larger if there are > 4) and if the activity summariser is enabled
         private List<GraphDataset> datasets;
@@ -59,8 +59,7 @@ namespace DataGraph
         {
             double xdatamax = 0;
             double ydatamax = 0;
-            List<string> nodeNames = new List<string>();
-
+            List<string> nodeNames = new List<string>(); //add occurrences to get priority
 
             if (datasets != null)
             {
@@ -77,15 +76,7 @@ namespace DataGraph
                 }
                 xdatamax = Math.Ceiling(xdatamax / xDivisor) * xDivisor;
                 ydatamax = Math.Ceiling(ydatamax / yDivisor) * yDivisor;
-
-                //TO BE USED WHEN THE BOTTOM HALF IS MADE DYNAMIC
-                //if( summariser == false){
-                //    ymin = 30;
-                //}else if (nodeNames.Count() < 4 )
-                //{
-                //    ymin -= (20 * (4 - nodeNames.Count()));
-                //}
-                //TODO draw each dataset onto the graph
+                DrawSummariser(nodeNames);
             }
 
             DrawXAxis(xdatamax);
@@ -95,8 +86,11 @@ namespace DataGraph
 
             if (datasets != null)
             {
+                int keyOffset = 0;
                 foreach (GraphDataset data in datasets)
                 {
+                    keyOffset = AddDataToKey(keyOffset, data);
+
                     PointCollection points = new PointCollection();
                     foreach (GraphNode node in data.Nodes)
                     {
@@ -116,6 +110,40 @@ namespace DataGraph
                 }
             }
 
+        }
+
+        private void DrawSummariser(List<string> nodeNames)
+        {
+            ymin = 110;
+            if (summariser == false)
+            {
+                ymin = 30;
+                return;
+            }
+            ymin -= (20 * (4 - nodeNames.Count()));
+
+            //draw summariser
+
+        }
+
+        private int AddDataToKey(int keyOffset, GraphDataset data)
+        {
+            Rectangle rect = new Rectangle();
+            Label lab = new Label();
+
+            rect.Fill = data.Colour;
+            rect.StrokeThickness = 0;
+            rect.Height = 20;
+            rect.Width = 20;
+            lab.Content = data.DatasetName;
+
+            SetTop(rect, Height - ymin - keyOffset);
+            SetTop(lab, Height - ymin - keyOffset);
+            SetLeft(lab, 20);
+
+            Children.Add(rect);
+            Children.Add(lab);
+            return keyOffset + 23;
         }
 
         private static Polyline GeneratePolyline(Brush brush, PointCollection points)
