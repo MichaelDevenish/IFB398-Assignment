@@ -36,8 +36,6 @@
             <MenuItem Header="_About"/>
         </Menu>
         <control:TestGraph Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
-            <Label x:Name="label" Content="Left" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="323"/>
-            <Label x:Name="label_Copy" Content="Right" Canvas.Left="20" RenderTransformOrigin="0.57,0.487" Canvas.Top="346"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="383" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="373" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="423" Width="195" ToolTip="Walking"/>
@@ -75,8 +73,6 @@
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="482" Canvas.Top="413" Width="115" ToolTip="Walking"/>
             <Rectangle Fill="Salmon" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="443" Width="84" ToolTip="Lifting"/>
             <Rectangle Fill="Salmon" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="433" Width="84" ToolTip="Lifting"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="20" Width="20" ToolTip="Not shown" RenderTransformOrigin="0.25,1" Canvas.Top="326"/>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="20" Canvas.Top="349" Width="20" ToolTip="Not shown"/>
             <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="432" Width="681" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
