@@ -36,10 +36,6 @@
             <MenuItem Header="_About"/>
         </Menu>
         <control:TestGraph Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="383" Width="61" ToolTip="Dressing"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="373" Width="61" ToolTip="Dressing"/>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="423" Width="195" ToolTip="Walking"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="413" Width="195" ToolTip="Walking"/>
             <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="149" Canvas.Top="443" Width="7" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -50,7 +46,6 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="198" Canvas.Top="403" Width="20" ToolTip="Eating"/>
             <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="218" Canvas.Top="443" Width="9" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -61,12 +56,6 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="156" Canvas.Top="403" Width="15" ToolTip="Eating"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="156" Canvas.Top="393" Width="62" ToolTip="Eating"/>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="424" Canvas.Top="403" Width="58" ToolTip="Eating"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="424" Canvas.Top="393" Width="58" ToolTip="Eating"/>
-            <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="482" Canvas.Top="423" Width="115" ToolTip="Walking"/>
-            <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="482" Canvas.Top="413" Width="115" ToolTip="Walking"/>
             <Rectangle Fill="Salmon" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="443" Width="84" ToolTip="Lifting"/>
             <Rectangle Fill="Salmon" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="433" Width="84" ToolTip="Lifting"/>
             <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="443" Width="28" ToolTip="Unidentified"/>
