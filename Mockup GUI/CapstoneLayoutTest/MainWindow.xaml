@@ -40,9 +40,6 @@
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="88" Canvas.Top="373" Width="61" ToolTip="Dressing"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="423" Width="195" ToolTip="Walking"/>
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="228" Canvas.Top="413" Width="195" ToolTip="Walking"/>
-            <TextBlock x:Name="textBlock" Canvas.Left="8" TextWrapping="Wrap" Text="Dressing" Canvas.Top="373"/>
-            <TextBlock x:Name="textBlock_Copy" Canvas.Left="8" TextWrapping="Wrap" Text="Eating" Canvas.Top="394"/>
-            <TextBlock x:Name="textBlock_Copy1" Canvas.Left="8" TextWrapping="Wrap" Text="Walking" Canvas.Top="415"/>
             <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="149" Canvas.Top="443" Width="7" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -53,7 +50,6 @@
                     </TransformGroup>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <TextBlock x:Name="textBlock_Copy2" Canvas.Left="8" TextWrapping="Wrap" Text="Other" Canvas.Top="433"/>
             <Rectangle Fill="SteelBlue" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="198" Canvas.Top="403" Width="20" ToolTip="Eating"/>
             <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="218" Canvas.Top="443" Width="9" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
@@ -73,49 +69,8 @@
             <Rectangle Fill="Orange" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="482" Canvas.Top="413" Width="115" ToolTip="Walking"/>
             <Rectangle Fill="Salmon" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="443" Width="84" ToolTip="Lifting"/>
             <Rectangle Fill="Salmon" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="433" Width="84" ToolTip="Lifting"/>
-            <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="432" Width="681" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="413" Width="681" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="392" Width="681" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="372" Width="681" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
             <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="443" Width="28" ToolTip="Unidentified"/>
             <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="171" Canvas.Top="443" Width="27" ToolTip="Unidentified"/>
-            <Rectangle Fill="LightGray" Height="1" Stroke="Black" StrokeThickness="0" Canvas.Top="453" Width="681" RenderTransformOrigin="0.5,0.5"/>
             <Rectangle Fill="Gray" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="433" Width="28" ToolTip="Unidentified"/>
         </control:TestGraph>
         
