@@ -37,11 +37,13 @@ namespace CapstoneLayoutTest
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //dummy
             double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
 
             GraphDataset left = BuildDataset("left", leftArray, Brushes.SteelBlue);
             GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange);
+            //dummy
 
             running = true;
             mediaElement.Play();
@@ -55,18 +57,20 @@ namespace CapstoneLayoutTest
             canGraph.DrawGraph();
         }
 
-
+        //dummy
         private GraphDataset BuildDataset(string name, double[,] data, Brush brush)
         {
+            string[] datatypes = { "walking", "running", "sprinting", "jogging", "skipping", "test" };
             GraphDataset temp = new GraphDataset(name, brush);
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
-                GraphNode node = new GraphNode(data[i, 0], data[i, 1], "test");
+                GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 6]);
                 node = SetupButtons(node);
                 temp.AddNode(node);
             }
             return temp;
         }
+        //dummy
 
         private GraphNode SetupButtons(GraphNode node)
         {
