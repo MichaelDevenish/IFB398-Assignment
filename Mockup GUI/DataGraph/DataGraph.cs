@@ -68,7 +68,7 @@ namespace DataGraph
         public void AddDataset(GraphDataset data)
         {
             if (datasets == null) datasets = new List<GraphDataset>();
-            datasets.Add(data);
+            if (!datasets.Contains(data) && datasets.Count < 5) datasets.Add(data);
         }
 
         public void DrawGraph()
