@@ -36,6 +36,7 @@ namespace DataGraph
         private const int Y_NUMBER_VERTICAL_OFFSET = 20;
         private const int Y_NUMBER_HORIZONTAL_OFFSET = 8;
         private const int SUMMARISER_TEXT_OFFSET = 5;
+
         private double ymin = YMIN_DEFAULT;//Dependant on how many lower items there are (no larger if there are > 4) and if the activity summariser is enabled
         private List<GraphDataset> datasets;
         private int xDivisor = 1;
@@ -97,7 +98,7 @@ namespace DataGraph
                 if (ymin != YMIN_NO_SUMMARISER)
                 {
                     List<string> topData = DrawSummariserLayout(nodeNames);
-                    DrawSummariserData(topData, datasets);
+                    DrawSummariserData(topData, datasets, xdatamax);
                 }
             }
 
@@ -109,10 +110,45 @@ namespace DataGraph
             if (datasets != null) DrawDatasets(xdatamax, ydatamax);
         }
 
-        private void DrawSummariserData(List<string> topData, List<GraphDataset> datasets)
+        private void DrawSummariserData(List<string> topData, List<GraphDataset> datasets, double xdatamax)
         {
-            //TODO
-            // throw new NotImplementedException();
+            double itemHeight = YMIN_INCREMENTSIZE / datasets.Count();
+            for (int e = 0; e < datasets.Count(); e++)
+            {
+                GraphDataset dataset = datasets[e];
+                for (int i = 0; i < dataset.Nodes.Count(); i++)
+                {
+                    string itemName = dataset.Nodes[i].NodeName;
+                    Rectangle rect = new Rectangle();
+                    rect.Height = itemHeight;
+                    double xpoint1 = (((Width - XMIN) / xdatamax) * dataset.Nodes[i].GetCoords()[0]) + XMIN;
+                    double xpoint2 = Width;
+                    if (i + 1 < dataset.Nodes.Count())
+                        xpoint2 = (((Width - XMIN) / xdatamax) * dataset.Nodes[i + 1].GetCoords()[0]) + XMIN;
+                    rect.Width = xpoint2 - xpoint1;
+                    rect.Fill = dataset.Colour;
+                    rect.StrokeThickness = 0;
+                    rect.ToolTip = dataset.Nodes[i].NodeName;
+                    if (topData.Contains(itemName))
+                    {
+                        int startingPosition = TEXT_HEIGHT * 2;
+                        if (topData.Count() == NUMBEROFYMININCREMENTS)
+                        {
+                            startingPosition = TEXT_HEIGHT;
+                        }
+                        double v = Height - startingPosition - (TEXT_HEIGHT * topData.IndexOf(itemName)) + (itemHeight * e);
+                        SetTop(rect, v);
+                    }
+                    else
+                    {
+                        //TODO set color depending on what item it is
+                        SetTop(rect, Height - TEXT_HEIGHT + (itemHeight * e));
+                    }
+                    SetLeft(rect, xpoint1 - BUTTON_SIZE / 2);
+                    Children.Add(rect);
+                }
+            }
+
         }
 
         private void SetYmin(Dictionary<string, int> nodeNames)
