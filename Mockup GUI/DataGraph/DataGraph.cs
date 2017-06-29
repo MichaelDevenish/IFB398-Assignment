@@ -33,10 +33,11 @@ namespace DataGraph
         private const int X_LINE_MARKE_RSIZE = 5;
         private const int X_LINE_THICKNESS = 1;
         private const double Y_LINE_THICKNESS = 0.5;
-        private const int Y_NUMBER_VERTICAL_OFFSET = 20;
         private const int Y_NUMBER_HORIZONTAL_OFFSET = 8;
+        private const int Y_NUMBER_VERTICAL_OFFSET = 8;
         private const int SUMMARISER_TEXT_OFFSET = 5;
-
+        private const int X_NUMBERHORIZONTAL_OFFSET = 8;
+        private const int X_NUMBER_HORIZONTAL_UNDER = 4;
         private double ymin = YMIN_DEFAULT;//Dependant on how many lower items there are (no larger if there are > 4) and if the activity summariser is enabled
         private List<GraphDataset> datasets;
         private int xDivisor = 1;
@@ -45,6 +46,7 @@ namespace DataGraph
         private string yAxisName = "";
         private bool summariser = true;
 
+
         public int XDivisor { get { return xDivisor; } set { xDivisor = value; } }
         public int YDivisor { get { return yDivisor; } set { yDivisor = value; } }
         public string XAxisName { set { xAxisName = value; } }
@@ -52,6 +54,7 @@ namespace DataGraph
 
         static TestGraph()
         {
+
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TestGraph), new FrameworkPropertyMetadata(typeof(TestGraph)));
         }
 
@@ -112,6 +115,9 @@ namespace DataGraph
 
         private void DrawSummariserData(List<string> topData, List<GraphDataset> datasets, double xdatamax)
         {
+            Brush[] otherBrushes = new Brush[]{ Brushes.MediumTurquoise, Brushes.LightGreen, Brushes.Gray, Brushes.Salmon,
+             Brushes.Orange, Brushes.Crimson, Brushes.Black, Brushes.SteelBlue, Brushes.Orange, Brushes.Tan};
+            List<string> orderOfOther = new List<string>();
             double itemHeight = YMIN_INCREMENTSIZE / datasets.Count();
             for (int e = 0; e < datasets.Count(); e++)
             {
@@ -128,7 +134,7 @@ namespace DataGraph
                     rect.Width = xpoint2 - xpoint1;
                     rect.Fill = dataset.Colour;
                     rect.StrokeThickness = 0;
-                    rect.ToolTip = dataset.Nodes[i].NodeName;
+                    rect.ToolTip = itemName;
                     if (topData.Contains(itemName))
                     {
                         int startingPosition = TEXT_HEIGHT * 2;
@@ -141,7 +147,11 @@ namespace DataGraph
                     }
                     else
                     {
-                        //TODO set color depending on what item it is
+                        if (!orderOfOther.Contains(itemName))
+                        {
+                            orderOfOther.Add(itemName);
+                        }
+                        rect.Fill = otherBrushes[orderOfOther.IndexOf(itemName)];
                         SetTop(rect, Height - TEXT_HEIGHT + (itemHeight * e));
                     }
                     SetLeft(rect, xpoint1 - BUTTON_SIZE / 2);
@@ -283,8 +293,9 @@ namespace DataGraph
             for (double x = 0; x <= xdatamax; x += xDivisor)
             {
                 double point = (((Width - XMIN) / xdatamax) * (x)) + XMIN;
+                double offset = getDoubleOffset(x, X_NUMBERHORIZONTAL_OFFSET) - X_NUMBER_HORIZONTAL_UNDER;
                 xaxis_geom.Children.Add(new LineGeometry(new Point(point, Height - ymin - X_LINE_MARKE_RSIZE), new Point(point, Height - ymin)));
-                DrawGraphText(x.ToString(), point - 2, (Height - ymin));
+                DrawGraphText(x.ToString(), point - offset, (Height - ymin));
             }
             DrawLines(xaxis_geom, X_LINE_THICKNESS, Brushes.Black);
         }
@@ -297,11 +308,17 @@ namespace DataGraph
                 if (y != 0)
                 {
                     double point = (Height - ymin) - (((Height - ymin) / ydatamax) * (y));
+                    double offset = getDoubleOffset(y, Y_NUMBER_HORIZONTAL_OFFSET);
                     yaxis_geom.Children.Add(new LineGeometry(new Point(Width, point), new Point(XMIN, point)));
-                    DrawGraphText(y.ToString(), XMIN - Y_NUMBER_VERTICAL_OFFSET, (point - Y_NUMBER_HORIZONTAL_OFFSET));
+                    DrawGraphText(y.ToString(), XMIN - offset, (point - Y_NUMBER_VERTICAL_OFFSET));
                 }
             }
             DrawLines(yaxis_geom, Y_LINE_THICKNESS, Brushes.Gray);
+        }
+
+        private double getDoubleOffset(double value, int offsetIncrease)
+        {
+            return value == 0 ? offsetIncrease : offsetIncrease * Math.Floor(Math.Log10(Math.Abs(value)) + 1);
         }
 
         private void DrawGraphText(string x, double LeftPoint, double TopPoint)

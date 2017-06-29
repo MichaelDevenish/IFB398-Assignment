@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="530" Width="1308"
+        Title="MainWindow" Height="530" Width="1366"
         Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="CircleButton" TargetType="Button">
@@ -35,37 +35,11 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:TestGraph Name="canGraph" Width="682"  Height="454" VerticalAlignment="Center" Margin="608,35,10,10">
-            <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="149" Canvas.Top="443" Width="7" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleX="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="LightGreen" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="218" Canvas.Top="443" Width="9" ToolTip="Door Opening" RenderTransformOrigin="0.5,0.5">
-                <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleX="-1"/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Fill="Salmon" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="443" Width="84" ToolTip="Lifting"/>
-            <Rectangle Fill="Salmon" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="597" Canvas.Top="433" Width="84" ToolTip="Lifting"/>
-            <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="443" Width="28" ToolTip="Unidentified"/>
-            <Rectangle Fill="Gray" StrokeThickness="0" Stroke="Black" Height="10" Canvas.Left="171" Canvas.Top="443" Width="27" ToolTip="Unidentified"/>
-            <Rectangle Fill="Gray" StrokeThickness="0"  Stroke="Black" Height="10" Canvas.Left="61" Canvas.Top="433" Width="28" ToolTip="Unidentified"/>
-        </control:TestGraph>
-        
-        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="10,368,702,114"/>
-        <Grid HorizontalAlignment="Left" Height="328" Margin="10,35,0,0" VerticalAlignment="Top" Width="588" RenderTransformOrigin="0.5,0.5">
-            <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="330" Width="588" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
+        <control:TestGraph Name="canGraph"  Height="454" Width="700" VerticalAlignment="Center" Margin="645,35,10,10"/>
+
+        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="52,389,718,93"/>
+        <Grid HorizontalAlignment="Left" Height="354" Margin="10,35,0,0" VerticalAlignment="Top" Width="635" RenderTransformOrigin="0.5,0.5">
+            <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="356" Width="635" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
 
         </Grid>
 
