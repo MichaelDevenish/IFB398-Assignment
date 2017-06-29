@@ -43,7 +43,7 @@ namespace CapstoneLayoutTest
             double[,] testArray = { { 0, 1 }, { 1, 21 }, { 2, 21 }, { 3, 11 }, { 4, 21 }, { 5, 31 }, { 6, 41 }, { 7, 51 }, { 8, 51 }, { 9, 51 }, { 10, 51 }, { 11, 51 }, { 12, 21 }, { 13, 21 }, { 14, 51 }, { 15, 61 }, { 16, 51 }, { 17, 41 }, { 18, 51 }, { 19, 61 }, { 20, 61 } };
 
             GraphDataset left = BuildDataset("left", leftArray, Brushes.SteelBlue, 0);
-            GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 0);
+            GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 1);
             GraphDataset test = BuildDataset("test", testArray, Brushes.Tan, 0);
 
             //dummy
@@ -57,7 +57,7 @@ namespace CapstoneLayoutTest
             canGraph.XAxisName = "Minutes";
             canGraph.YAxisName = "Moves";
             canGraph.XDivisor = 1;
-            canGraph.YDivisor = 10;
+            canGraph.YDivisor = 5;
             canGraph.DrawGraph();
         }
 
@@ -68,7 +68,7 @@ namespace CapstoneLayoutTest
             GraphDataset temp = new GraphDataset(name, brush);
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
-                GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 4 + inc]);
+                GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 5 + inc]);
                 node = SetupButtons(node);
                 temp.AddNode(node);
             }
