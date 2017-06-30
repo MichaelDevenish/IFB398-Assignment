@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace DataGraph
 {
 
-    public class TestGraph : Canvas
+    public class LineGraph : Canvas
     {
         //constants
         const double XMIN = 80;
@@ -39,10 +39,10 @@ namespace DataGraph
         private const int SUMMARISER_TEXT_OFFSET = 5;
         private const int X_NUMBERHORIZONTAL_OFFSET = 8;
         private const int X_NUMBER_HORIZONTAL_UNDER = 4;
+        private static readonly Brush[] otherBrushes = new Brush[]{ Brushes.MediumTurquoise, Brushes.LightGreen, Brushes.Gray, Brushes.Salmon,
+             Brushes.Orange, Brushes.Crimson, Brushes.Black, Brushes.SteelBlue, Brushes.Orange, Brushes.Tan};
 
         //globals
-        private static Brush[] otherBrushes = new Brush[]{ Brushes.MediumTurquoise, Brushes.LightGreen, Brushes.Gray, Brushes.Salmon,
-             Brushes.Orange, Brushes.Crimson, Brushes.Black, Brushes.SteelBlue, Brushes.Orange, Brushes.Tan};
         private double ymin = YMIN_DEFAULT;
         private List<GraphDataset> datasets;
         private int xDivisor = 1;
@@ -58,9 +58,9 @@ namespace DataGraph
         public string YAxisName { set { yAxisName = value; } }
 
         //functions
-        static TestGraph()
+        static LineGraph()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TestGraph), new FrameworkPropertyMetadata(typeof(TestGraph)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(LineGraph), new FrameworkPropertyMetadata(typeof(LineGraph)));
         }
 
         /// <summary>
@@ -75,10 +75,16 @@ namespace DataGraph
         /// Adds the supplied dataset to the list of datasets
         /// </summary>
         /// <param name="data">the dataset to be added</param>
-        public void AddDataset(GraphDataset data)
+        /// <returns>true if dataset is successfully added</returns>
+        public bool AddDataset(GraphDataset data)
         {
             if (datasets == null) datasets = new List<GraphDataset>();
-            if (!datasets.Contains(data) && datasets.Count < 5) datasets.Add(data);
+            if (!datasets.Contains(data) && datasets.Count < 5)
+            {
+                datasets.Add(data);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -86,6 +92,9 @@ namespace DataGraph
         /// </summary>
         public void DrawGraph()
         {
+            if (double.IsNaN(Width)) throw new NotFiniteNumberException("Graph must have a set width!", Width);
+            if (double.IsNaN(Height)) throw new NotFiniteNumberException("Graph must have a set height!", Height);
+            if (datasets == null || datasets.Count() == 0) throw new NoDatasetsException("Must have at least added one dataset to draw a graph!");
             double xdatamax = 0;
             double ydatamax = 0;
             Dictionary<string, int> nodeNames = new Dictionary<string, int>(); //add occurrences to get priority
@@ -233,6 +242,7 @@ namespace DataGraph
         /// <param name="parent">the parent dataset of the item</param>
         /// <param name="start">the starting x position of the data point</param>
         /// <param name="end">the ending x position of the data point</param>
+        /// <param name="countOfNames">the number of names that are being used for points</param>
         /// <returns>a rectangle that represents a single data point in the summarizer</returns>
         private Rectangle GenerateSummariserDatapoint(List<string> notInOther, List<string> orderOfOther, double itemHeight, int verticalIndex, string itemName, GraphDataset parent, double start, double end, int countOfNames)
         {
