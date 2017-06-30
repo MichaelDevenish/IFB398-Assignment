@@ -110,8 +110,8 @@ namespace DataGraph
                 SetYmin(nodeNames);
                 if (ymin != YMIN_NO_SUMMARISER)
                 {
-                    List<string> topData = DrawSummariserLayout(nodeNames);
-                    DrawSummariserData(topData, datasets, xdatamax);
+                    List<string> topData = DrawSummariserLayout(nodeNames, xdatamax);
+                    DrawSummariserData(topData, datasets, xdatamax, nodeNames.Count);
                 }
             }
 
@@ -148,7 +148,7 @@ namespace DataGraph
         /// <param name="nodeNames">a dictionary that represents the node names that 
         /// exist in the datasets and how many times they occur</param>
         /// <returns>a list of the data that is not in the other section of the summarizer</returns>
-        private List<string> DrawSummariserLayout(Dictionary<string, int> nodeNames)
+        private List<string> DrawSummariserLayout(Dictionary<string, int> nodeNames, double xdatamax)
         {
             List<string> topData = new List<string>();
             int currentPosition = 0;
@@ -170,6 +170,12 @@ namespace DataGraph
             }
             double topBorderHeight = Height - ((currentPosition) * YMIN_INCREMENTSIZE);
             xaxis_geom.Children.Add(new LineGeometry(new Point(0, topBorderHeight), new Point(Width, topBorderHeight)));
+            xaxis_geom.Children.Add(new LineGeometry(new Point(0, topBorderHeight), new Point(0, Height)));
+            for (int e = 0; e <= xdatamax; e++)
+            {
+                double xpos = XMIN + ((Width - XMIN) / xdatamax) * e;
+                xaxis_geom.Children.Add(new LineGeometry(new Point(xpos, topBorderHeight), new Point(xpos, Height)));
+            }
             Children.Add(GenerateSetOfLines(xaxis_geom, 1, Brushes.LightGray));
             return topData;
 
@@ -193,7 +199,7 @@ namespace DataGraph
         /// <param name="itemsNotInOther">the item names of the items that are not in the other section</param>
         /// <param name="datasets">the datasets to be added</param>
         /// <param name="xdatamax">the largest horizontal number on the graph</param>
-        private void DrawSummariserData(List<string> itemsNotInOther, List<GraphDataset> datasets, double xdatamax)
+        private void DrawSummariserData(List<string> itemsNotInOther, List<GraphDataset> datasets, double xdatamax, int countOfNames)
         {
             List<string> orderOfOther = new List<string>();
             double datasetHeight = YMIN_INCREMENTSIZE / datasets.Count();
@@ -209,7 +215,7 @@ namespace DataGraph
                         (smallestIncrement * dataset.Nodes[i + 1].GetCoords()[0]) + XMIN
                         : Width;
                     string itemName = dataset.Nodes[i].NodeName;
-                    Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, dataset, xpoint1, xpoint2);
+                    Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, dataset, xpoint1, xpoint2, countOfNames);
                     Children.Add(rect);
                 }
             }
@@ -228,7 +234,7 @@ namespace DataGraph
         /// <param name="start">the starting x position of the data point</param>
         /// <param name="end">the ending x position of the data point</param>
         /// <returns>a rectangle that represents a single data point in the summarizer</returns>
-        private Rectangle GenerateSummariserDatapoint(List<string> notInOther, List<string> orderOfOther, double itemHeight, int verticalIndex, string itemName, GraphDataset parent, double start, double end)
+        private Rectangle GenerateSummariserDatapoint(List<string> notInOther, List<string> orderOfOther, double itemHeight, int verticalIndex, string itemName, GraphDataset parent, double start, double end, int countOfNames)
         {
             Rectangle rect = GenerateRectangle(itemHeight, end - start, parent.Colour, itemName);
             if (notInOther.Contains(itemName))
@@ -236,6 +242,8 @@ namespace DataGraph
                 int startingPosition = TEXT_HEIGHT * 2;
                 if (notInOther.Count() == NUMBEROFYMININCREMENTS) startingPosition = TEXT_HEIGHT;
                 double v = Height - startingPosition - (TEXT_HEIGHT * notInOther.IndexOf(itemName)) + (itemHeight * verticalIndex);
+                if (countOfNames < 4)
+                    v += TEXT_HEIGHT;
                 SetTop(rect, v);
             }
             else
@@ -244,7 +252,7 @@ namespace DataGraph
                 rect.Fill = otherBrushes[orderOfOther.IndexOf(itemName) % otherBrushes.Length];
                 SetTop(rect, Height - TEXT_HEIGHT + (itemHeight * verticalIndex));
             }
-            SetLeft(rect, start - BUTTON_SIZE / 2);
+            SetLeft(rect, start);
             return rect;
         }
 
