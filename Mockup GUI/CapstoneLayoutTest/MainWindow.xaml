@@ -35,7 +35,7 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:TestGraph Name="canGraph"  Height="381" Width="690" VerticalAlignment="Top" Margin="0,30,8,0" HorizontalAlignment="Right"/>
+        <control:LineGraph Name="canGraph"  Height="381" Width="690" VerticalAlignment="Top" Margin="0,30,8,0" HorizontalAlignment="Right"/>
 
         <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="631" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="10,394,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Grid HorizontalAlignment="Left" Height="354" Margin="10,35,0,0" VerticalAlignment="Top" Width="635" RenderTransformOrigin="0.5,0.5">
