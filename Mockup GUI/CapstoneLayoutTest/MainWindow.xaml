@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="530" Width="1366"
-        Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="MainWindow" Height="457" Width="1366"
+        Loaded="Window_Loaded" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
     <Window.Resources>
         <Style x:Key="CircleButton" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -35,9 +35,9 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:TestGraph Name="canGraph"  Height="454" Width="700" VerticalAlignment="Center" Margin="645,35,10,10"/>
+        <control:TestGraph Name="canGraph"  Height="381" Width="690" VerticalAlignment="Top" Margin="0,30,8,0" HorizontalAlignment="Right"/>
 
-        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="588" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="52,389,718,93"/>
+        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="631" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="10,394,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         <Grid HorizontalAlignment="Left" Height="354" Margin="10,35,0,0" VerticalAlignment="Top" Width="635" RenderTransformOrigin="0.5,0.5">
             <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="356" Width="635" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
 
