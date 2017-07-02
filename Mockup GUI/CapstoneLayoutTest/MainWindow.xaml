@@ -9,19 +9,35 @@
         Title="MainWindow" Height="457" Width="1366"
         Loaded="Window_Loaded" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
     <Window.Resources>
-       
+        <Style x:Key="VideoButton" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Property=Background}"
+                                                BorderBrush="{TemplateBinding Property=BorderBrush}"
+                                                BorderThickness="{TemplateBinding Property=BorderThickness}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Button.Background" Value="#00000000" />
+            <Setter Property="Button.BorderBrush" Value="#00000000" />
+
+            <Style.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="True">
+                    <Setter Property="Button.Background" Value="#7F000000" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     <Grid>
-
         <Menu Canvas.Left="-11" Canvas.Top="-60" Height="20" VerticalAlignment="Top">
             <MenuItem Header="_Upload" Click="Upload_Click"/>
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
         <control:LineGraph Name="canGraph"  Height="381" Width="648" VerticalAlignment="Top" Margin="0,35,10,0" HorizontalAlignment="Right"/>
-
-
-
         <Grid HorizontalAlignment="Left" Height="384" Margin="5,30,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -30,7 +46,9 @@
             <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
             <Grid Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="25" />
             <DockPanel VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="25">
-                <Button Width="50" Click="Button_Click" Margin="5,2,0,2"/>
+                <Button Width="20" Click="Button_Click" Margin="5,2,0,2" Height="20" Style="{StaticResource VideoButton}">
+                    <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
+                </Button>
                 <Slider x:Name="scrollBar" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="5,2" Height="20"/>
             </DockPanel>
         </Grid>

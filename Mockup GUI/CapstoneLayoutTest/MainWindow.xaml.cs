@@ -128,11 +128,16 @@ namespace CapstoneLayoutTest
             if (videoState)
             {
                 mediaElement.Pause();
+
+                var uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_play_arrow_white_24dp.png", UriKind.Relative);
+                pausePlayImage.Source = new BitmapImage(uriSource);
                 videoState = false;
             }
             else
             {
                 mediaElement.Play();
+                var uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_pause_white_24dp.png", UriKind.Relative);
+                pausePlayImage.Source = new BitmapImage(uriSource);
                 videoState = true;
             }
         }
