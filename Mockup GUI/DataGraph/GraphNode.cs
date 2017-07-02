@@ -24,6 +24,11 @@ namespace DataGraph
         {
             this.nodeName = nodeName;
             nodeButton = new Button();
+            var myResourceDictionary = new ResourceDictionary
+            {
+                Source = new Uri("/DataGraph;component/Dictionary.xaml", UriKind.RelativeOrAbsolute)
+            };
+            nodeButton.Style = myResourceDictionary["CircleButton"] as Style;
             nodeButton.Width = 10;
             nodeButton.Height = 10;
             this.horizontalValue = horizontalValue;
@@ -33,11 +38,6 @@ namespace DataGraph
         public void SetButtonColour(Brush brush)
         {
             nodeButton.Background = brush;
-        }
-
-        public void SetButtonStyle(Style style)
-        {
-            nodeButton.Style = style;
         }
 
         public void AddButtonClick(RoutedEventHandler click)

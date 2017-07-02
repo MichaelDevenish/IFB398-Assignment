@@ -9,24 +9,7 @@
         Title="MainWindow" Height="457" Width="1366"
         Loaded="Window_Loaded" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
     <Window.Resources>
-        <Style x:Key="CircleButton" TargetType="Button">
-            <Setter Property="OverridesDefaultStyle" Value="True"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Ellipse Fill="{TemplateBinding Background}"/>
-                            <Ellipse>
-                                <Ellipse.Fill>
-                                    <SolidColorBrush Color="#00000000" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <ContentPresenter x:Name="content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+       
     </Window.Resources>
     <Grid>
 
@@ -35,13 +18,21 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:LineGraph Name="canGraph"  Height="381" Width="690" VerticalAlignment="Top" Margin="0,30,8,0" HorizontalAlignment="Right"/>
+        <control:LineGraph Name="canGraph"  Height="381" Width="648" VerticalAlignment="Top" Margin="0,35,10,0" HorizontalAlignment="Right"/>
 
-        <ScrollBar x:Name="scrollBar" Canvas.Left="-598" Canvas.Top="340" RenderTransformOrigin="0.5,0.5" Height="13" Width="631" Scroll="scrollBar_Scroll" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" Margin="10,394,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-        <Grid HorizontalAlignment="Left" Height="354" Margin="10,35,0,0" VerticalAlignment="Top" Width="635" RenderTransformOrigin="0.5,0.5">
-            <MediaElement x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual"  Height="356" Width="635" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Margin="0,-2,0,0" />
 
+
+        <Grid HorizontalAlignment="Left" Height="384" Margin="5,30,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height=".07*"/>
+            </Grid.RowDefinitions>
+            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
+            <Grid Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="25" />
+            <DockPanel VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="25">
+                <Button Width="50" Click="Button_Click" Margin="5,2,0,2"/>
+                <Slider x:Name="scrollBar" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="5,2" Height="20"/>
+            </DockPanel>
         </Grid>
-
     </Grid>
 </Window>
