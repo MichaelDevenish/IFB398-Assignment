@@ -290,7 +290,6 @@ namespace DataGraph
         {
             foreach (GraphNode node in data.Nodes)
             {
-                node.SetButtonStyle(FindResource("CircleButton") as Style);
                 Children.Add(node.NodeButton);
             }
         }

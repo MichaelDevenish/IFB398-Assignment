@@ -120,6 +120,11 @@ namespace CapstoneLayoutTest
 
         private void mediaElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            PausePlay();
+        }
+
+        private void PausePlay()
+        {
             if (videoState)
             {
                 mediaElement.Pause();
@@ -150,11 +155,6 @@ namespace CapstoneLayoutTest
             backgroundWorker1.RunWorkerAsync();
         }
 
-        private void scrollBar_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
-            mediaElement.Position = TimeSpan.FromSeconds(((ScrollBar)sender).Value);
-        }
-
         private void scrollBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (videoState) mediaElement.Play();
@@ -180,6 +180,28 @@ namespace CapstoneLayoutTest
         {
             Load load = new Load();
             load.ShowDialog();
+        }
+
+        private void scrollBar_Scroll(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Value);
+        }
+
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+            //show the controls  (grid and dockpanel height <25)
+        }
+
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //hide the controls (grid and dockpanel height >0)
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            PausePlay();
+            //also change the look of the button
         }
     }
 }
