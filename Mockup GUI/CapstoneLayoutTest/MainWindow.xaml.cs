@@ -30,6 +30,13 @@ namespace CapstoneLayoutTest
             InitializeComponent();
         }
 
+        private const int CONTROLS_HIDE_SPEED = 10;
+        private const int CONTROLS_SHOW_SPEED = 2;
+        private const int CONTROLS_MIN_HEIGHT = 0;
+        private const int CONTROLS_MAX_HEIGHT = 25;
+        private const int CONTROLS_HIDE_DELAY = 1000;
+        private const int PROGRESS_BAR_UPDATE_SPEED = 15;
+        private const int SCREENSHOT_TIME = 150;
         private bool videoState = true;
         private bool currentlyRenderingPopup = false;
         private bool running = false;
@@ -72,16 +79,27 @@ namespace CapstoneLayoutTest
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
                 GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 5 + inc]);
-                node = SetupButtons(node);
+                node.AddButtonHover(HoverButtonHandeler(node));
+                node.AddButtonClick(ClickButtonHandeler(node));
                 temp.AddNode(node);
             }
             return temp;
         }
         //dummy
 
-        private GraphNode SetupButtons(GraphNode node)
+        private RoutedEventHandler ClickButtonHandeler(GraphNode node)
         {
-            node.AddButtonHover(new MouseEventHandler((object subSender, MouseEventArgs subE) =>
+            return new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
+            {
+                mediaElement.Pause();
+                mediaElement.Position = TimeSpan.FromSeconds((int)node.GetCoords()[0]);
+                mediaElement.Play();
+            });
+        }
+
+        private MouseEventHandler HoverButtonHandeler(GraphNode node)
+        {
+            return new MouseEventHandler((object subSender, MouseEventArgs subE) =>
             {
                 if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
                 {
@@ -89,16 +107,7 @@ namespace CapstoneLayoutTest
                     ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0]));
                     currentlyRenderingPopup = false;
                 }
-            }));
-
-            node.AddButtonClick(new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
-            {
-                mediaElement.Pause();
-                mediaElement.Position = TimeSpan.FromSeconds((int)node.GetCoords()[0]);
-                Thread.Sleep(50);
-                mediaElement.Play();
-            }));
-            return node;
+            });
         }
 
         private Image GetScreenshotAtTime(int currentMinute)
@@ -109,7 +118,7 @@ namespace CapstoneLayoutTest
             TimeSpan prePos = mediaElement.Position;
             if (videoState) mediaElement.Pause();
             mediaElement.Position = TimeSpan.FromSeconds(currentMinute);
-            Thread.Sleep(200);
+            Thread.Sleep(SCREENSHOT_TIME);
             rtb.Render(mediaElement);
             img.Source = BitmapFrame.Create(rtb);
 
@@ -126,29 +135,43 @@ namespace CapstoneLayoutTest
 
         private void PausePlay()
         {
-            if (videoState)
+            switch (videoState)
             {
-                mediaElement.Pause();
-
-                var uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_play_arrow_white_24dp.png", UriKind.Relative);
-                pausePlayImage.Source = new BitmapImage(uriSource);
-                videoState = false;
-            }
-            else
-            {
-                mediaElement.Play();
-                var uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_pause_white_24dp.png", UriKind.Relative);
-                pausePlayImage.Source = new BitmapImage(uriSource);
-                videoState = true;
+                case true:
+                    mediaElement.Pause();
+                    SetPausePlayImage(false);
+                    videoState = false;
+                    break;
+                case false:
+                    mediaElement.Play();
+                    SetPausePlayImage(true);
+                    videoState = true;
+                    break;
             }
         }
 
+        private void SetPausePlayImage(bool pausePlay)
+        {
+            Uri uriSource = null;
+            if (pausePlay) uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_pause_white_24dp.png", UriKind.Relative);
+            else uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_play_arrow_white_24dp.png", UriKind.Relative);
+            pausePlayImage.Source = new BitmapImage(uriSource);
+        }
+
+        private BackgroundWorker SetupBackgroundWorker(DoWorkEventHandler doWork, bool cancelable)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerSupportsCancellation = cancelable;
+            worker.DoWork += doWork;
+            worker.RunWorkerAsync();
+            return worker;
+        }
+
+        //Event Handlers
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            VideoProgressThread = new BackgroundWorker();
-            VideoProgressThread.DoWork += VideoProgressThread_DoWork;
-            VideoProgressThread.RunWorkerAsync();
+            VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
         }
 
         private void scrollBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -185,19 +208,13 @@ namespace CapstoneLayoutTest
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             if (HideControlsThread != null) HideControlsThread.CancelAsync();
-            ShowControllsThread = new BackgroundWorker();
-            ShowControllsThread.WorkerSupportsCancellation = true;
-            ShowControllsThread.DoWork += ShowControllsThread_DoWork;
-            ShowControllsThread.RunWorkerAsync();
+            ShowControllsThread = SetupBackgroundWorker(ShowControllsThread_DoWork, true);
         }
 
         private void Grid_MouseLeave(object sender, MouseEventArgs e)
         {
             if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
-            HideControlsThread = new BackgroundWorker();
-            HideControlsThread.WorkerSupportsCancellation = true;
-            HideControlsThread.DoWork += HideControlsThread_DoWork;
-            HideControlsThread.RunWorkerAsync();
+            HideControlsThread = SetupBackgroundWorker(HideControlsThread_DoWork, true);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -211,7 +228,7 @@ namespace CapstoneLayoutTest
             while (running)
             {
                 Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
-                Thread.Sleep(15);
+                Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
             }
             e.Cancel = true;
             return;
@@ -220,7 +237,7 @@ namespace CapstoneLayoutTest
         private void ShowControllsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height < 25);
+            Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
             while (run)
             {
                 if (ShowControllsThread.CancellationPending)
@@ -233,8 +250,8 @@ namespace CapstoneLayoutTest
                     ControlPanel.Height++;
                     ControlGrid.Height++;
                 });
-                Thread.Sleep(2);
-                Dispatcher.Invoke(() => run = ControlPanel.Height < 25);
+                Thread.Sleep(CONTROLS_SHOW_SPEED);
+                Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
             } while (run) ;
             e.Cancel = true;
             return;
@@ -242,9 +259,9 @@ namespace CapstoneLayoutTest
 
         private void HideControlsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(CONTROLS_HIDE_DELAY);
             bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height > 0);
+            Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
             while (run)
             {
                 if (HideControlsThread.CancellationPending)
@@ -257,8 +274,8 @@ namespace CapstoneLayoutTest
                     ControlPanel.Height--;
                     ControlGrid.Height--;
                 });
-                Thread.Sleep(10);
-                Dispatcher.Invoke(() => run = ControlPanel.Height > 0);
+                Thread.Sleep(CONTROLS_HIDE_SPEED);
+                Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
             }
             e.Cancel = true;
             return;
