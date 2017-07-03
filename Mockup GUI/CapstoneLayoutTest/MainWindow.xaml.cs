@@ -33,7 +33,9 @@ namespace CapstoneLayoutTest
         private bool videoState = true;
         private bool currentlyRenderingPopup = false;
         private bool running = false;
-        BackgroundWorker backgroundWorker1;
+        BackgroundWorker HideControlsThread;
+        BackgroundWorker VideoProgressThread;
+        BackgroundWorker ShowControllsThread;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -79,7 +81,6 @@ namespace CapstoneLayoutTest
 
         private GraphNode SetupButtons(GraphNode node)
         {
-
             node.AddButtonHover(new MouseEventHandler((object subSender, MouseEventArgs subE) =>
             {
                 if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
@@ -142,22 +143,12 @@ namespace CapstoneLayoutTest
             }
         }
 
-        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            while (running)
-            {
-                Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
-                Thread.Sleep(15);
-            }
-            e.Cancel = true;
-            return;
-        }
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            backgroundWorker1 = new BackgroundWorker();
-            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
-            backgroundWorker1.RunWorkerAsync();
+            VideoProgressThread = new BackgroundWorker();
+            VideoProgressThread.DoWork += VideoProgressThread_DoWork;
+            VideoProgressThread.RunWorkerAsync();
         }
 
         private void scrollBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -174,7 +165,6 @@ namespace CapstoneLayoutTest
         {
             running = false;
         }
-
         private void Upload_Click(object sender, RoutedEventArgs e)
         {
             Upload upload = new Upload();
@@ -194,19 +184,84 @@ namespace CapstoneLayoutTest
 
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
-
-            //show the controls  (grid and dockpanel height <25)
+            if (HideControlsThread != null) HideControlsThread.CancelAsync();
+            ShowControllsThread = new BackgroundWorker();
+            ShowControllsThread.WorkerSupportsCancellation = true;
+            ShowControllsThread.DoWork += ShowControllsThread_DoWork;
+            ShowControllsThread.RunWorkerAsync();
         }
 
         private void Grid_MouseLeave(object sender, MouseEventArgs e)
         {
-            //hide the controls (grid and dockpanel height >0)
+            if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
+            HideControlsThread = new BackgroundWorker();
+            HideControlsThread.WorkerSupportsCancellation = true;
+            HideControlsThread.DoWork += HideControlsThread_DoWork;
+            HideControlsThread.RunWorkerAsync();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             PausePlay();
-            //also change the look of the button
+        }
+
+        //Background workers
+        private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (running)
+            {
+                Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
+                Thread.Sleep(15);
+            }
+            e.Cancel = true;
+            return;
+        }
+
+        private void ShowControllsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            bool run = false;
+            Dispatcher.Invoke(() => run = ControlPanel.Height < 25);
+            while (run)
+            {
+                if (ShowControllsThread.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    ControlPanel.Height++;
+                    ControlGrid.Height++;
+                });
+                Thread.Sleep(2);
+                Dispatcher.Invoke(() => run = ControlPanel.Height < 25);
+            } while (run) ;
+            e.Cancel = true;
+            return;
+        }
+
+        private void HideControlsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            Thread.Sleep(1000);
+            bool run = false;
+            Dispatcher.Invoke(() => run = ControlPanel.Height > 0);
+            while (run)
+            {
+                if (HideControlsThread.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    ControlPanel.Height--;
+                    ControlGrid.Height--;
+                });
+                Thread.Sleep(10);
+                Dispatcher.Invoke(() => run = ControlPanel.Height > 0);
+            }
+            e.Cancel = true;
+            return;
         }
     }
 }
