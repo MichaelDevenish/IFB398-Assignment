@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="457" Width="1366"
-        Loaded="Window_Loaded" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
+        Title="MainWindow" Height="457" Width="1366" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
     <Window.Resources>
         <Style x:Key="VideoButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
