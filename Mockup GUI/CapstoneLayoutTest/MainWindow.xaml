@@ -44,8 +44,8 @@
                 <RowDefinition Height=".07*"/>
             </Grid.RowDefinitions>
             <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
-            <Grid Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="25" />
-            <DockPanel VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="25">
+            <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
+            <DockPanel x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
                 <Button Width="20" Click="Button_Click" Margin="5,2,0,2" Height="20" Style="{StaticResource VideoButton}">
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
