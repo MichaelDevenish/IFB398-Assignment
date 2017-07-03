@@ -25,11 +25,7 @@ namespace CapstoneLayoutTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-
+        //CONSTANTS
         private const int CONTROLS_HIDE_SPEED = 10;
         private const int CONTROLS_SHOW_SPEED = 2;
         private const int CONTROLS_MIN_HEIGHT = 0;
@@ -37,16 +33,29 @@ namespace CapstoneLayoutTest
         private const int CONTROLS_HIDE_DELAY = 1000;
         private const int PROGRESS_BAR_UPDATE_SPEED = 15;
         private const int SCREENSHOT_TIME = 150;
+
+        //GLOBALS
         private bool videoState = true;
         private bool currentlyRenderingPopup = false;
         private bool running = false;
-        BackgroundWorker HideControlsThread;
-        BackgroundWorker VideoProgressThread;
-        BackgroundWorker ShowControllsThread;
+        private BackgroundWorker HideControlsThread;
+        private BackgroundWorker VideoProgressThread;
+        private BackgroundWorker ShowControllsThread;
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        public MainWindow()
         {
-            //dummy
+            InitializeComponent();
+            SetupWindow();
+        }
+
+        /// <summary>
+        /// Main function that controls setting everything up
+        /// </summary>
+        private void SetupWindow()
+        {
             double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] testArray = { { 0, 1 }, { 1, 21 }, { 2, 21 }, { 3, 11 }, { 4, 21 }, { 5, 31 }, { 6, 41 }, { 7, 51 }, { 8, 51 }, { 9, 51 }, { 10, 51 }, { 11, 51 }, { 12, 21 }, { 13, 21 }, { 14, 51 }, { 15, 61 }, { 16, 51 }, { 17, 41 }, { 18, 51 }, { 19, 61 }, { 20, 61 } };
@@ -87,6 +96,11 @@ namespace CapstoneLayoutTest
         }
         //dummy
 
+        /// <summary>
+        /// Returns an event handler for the supplied node that handles clicking on the button 
+        /// </summary>
+        /// <param name="node">the node the handler relates to</param>
+        /// <returns>a click event relating to the supplied node</returns>
         private RoutedEventHandler ClickButtonHandeler(GraphNode node)
         {
             return new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
@@ -97,6 +111,11 @@ namespace CapstoneLayoutTest
             });
         }
 
+        /// <summary>
+        /// Returns an event handler for the supplied node that handles hovering over the button 
+        /// </summary>
+        /// <param name="node">the node the handler relates to</param>
+        /// <returns>a mouse event relating to the supplied node</returns>
         private MouseEventHandler HoverButtonHandeler(GraphNode node)
         {
             return new MouseEventHandler((object subSender, MouseEventArgs subE) =>
@@ -104,35 +123,38 @@ namespace CapstoneLayoutTest
                 if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
                 {
                     currentlyRenderingPopup = true;
-                    ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0]));
+                    ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0], mediaElement));
                     currentlyRenderingPopup = false;
                 }
             });
         }
 
-        private Image GetScreenshotAtTime(int currentMinute)
+        /// <summary>
+        /// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
+        /// </summary>
+        /// <param name="currentSecond">the second to take the screen-shot at</param>
+        /// <param name="player">the MediaElement to screen-shot</param>
+        /// <returns>an image of the screen-shot</returns>
+        private Image GetScreenshotAtTime(int currentSecond, MediaElement player)
         {
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)mediaElement.Width, (int)mediaElement.Height, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)player.Width, (int)player.Height, 96, 96, PixelFormats.Pbgra32);
             Image img = new Image();
 
-            TimeSpan prePos = mediaElement.Position;
-            if (videoState) mediaElement.Pause();
-            mediaElement.Position = TimeSpan.FromSeconds(currentMinute);
+            TimeSpan prePos = player.Position;
+            if (videoState) player.Pause();
+            player.Position = TimeSpan.FromSeconds(currentSecond);
             Thread.Sleep(SCREENSHOT_TIME);
-            rtb.Render(mediaElement);
+            rtb.Render(player);
             img.Source = BitmapFrame.Create(rtb);
 
-            mediaElement.Position = prePos;
-            if (videoState) mediaElement.Play();
+            player.Position = prePos;
+            if (videoState) player.Play();
             return img;
         }
 
-
-        private void mediaElement_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            PausePlay();
-        }
-
+        /// <summary>
+        /// Plays or pauses the video depending on the current video state
+        /// </summary>
         private void PausePlay()
         {
             switch (videoState)
@@ -150,6 +172,10 @@ namespace CapstoneLayoutTest
             }
         }
 
+        /// <summary>
+        /// Sets the pausePlayImage to either pause(true) or play(false)
+        /// </summary>
+        /// <param name="pausePlay">the state of the button</param>
         private void SetPausePlayImage(bool pausePlay)
         {
             Uri uriSource = null;
@@ -158,6 +184,12 @@ namespace CapstoneLayoutTest
             pausePlayImage.Source = new BitmapImage(uriSource);
         }
 
+        /// <summary>
+        /// Sets up and runs a BackgroundWorker
+        /// </summary>
+        /// <param name="doWork">the function for it to run</param>
+        /// <param name="cancelable">if it can be closed early</param>
+        /// <returns>a BackgroundWorker based of the supplied constraints that is running</returns>
         private BackgroundWorker SetupBackgroundWorker(DoWorkEventHandler doWork, bool cancelable)
         {
             BackgroundWorker worker = new BackgroundWorker();
@@ -167,7 +199,86 @@ namespace CapstoneLayoutTest
             return worker;
         }
 
+        //Background workers
+        /// <summary>
+        /// USed to update the scrollbar progress as the video is playing
+        /// </summary>
+        /// <param name="sender">The parent thread</param>
+        /// <param name="e">arguments</param>
+        private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (running)
+            {
+                if (videoState) Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
+                Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
+            }
+            e.Cancel = true;
+            return;
+        }
+
+        /// <summary>
+        /// Shows the video controls
+        /// </summary>
+        /// <param name="sender">The parent thread</param>
+        /// <param name="e">arguments</param>
+        private void ShowControllsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            bool run = false;
+            Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
+            while (run)
+            {
+                if (ShowControllsThread.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    ControlPanel.Height++;
+                    ControlGrid.Height++;
+                });
+                Thread.Sleep(CONTROLS_SHOW_SPEED);
+                Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
+            } while (run) ;
+            e.Cancel = true;
+            return;
+        }
+
+        /// <summary>
+        /// hides the video controls
+        /// </summary>
+        /// <param name="sender">The parent thread</param>
+        /// <param name="e">arguments</param>
+        private void HideControlsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            Thread.Sleep(CONTROLS_HIDE_DELAY);
+            bool run = false;
+            Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
+            while (run)
+            {
+                if (HideControlsThread.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    ControlPanel.Height--;
+                    ControlGrid.Height--;
+                });
+                Thread.Sleep(CONTROLS_HIDE_SPEED);
+                Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
+            }
+            e.Cancel = true;
+            return;
+        }
+
         //Event Handlers
+        private void mediaElement_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            PausePlay();
+        }
+
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
@@ -220,65 +331,6 @@ namespace CapstoneLayoutTest
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             PausePlay();
-        }
-
-        //Background workers
-        private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            while (running)
-            {
-                Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
-                Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
-            }
-            e.Cancel = true;
-            return;
-        }
-
-        private void ShowControllsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
-            while (run)
-            {
-                if (ShowControllsThread.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    ControlPanel.Height++;
-                    ControlGrid.Height++;
-                });
-                Thread.Sleep(CONTROLS_SHOW_SPEED);
-                Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
-            } while (run) ;
-            e.Cancel = true;
-            return;
-        }
-
-        private void HideControlsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            Thread.Sleep(CONTROLS_HIDE_DELAY);
-            bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
-            while (run)
-            {
-                if (HideControlsThread.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                Dispatcher.Invoke(() =>
-                {
-                    ControlPanel.Height--;
-                    ControlGrid.Height--;
-                });
-                Thread.Sleep(CONTROLS_HIDE_SPEED);
-                Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
-            }
-            e.Cancel = true;
-            return;
         }
     }
 }
