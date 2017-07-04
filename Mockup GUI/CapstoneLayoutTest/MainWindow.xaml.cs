@@ -185,6 +185,29 @@ namespace CapstoneLayoutTest
         }
 
         /// <summary>
+        /// Converts an int to a string that represents [HH:]MM:SS
+        /// </summary>
+        /// <param name="seconds">the seconds to convert</param>
+        /// <returns>a string representing [HH:]MM:SS</returns>
+        private string IntToTimeString(int seconds)
+        {
+            string builder = "";
+            if (seconds >= 3600) builder += seconds / 3600 + ":";
+            if (seconds % 3600 > 60)
+            {
+                int min = seconds % 3600 / 60;
+                if (min < 10) builder += "0";
+                builder += min + ":";
+            }
+            else builder += "00:";
+
+            int sec = seconds % 60;
+            if (sec < 10) builder += "0";
+            builder += sec;
+            return builder;
+        }
+
+        /// <summary>
         /// Sets up and runs a BackgroundWorker
         /// </summary>
         /// <param name="doWork">the function for it to run</param>
@@ -207,9 +230,23 @@ namespace CapstoneLayoutTest
         /// <param name="e">arguments</param>
         private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            int sec = 3600;
             while (running)
             {
-                if (videoState) Dispatcher.Invoke(() => scrollBar.Value = mediaElement.Position.TotalSeconds);
+
+                int currentTime = 0; int totalTime = 0;
+                if (videoState) Dispatcher.Invoke(() =>
+                {
+                    currentTime = (int)mediaElement.Position.TotalSeconds;
+                    totalTime = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+                });
+                string timeString = IntToTimeString(currentTime) + "/" + IntToTimeString(totalTime);
+                if (videoState) Dispatcher.Invoke(() =>
+                {
+                    VideoTime.Content = timeString;
+                    scrollBar.Value = mediaElement.Position.TotalSeconds;
+                });
+
                 Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
             }
             e.Cancel = true;
