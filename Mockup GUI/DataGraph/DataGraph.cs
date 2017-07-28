@@ -50,12 +50,15 @@ namespace DataGraph
         private string xAxisName = "";
         private string yAxisName = "";
         private bool summariser = true;
+        private int summariserHeight = 0;
 
         //properties
         public int XDivisor { get { return xDivisor; } set { xDivisor = value; } }
         public int YDivisor { get { return yDivisor; } set { yDivisor = value; } }
         public string XAxisName { set { xAxisName = value; } }
         public string YAxisName { set { yAxisName = value; } }
+        public int SummariserHeight { get { return summariserHeight; } }
+        public double SummariserWidth { get { return Width-XMIN; } }
 
         //functions
         static LineGraph()
@@ -161,6 +164,7 @@ namespace DataGraph
         {
             List<string> topData = new List<string>();
             int currentPosition = 0;
+            summariserHeight = 0;
             int maxIteration = nodeNames.Count();
 
             GeometryGroup xaxis_geom = new GeometryGroup();
@@ -169,6 +173,7 @@ namespace DataGraph
                 maxIteration = 4;
                 DrawSummariserRow(xaxis_geom, "Other", Height);
                 currentPosition++;
+                summariserHeight += YMIN_INCREMENTSIZE;
             }
             for (int i = currentPosition; i < maxIteration; i++)
             {
@@ -176,6 +181,7 @@ namespace DataGraph
                 double height = Height - (i * YMIN_INCREMENTSIZE);
                 DrawSummariserRow(xaxis_geom, maxName, height);
                 currentPosition++;
+                summariserHeight += YMIN_INCREMENTSIZE;
             }
             double topBorderHeight = Height - ((currentPosition) * YMIN_INCREMENTSIZE);
             xaxis_geom.Children.Add(new LineGeometry(new Point(0, topBorderHeight), new Point(Width, topBorderHeight)));

@@ -29,6 +29,39 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="SinglePointThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Rectangle Fill="Gray" Stroke="#00000000" Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Width="3" VerticalAlignment="Stretch"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SinglePointSlider" TargetType="{x:Type Slider}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border x:Name="TrackBackground" Background="#00000000" BorderBrush="#00000000" />
+                                <Track x:Name="PART_Track" Grid.Row="1">
+                                    <Track.Thumb>
+                                        <Thumb x:Name="Thumb" Style="{StaticResource SinglePointThumb}" Background="Black"/>
+                                    </Track.Thumb>
+                                </Track>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid>
         <Menu Canvas.Left="-11" Canvas.Top="-60" Height="20" VerticalAlignment="Top">
@@ -42,15 +75,21 @@
                 <RowDefinition />
                 <RowDefinition Height=".07*"/>
             </Grid.RowDefinitions>
-            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
+            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" 
+                          VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4"
+                          IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
+            
             <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
             <DockPanel x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
                 <Button Width="25" Click="Button_Click" Margin="5,0,0,0" Height="25" Style="{StaticResource VideoButton}">
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
                 <Label x:Name="VideoTime" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Foreground="White">0:00/0:00</Label>
-                <Slider x:Name="scrollBar" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20"/>
+                <Slider x:Name="scrollBar" PreviewMouseUp="scrollBar_PreviewMouseUp" PreviewMouseDown="scrollBar_PreviewMouseDown"
+                        Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20"/>
             </DockPanel>
         </Grid>
+        <Slider x:Name="scrollBar2"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,0,10,2" Height="21" Width="568" 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" IsEnabled="False"/>
     </Grid>
 </Window>

@@ -1,22 +1,13 @@
 ﻿using DataGraph;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CapstoneLayoutTest
 {
@@ -30,7 +21,7 @@ namespace CapstoneLayoutTest
         private const int CONTROLS_SHOW_SPEED = 2;
         private const int CONTROLS_MIN_HEIGHT = 0;
         private const int CONTROLS_MAX_HEIGHT = 25;
-        private const int CONTROLS_HIDE_DELAY = 1000;
+        private const int CONTROLS_HIDE_DELAY = 500;
         private const int PROGRESS_BAR_UPDATE_SPEED = 15;
         private const int SCREENSHOT_TIME = 150;
 
@@ -78,6 +69,8 @@ namespace CapstoneLayoutTest
             canGraph.XDivisor = 1;
             canGraph.YDivisor = 5;
             canGraph.DrawGraph();
+            scrollBar2.Height = canGraph.SummariserHeight;
+            scrollBar2.Width = canGraph.SummariserWidth;
         }
 
         //dummy
@@ -245,6 +238,7 @@ namespace CapstoneLayoutTest
                 {
                     VideoTime.Content = timeString;
                     scrollBar.Value = mediaElement.Position.TotalSeconds;
+                    scrollBar2.Value = mediaElement.Position.TotalSeconds;
                 });
 
                 Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
@@ -319,7 +313,9 @@ namespace CapstoneLayoutTest
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            scrollBar2.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
+            
         }
 
         private void scrollBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
