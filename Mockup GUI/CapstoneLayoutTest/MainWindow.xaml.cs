@@ -315,17 +315,7 @@ namespace CapstoneLayoutTest
             scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             scrollBar2.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
-            
-        }
 
-        private void scrollBar_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (videoState) mediaElement.Play();
-        }
-
-        private void scrollBar_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            mediaElement.Pause();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -364,6 +354,14 @@ namespace CapstoneLayoutTest
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             PausePlay();
+        }
+
+        private void scrollBar2_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X));
+            }
         }
     }
 }
