@@ -69,8 +69,8 @@ namespace CapstoneLayoutTest
             canGraph.XDivisor = 1;
             canGraph.YDivisor = 5;
             canGraph.DrawGraph();
-            scrollBar2.Height = canGraph.SummariserHeight;
-            scrollBar2.Width = canGraph.SummariserWidth;
+            graphSlider.Height = canGraph.Height + 10;
+            graphSlider.Width = canGraph.SummariserWidth;
         }
 
         //dummy
@@ -81,8 +81,8 @@ namespace CapstoneLayoutTest
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
                 GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 5 + inc]);
-                node.AddButtonHover(HoverButtonHandeler(node));
-                node.AddButtonClick(ClickButtonHandeler(node));
+                //node.AddButtonHover(HoverButtonHandeler(node));
+                //node.AddButtonClick(ClickButtonHandeler(node));
                 temp.AddNode(node);
             }
             return temp;
@@ -94,33 +94,33 @@ namespace CapstoneLayoutTest
         /// </summary>
         /// <param name="node">the node the handler relates to</param>
         /// <returns>a click event relating to the supplied node</returns>
-        private RoutedEventHandler ClickButtonHandeler(GraphNode node)
-        {
-            return new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
-            {
-                mediaElement.Pause();
-                mediaElement.Position = TimeSpan.FromSeconds((int)node.GetCoords()[0]);
-                mediaElement.Play();
-            });
-        }
+        //private RoutedEventHandler ClickButtonHandeler(GraphNode node)
+        //{
+        //    return new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
+        //    {
+        //        mediaElement.Pause();
+        //        mediaElement.Position = TimeSpan.FromSeconds((int)node.GetCoords()[0]);
+        //        mediaElement.Play();
+        //    });
+        //}
 
         /// <summary>
         /// Returns an event handler for the supplied node that handles hovering over the button 
         /// </summary>
         /// <param name="node">the node the handler relates to</param>
         /// <returns>a mouse event relating to the supplied node</returns>
-        private MouseEventHandler HoverButtonHandeler(GraphNode node)
-        {
-            return new MouseEventHandler((object subSender, MouseEventArgs subE) =>
-            {
-                if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
-                {
-                    currentlyRenderingPopup = true;
-                    ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0], mediaElement));
-                    currentlyRenderingPopup = false;
-                }
-            });
-        }
+        //private MouseEventHandler HoverButtonHandeler(GraphNode node)
+        //{
+        //    return new MouseEventHandler((object subSender, MouseEventArgs subE) =>
+        //    {
+        //        if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
+        //        {
+        //            currentlyRenderingPopup = true;
+        //            ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0], mediaElement));
+        //            currentlyRenderingPopup = false;
+        //        }
+        //    });
+        //}
 
         /// <summary>
         /// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
@@ -201,6 +201,20 @@ namespace CapstoneLayoutTest
         }
 
         /// <summary>
+        /// Moves the video to the position of the selected slider and updates the other slider
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VideoSliderbarMove(object sender, MouseEventArgs e)
+        {
+            mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X));
+            if ((Slider)sender == graphSlider)
+                playerSlider.Value = graphSlider.Value;
+            if ((Slider)sender == playerSlider)
+                graphSlider.Value = playerSlider.Value;
+        }
+
+        /// <summary>
         /// Sets up and runs a BackgroundWorker
         /// </summary>
         /// <param name="doWork">the function for it to run</param>
@@ -237,8 +251,8 @@ namespace CapstoneLayoutTest
                 if (videoState) Dispatcher.Invoke(() =>
                 {
                     VideoTime.Content = timeString;
-                    scrollBar.Value = mediaElement.Position.TotalSeconds;
-                    scrollBar2.Value = mediaElement.Position.TotalSeconds;
+                    playerSlider.Value = mediaElement.Position.TotalSeconds;
+                    graphSlider.Value = mediaElement.Position.TotalSeconds;
                 });
 
                 Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
@@ -312,8 +326,8 @@ namespace CapstoneLayoutTest
 
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
-            scrollBar.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            scrollBar2.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            playerSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            graphSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
 
         }
@@ -359,9 +373,20 @@ namespace CapstoneLayoutTest
         private void scrollBar2_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X));
-            }
+                VideoSliderbarMove(sender, e);
+
         }
+
+        private void scrollBar2_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            VideoSliderbarMove(sender, e);
+            mediaElement.Pause();
+        }
+
+        private void scrollBar2_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            mediaElement.Play();
+        }
+
     }
 }

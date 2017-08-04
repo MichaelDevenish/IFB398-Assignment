@@ -78,17 +78,17 @@
             <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" 
                           VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4"
                           IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
-            
+
             <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
             <DockPanel x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
                 <Button Width="25" Click="Button_Click" Margin="5,0,0,0" Height="25" Style="{StaticResource VideoButton}">
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
                 <Label x:Name="VideoTime" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Foreground="White">0:00/0:00</Label>
-                <Slider x:Name="scrollBar" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove"/>
+                <Slider x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
             </DockPanel>
         </Grid>
-        <Slider x:Name="scrollBar2"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,0,10,2" Height="21" Width="568" 
-                HorizontalAlignment="Right"  VerticalAlignment="Bottom" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove"/>
+        <Slider x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,0,10,2" Height="399" Width="568" 
+                HorizontalAlignment="Right"  VerticalAlignment="Bottom" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
     </Grid>
 </Window>
