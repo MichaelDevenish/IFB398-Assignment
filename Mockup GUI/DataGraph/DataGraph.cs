@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace DataGraph
 {
 
-    public class LineGraph : Canvas
+    public class LineGraph : Graph
     {
         //constants
         const double XMIN = 80;
@@ -30,7 +30,6 @@ namespace DataGraph
         private const int KEY_GAP = 3;
         private const int BUTTON_SIZE = 10;
         private const int GRAPH_LINE_SIZE = 3;
-        private const int DEFAULT_RECTANGLE_BORDER = 0;
         private const int X_LINE_MARKE_RSIZE = 5;
         private const int X_LINE_THICKNESS = 1;
         private const double Y_LINE_THICKNESS = 0.5;
@@ -39,8 +38,6 @@ namespace DataGraph
         private const int SUMMARISER_TEXT_OFFSET = 5;
         private const int X_NUMBERHORIZONTAL_OFFSET = 8;
         private const int X_NUMBER_HORIZONTAL_UNDER = 4;
-        private static readonly Brush[] otherBrushes = new Brush[]{ Brushes.MediumTurquoise, Brushes.LightGreen, Brushes.Gray, Brushes.Salmon,
-             Brushes.Orange, Brushes.Crimson, Brushes.Black, Brushes.SteelBlue, Brushes.Orange, Brushes.Tan};
 
         //globals
         private double ymin = YMIN_DEFAULT;
@@ -58,7 +55,7 @@ namespace DataGraph
         public string XAxisName { set { xAxisName = value; } }
         public string YAxisName { set { yAxisName = value; } }
         public int SummariserHeight { get { return summariserHeight; } }
-        public double SummariserWidth { get { return Width-XMIN; } }
+        public double SummariserWidth { get { return Width - XMIN; } }
 
         //functions
         static LineGraph()
@@ -225,9 +222,9 @@ namespace DataGraph
                 GraphDataset dataset = datasets[e];
                 for (int i = 0; i < dataset.Nodes.Count(); i++)
                 {
-                    double xpoint1 = (smallestIncrement * dataset.Nodes[i].GetCoords()[0]) + XMIN;
+                    double xpoint1 = (smallestIncrement * ((GraphNode)dataset.Nodes[i]).GetCoords()[0]) + XMIN;
                     double xpoint2 = i + 1 < dataset.Nodes.Count() ?
-                        (smallestIncrement * dataset.Nodes[i + 1].GetCoords()[0]) + XMIN
+                        (smallestIncrement * ((GraphNode)dataset.Nodes[i + 1]).GetCoords()[0]) + XMIN
                         : Width;
                     string itemName = dataset.Nodes[i].NodeName;
                     Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, dataset, xpoint1, xpoint2, countOfNames);
@@ -284,21 +281,9 @@ namespace DataGraph
             {
                 keyOffset = AddDataToKey(keyOffset, data);
                 DrawNodesForDataset(xdatamax, ydatamax, data);
-                DrawButtonsForDataset(data);
             }
         }
 
-        /// <summary>
-        /// Draws the buttons onto the graph for the supplied dataset
-        /// </summary>
-        /// <param name="data">the dataset to draw the buttons for</param>
-        private void DrawButtonsForDataset(GraphDataset data)
-        {
-            foreach (GraphNode node in data.Nodes)
-            {
-                Children.Add(node.NodeButton);
-            }
-        }
 
         /// <summary>
         /// draws the nodes onto the graph for the supplied dataset
@@ -329,8 +314,6 @@ namespace DataGraph
         {
             double xpoint = (((Width - XMIN) / xdatamax) * node.GetCoords()[0]) + XMIN;
             double ypoint = (Height - ymin) - (((Height - ymin) / ydatamax) * node.GetCoords()[1]);
-            SetLeft(node.NodeButton, xpoint - BUTTON_SIZE / 2);
-            SetTop(node.NodeButton, ypoint - BUTTON_SIZE / 2);
             return new Point(xpoint, ypoint);
         }
 
@@ -426,74 +409,6 @@ namespace DataGraph
         private double getDoubleOffset(double value, int offsetIncrease)
         {
             return value == 0 ? offsetIncrease : offsetIncrease * Math.Floor(Math.Log10(Math.Abs(value)) + 1);
-        }
-
-        /// <summary>
-        /// Generates a TextBlock from the supplied string at the supplied positions
-        /// </summary>
-        /// <param name="text">the text to be written into the TextBlock</param>
-        /// <param name="x">the x position of the TextBlock</param>
-        /// <param name="y">the y position of the TextBlock</param>
-        /// <returns></returns>
-        private TextBlock GenerateGraphText(string text, double x, double y)
-        {
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = text;
-            textBlock.Foreground = Brushes.Black;
-            SetLeft(textBlock, x);
-            SetTop(textBlock, y);
-            return textBlock;
-        }
-
-        /// <summary>
-        /// Generates a set of lines in a geometry group
-        /// </summary>
-        /// <param name="lines">a GeometryGroup that represents the lines</param>
-        /// <param name="thickness">the desired thickness</param>
-        /// <param name="brush">the desired colour</param>
-        /// <returns>a path that has been built from the GeometryGroup</returns>
-        private Path GenerateSetOfLines(GeometryGroup lines, double thickness, SolidColorBrush brush)
-        {
-            Path axis_path = new Path();
-            axis_path.StrokeThickness = thickness;
-            axis_path.Stroke = brush;
-            axis_path.Data = lines;
-            return axis_path;
-        }
-
-        /// <summary>
-        /// Generates a rectangle with the supplied dimensions, colour and tool-tip (if a blank string is supplied no tool-tip is added)
-        /// </summary>
-        /// <param name="height">the height of the rectangle</param>
-        /// <param name="width">the width of the rectangle</param>
-        /// <param name="colour">the desired colour</param>
-        /// <param name="tooltip">the desired tool-tip</param>
-        /// <returns></returns>
-        private static Rectangle GenerateRectangle(double height, double width, Brush colour, string tooltip)
-        {
-            Rectangle rect = new Rectangle();
-            rect.Height = height;
-            rect.Width = width;
-            rect.Fill = colour;
-            rect.StrokeThickness = DEFAULT_RECTANGLE_BORDER;
-            if (tooltip != "") rect.ToolTip = tooltip;
-            return rect;
-        }
-
-        /// <summary>
-        /// generates a line of the supplied colour between the supplied points
-        /// </summary>
-        /// <param name="brush">the desired colour</param>
-        /// <param name="points">the points to draw the line between</param>
-        /// <returns>the generated line</returns>
-        private Polyline GenerateGraphLine(Brush brush, PointCollection points)
-        {
-            Polyline polyline = new Polyline();
-            polyline.StrokeThickness = GRAPH_LINE_SIZE;
-            polyline.Stroke = brush;
-            polyline.Points = points;
-            return polyline;
-
         }
 
     }

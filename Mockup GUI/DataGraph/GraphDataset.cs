@@ -9,11 +9,11 @@ namespace DataGraph
 {
     public class GraphDataset
     {
-        private List<GraphNode> nodes;
+        private List<Node> nodes;
         private string datasetName;
         private Brush colour;
 
-        public List<GraphNode> Nodes { get { return nodes; } }
+        public List<Node> Nodes { get { return nodes; } }
         public string DatasetName { get { return datasetName; } }
         public Brush Colour { get { return colour; } }
 
@@ -21,11 +21,10 @@ namespace DataGraph
         {
             this.colour = colour;
             datasetName = name;
-            nodes = new List<GraphNode>();
+            nodes = new List<Node>();
         }
-        public void AddNode(GraphNode node)
+        public void AddNode(Node node)
         {
-            node.SetButtonColour(colour);
             nodes.Add(node);
         }
     }
