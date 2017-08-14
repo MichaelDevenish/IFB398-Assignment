@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="457" Width="1366" Closing="Window_Closing" MinWidth="1366" MinHeight="457">
+        Title="MainWindow" Height="907" Width="709" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="VideoButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -34,7 +34,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
-                        <Rectangle Fill="Gray" Stroke="#00000000" Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Width="3" VerticalAlignment="Stretch"/>
+                        <Rectangle Fill="DimGray" Stroke="#00000000" Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Width="3" VerticalAlignment="Stretch"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -53,7 +53,7 @@
                                 <Border x:Name="TrackBackground" Background="#00000000" BorderBrush="#00000000" />
                                 <Track x:Name="PART_Track" Grid.Row="1">
                                     <Track.Thumb>
-                                        <Thumb x:Name="Thumb" Style="{StaticResource SinglePointThumb}" Background="Black"/>
+                                        <Thumb x:Name="Thumb" Style="{StaticResource SinglePointThumb}" Background="DimGray"/>
                                     </Track.Thumb>
                                 </Track>
                             </Grid>
@@ -63,13 +63,13 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="0">
         <Menu Canvas.Left="-11" Canvas.Top="-60" Height="20" VerticalAlignment="Top">
             <MenuItem Header="_Upload" Click="Upload_Click"/>
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:SummariserOnly Name="canGraph"  Height="381" Width="648" VerticalAlignment="Top" Margin="0,35,10,0" HorizontalAlignment="Right"/>
+        <control:SummariserOnly Name="canGraph"  Height="381" Width="673" VerticalAlignment="Top" Margin="0,419,13,5" HorizontalAlignment="Right"/>
         <Grid HorizontalAlignment="Left" Height="384" Margin="5,30,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -88,7 +88,7 @@
                 <Slider x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
             </DockPanel>
         </Grid>
-        <Slider x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,0,10,331" Height="70" Width="568" 
-                HorizontalAlignment="Right"  VerticalAlignment="Bottom" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
+        <Slider x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,419,13,0" Height="41" Width="568" 
+                HorizontalAlignment="Right"  VerticalAlignment="Top" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
     </Grid>
 </Window>

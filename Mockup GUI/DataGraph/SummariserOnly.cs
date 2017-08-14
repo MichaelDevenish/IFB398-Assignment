@@ -14,23 +14,11 @@ namespace DataGraph
     {
 
         //TODO CLEANUP AND REMOVE UNUSED JUNK
-        const double XMIN = 80;
-        private const int NAME_HORIZONTAL_OFFSET = 15;
+        const double XMIN = 105;
         private const int TEXT_HEIGHT = 20;
-        private const int YMIN_DEFAULT = 115;
         private const int YMIN_INCREMENTSIZE = 20;
         private const int NUMBEROFYMININCREMENTS = 10;
-        private const int KEY_ICONSIZE = 20;
-        private const int BUTTON_SIZE = 10;
-        private const int DEFAULT_RECTANGLE_BORDER = 0;
-        private const int X_LINE_MARKE_RSIZE = 5;
-        private const int X_LINE_THICKNESS = 1;
-        private const double Y_LINE_THICKNESS = 0.5;
-        private const int Y_NUMBER_HORIZONTAL_OFFSET = 8;
-        private const int Y_NUMBER_VERTICAL_OFFSET = 8;
         private const int SUMMARISER_TEXT_OFFSET = 5;
-        private const int X_NUMBERHORIZONTAL_OFFSET = 8;
-        private const int X_NUMBER_HORIZONTAL_UNDER = 4;
 
         static SummariserOnly()
         {
@@ -56,12 +44,18 @@ namespace DataGraph
             return false;
         }
 
+        public void ClearDatasets()
+        {
+            datasets.Clear();
+        }
+
         public int Divisor { get { return divisor; } set { divisor = value; } }
         /// <summary>
         /// Draws the graph and the stored datasets
         /// </summary>
-        public void DrawGraph()
+        public void DrawGraph(double length)
         {
+            Children.Clear();
             if (double.IsNaN(Width)) throw new NotFiniteNumberException("Graph must have a set width!", Width);
             if (double.IsNaN(Height)) throw new NotFiniteNumberException("Graph must have a set height!", Height);
             if (datasets == null || datasets.Count() == 0) throw new NoDatasetsException("Must have at least added one dataset to draw a graph!");
@@ -74,15 +68,20 @@ namespace DataGraph
                 {
                     foreach (SummariserNode node in data.Nodes)
                     {
-                        datamax = (node.Value > datamax) ? node.Value : datamax;
+                        datamax = (node.Value()[1] > datamax) ? node.Value()[1] : datamax;
                         if (!nodeNames.ContainsKey(node.NodeName)) nodeNames.Add(node.NodeName, 1);
                         else nodeNames[node.NodeName] = nodeNames[node.NodeName] + 1;
                     }
 
                 }
-                datamax = (Math.Ceiling(datamax / divisor) * divisor) + 1;
-                List<string> topData = DrawSummariserLayout(nodeNames, datamax);
+                Height = (nodeNames.Count < 10) ? nodeNames.Count * YMIN_INCREMENTSIZE : NUMBEROFYMININCREMENTS * YMIN_INCREMENTSIZE;
+                //Children.Add(GenerateGraphText(Height.ToString(), SUMMARISER_TEXT_OFFSET, 0));
+                //datamax = (Math.Ceiling(datamax / divisor) * divisor);
+                //datamax = length; //CHANGE THIS TO TRUE WHEN USING ACTUAL VIDEOS TO MAKE ACCURATE todo
+                List<string> topData = new List<string>();
+                Path path = DrawSummariserLayout(nodeNames, datamax, topData);
                 DrawSummariserData(topData, datasets, datamax, nodeNames.Count);
+                Children.Add(path);
             }
         }
 
@@ -94,14 +93,13 @@ namespace DataGraph
         /// <param name="nodeNames">a dictionary that represents the node names that 
         /// exist in the datasets and how many times they occur</param>
         /// <returns>a list of the data that is not in the other section of the summarizer</returns>
-        private List<string> DrawSummariserLayout(Dictionary<string, int> nodeNames, double xdatamax)
+        private Path DrawSummariserLayout(Dictionary<string, int> nodeNames, double xdatamax, List<string> topData)
         {
-            List<string> topData = new List<string>();
             int currentPosition = 0;
-            int maxIteration = nodeNames.Count();
+            int maxIteration = nodeNames.Count;
 
             GeometryGroup xaxis_geom = new GeometryGroup();
-            if (nodeNames.Count() > NUMBEROFYMININCREMENTS)
+            if (maxIteration > NUMBEROFYMININCREMENTS)
             {
                 maxIteration = NUMBEROFYMININCREMENTS;
                 DrawSummariserRow(xaxis_geom, "Other", (NUMBEROFYMININCREMENTS - 1) * YMIN_INCREMENTSIZE);
@@ -117,13 +115,15 @@ namespace DataGraph
 
             double topBorderHeight = ((currentPosition) * YMIN_INCREMENTSIZE);
             xaxis_geom.Children.Add(new LineGeometry(new Point(0, topBorderHeight), new Point(Width, topBorderHeight)));
-            for (int e = 0; e <= xdatamax; e++)
-            {
-                double xpos = XMIN + ((Width - XMIN) / xdatamax) * e;
-                xaxis_geom.Children.Add(new LineGeometry(new Point(xpos, topBorderHeight), new Point(xpos, 0)));
-            }
-            Children.Add(GenerateSetOfLines(xaxis_geom, 1, Brushes.LightGray));
-            return topData;
+            xaxis_geom.Children.Add(new LineGeometry(new Point(0, 0), new Point(0, Height)));
+            xaxis_geom.Children.Add(new LineGeometry(new Point(XMIN, 0), new Point(XMIN, Height)));
+            xaxis_geom.Children.Add(new LineGeometry(new Point(Width, 0), new Point(Width, Height)));
+            //for (int e = 0; e <= xdatamax; e++)
+            //{
+            //    double xpos = XMIN + ((Width - XMIN) / xdatamax) * e;
+            //    xaxis_geom.Children.Add(new LineGeometry(new Point(xpos, topBorderHeight), new Point(xpos, 0)));
+            //}
+            return GenerateSetOfLines(xaxis_geom, 1, Brushes.LightGray);
 
         }
 
@@ -156,9 +156,9 @@ namespace DataGraph
                 GraphDataset dataset = datasets[e];
                 for (int i = 0; i < dataset.Nodes.Count(); i++)
                 {
-                    double value = ((SummariserNode)dataset.Nodes[i]).Value;
-                    double xpoint1 = smallestIncrement * value + XMIN;
-                    double xpoint2 = xpoint1 + smallestIncrement;
+                    double[] value = ((SummariserNode)dataset.Nodes[i]).Value();
+                    double xpoint1 = smallestIncrement * value[0] + XMIN;
+                    double xpoint2 = smallestIncrement * value[1] + XMIN;
                     string itemName = dataset.Nodes[i].NodeName;
                     Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, dataset, xpoint1, xpoint2, countOfNames);
                     Children.Add(rect);

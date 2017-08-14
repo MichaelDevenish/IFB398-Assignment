@@ -30,8 +30,6 @@ namespace CapstoneLayoutTest
 
         //GLOBALS
         private bool videoState = true;
-        private bool currentlyRenderingPopup = false;
-        private bool running = false;
         private BackgroundWorker HideControlsThread;
         private BackgroundWorker VideoProgressThread;
         private BackgroundWorker ShowControllsThread;
@@ -42,6 +40,7 @@ namespace CapstoneLayoutTest
         public MainWindow()
         {
             InitializeComponent();
+            SizeToContent = SizeToContent.Height;
             SetupWindow();
         }
 
@@ -64,7 +63,6 @@ namespace CapstoneLayoutTest
             GraphDataset csvDataset = CSVToDataset("..\\..\\output.csv", "left", Brushes.SteelBlue);
             //dummy
 
-            running = true;
             mediaElement.Play();
 
             canGraph.AddDataset(csvDataset);
@@ -74,8 +72,6 @@ namespace CapstoneLayoutTest
             //canGraph.YAxisName = "Moves";
             //canGraph.XDivisor = 1;
             //canGraph.YDivisor = 5;
-            canGraph.DrawGraph(56);
-            graphSlider.Height = canGraph.Height + 10;
             // graphSlider.Width = canGraph.SummariserWidth;
         }
 
@@ -121,7 +117,7 @@ namespace CapstoneLayoutTest
             GraphDataset temp = new GraphDataset(name, brush);
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
-                SummariserNode node = new SummariserNode(data[i, 0], data[i, 1], datatypes[i % 8]);
+                SummariserNode node = new SummariserNode(data[i, 0], data[i, 1], datatypes[i % 11]);
                 //node.AddButtonHover(HoverButtonHandeler(node));
                 //node.AddButtonClick(ClickButtonHandeler(node));
                 temp.AddNode(node);
@@ -264,7 +260,7 @@ namespace CapstoneLayoutTest
         private BackgroundWorker SetupBackgroundWorker(DoWorkEventHandler doWork, bool cancelable)
         {
             BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerSupportsCancellation = cancelable;
+            worker.WorkerSupportsCancellation = true;
             worker.DoWork += doWork;
             worker.RunWorkerAsync();
             return worker;
@@ -278,17 +274,21 @@ namespace CapstoneLayoutTest
         /// <param name="e">arguments</param>
         private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            while (running)
+            while (true)
             {
-
+                if (VideoProgressThread.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
                 int currentTime = 0; int totalTime = 0;
-                if (videoState) Dispatcher.Invoke(() =>
+                if (videoState && !VideoProgressThread.CancellationPending) Dispatcher.Invoke(() =>
                 {
                     currentTime = (int)mediaElement.Position.TotalSeconds;
                     totalTime = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                 });
                 string timeString = IntToTimeString(currentTime) + "/" + IntToTimeString(totalTime);
-                if (videoState) Dispatcher.Invoke(() =>
+                if (videoState && !VideoProgressThread.CancellationPending) Dispatcher.Invoke(() =>
                 {
                     VideoTime.Content = timeString;
                     playerSlider.Value = mediaElement.Position.TotalSeconds;
@@ -297,8 +297,6 @@ namespace CapstoneLayoutTest
 
                 Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
             }
-            e.Cancel = true;
-            return;
         }
 
         /// <summary>
@@ -309,7 +307,7 @@ namespace CapstoneLayoutTest
         private void ShowControllsThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
+            if (!ShowControllsThread.CancellationPending) Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
             while (run)
             {
                 if (ShowControllsThread.CancellationPending)
@@ -317,16 +315,14 @@ namespace CapstoneLayoutTest
                     e.Cancel = true;
                     return;
                 }
-                Dispatcher.Invoke(() =>
+                if (!ShowControllsThread.CancellationPending) Dispatcher.Invoke(() =>
                 {
                     ControlPanel.Height++;
                     ControlGrid.Height++;
                 });
                 Thread.Sleep(CONTROLS_SHOW_SPEED);
-                Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
-            } while (run) ;
-            e.Cancel = true;
-            return;
+                if (!ShowControllsThread.CancellationPending) Dispatcher.Invoke(() => run = ControlPanel.Height < CONTROLS_MAX_HEIGHT);
+            }
         }
 
         /// <summary>
@@ -338,7 +334,7 @@ namespace CapstoneLayoutTest
         {
             Thread.Sleep(CONTROLS_HIDE_DELAY);
             bool run = false;
-            Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
+            if (!HideControlsThread.CancellationPending) Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
             while (run)
             {
                 if (HideControlsThread.CancellationPending)
@@ -346,16 +342,17 @@ namespace CapstoneLayoutTest
                     e.Cancel = true;
                     return;
                 }
-                Dispatcher.Invoke(() =>
+                else
                 {
-                    ControlPanel.Height--;
-                    ControlGrid.Height--;
-                });
+                    Dispatcher.Invoke(() =>
+                     {
+                         ControlPanel.Height--;
+                         ControlGrid.Height--;
+                     });
+                }
                 Thread.Sleep(CONTROLS_HIDE_SPEED);
-                Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
+                if (!HideControlsThread.CancellationPending) Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
             }
-            e.Cancel = true;
-            return;
         }
 
         //Event Handlers
@@ -369,12 +366,16 @@ namespace CapstoneLayoutTest
             playerSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             graphSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
+            canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
+            graphSlider.Height = canGraph.Height;
 
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            running = false;
+            if (HideControlsThread != null) HideControlsThread.CancelAsync();
+            if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
+            if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
         }
         private void Upload_Click(object sender, RoutedEventArgs e)
         {

@@ -12,11 +12,17 @@ namespace DataGraph
 {
     public class SummariserNode : Node
     {
-        private double value;
-        public double Value { get { return value; } }
-        public SummariserNode(double value, string nodeName) : base(nodeName)
+        private double start;
+        private double end;
+
+        public SummariserNode(double start, double end, string nodeName) : base(nodeName)
         {
-            this.value = value;
+            this.start = start;
+            this.end = end;
+        }
+        public double[] Value()
+        {
+            return new double[] { start, end };
         }
     }
 }
