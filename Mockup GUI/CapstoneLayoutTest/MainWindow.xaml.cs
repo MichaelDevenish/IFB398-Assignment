@@ -1,6 +1,9 @@
 ﻿using DataGraph;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,31 +50,55 @@ namespace CapstoneLayoutTest
         /// </summary>
         private void SetupWindow()
         {
+
+
             double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
-            double[] leftArray2 = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+            double[,] leftArray2 = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 8 }, { 8, 9 }, { 9, 10 }, { 10, 11 }, { 11, 12 }, { 12.5, 13 }, { 13, 14 }, { 14, 15 }, { 15, 16 }, { 16, 17 }, { 17, 18 }, { 18, 19 }, { 19, 20 } };
             double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] testArray = { { 0, 1 }, { 1, 21 }, { 2, 21 }, { 3, 11 }, { 4, 21 }, { 5, 31 }, { 6, 41 }, { 7, 51 }, { 8, 51 }, { 9, 51 }, { 10, 51 }, { 11, 51 }, { 12, 21 }, { 13, 21 }, { 14, 51 }, { 15, 61 }, { 16, 51 }, { 17, 41 }, { 18, 51 }, { 19, 61 }, { 20, 61 } };
 
 
-            GraphDataset left = BuildDataset("left", leftArray, Brushes.SteelBlue, 0);
+            GraphDataset left = BuildDataset2("left", leftArray2, Brushes.SteelBlue, 0);
             GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 1);
             GraphDataset test = BuildDataset("test", testArray, Brushes.Tan, 0);
-
+            GraphDataset csvDataset = CSVToDataset("..\\..\\output.csv", "left", Brushes.SteelBlue);
             //dummy
 
             running = true;
             mediaElement.Play();
 
-            canGraph.AddDataset(left);
-            canGraph.AddDataset(right);
-            canGraph.AddDataset(test);
-            canGraph.XAxisName = "Minutes";
-            canGraph.YAxisName = "Moves";
-            canGraph.XDivisor = 1;
-            canGraph.YDivisor = 5;
-            canGraph.DrawGraph();
+            canGraph.AddDataset(csvDataset);
+            //canGraph.AddDataset(right);
+            //canGraph.AddDataset(test);
+            //canGraph.XAxisName = "Minutes";
+            //canGraph.YAxisName = "Moves";
+            //canGraph.XDivisor = 1;
+            //canGraph.YDivisor = 5;
+            canGraph.DrawGraph(56);
             graphSlider.Height = canGraph.Height + 10;
             // graphSlider.Width = canGraph.SummariserWidth;
+        }
+
+        /// <summary>
+        /// converts a csv of probability,start,end,activity to a GraphDataset
+        /// </summary>
+        private static GraphDataset CSVToDataset(string url, string name, Brush brush)
+        {
+            List<string[]> lines = File.ReadAllLines(url).Select(a => a.Split(',')).ToList();
+            GraphDataset temp = new GraphDataset(name, brush);
+            foreach (string[] line in lines)
+            {
+                try
+                {
+                    SummariserNode node = new SummariserNode(double.Parse(line[1]), double.Parse(line[2]), line[3]);
+                    temp.AddNode(node);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+            return temp;
         }
 
         //dummy
@@ -88,13 +115,13 @@ namespace CapstoneLayoutTest
             }
             return temp;
         }
-        private GraphDataset BuildDataset2(string name, double[] data, Brush brush, int inc)
+        private GraphDataset BuildDataset2(string name, double[,] data, Brush brush, int inc)
         {
             string[] datatypes = { "walking", "running", "sprinting", "jogging", "skipping", "test", "sgfesa", "dsafaef", "feafasdf", "a", "s", "d", "f", "g", "h", "j" };
             GraphDataset temp = new GraphDataset(name, brush);
             for (int i = 0; i <= data.GetUpperBound(0); i++)
             {
-                SummariserNode node = new SummariserNode(data[i], datatypes[i % 11]);
+                SummariserNode node = new SummariserNode(data[i, 0], data[i, 1], datatypes[i % 8]);
                 //node.AddButtonHover(HoverButtonHandeler(node));
                 //node.AddButtonClick(ClickButtonHandeler(node));
                 temp.AddNode(node);
@@ -251,7 +278,6 @@ namespace CapstoneLayoutTest
         /// <param name="e">arguments</param>
         private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            int sec = 3600;
             while (running)
             {
 
