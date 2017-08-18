@@ -68,7 +68,7 @@ namespace DataGraph
                 {
                     foreach (SummariserNode node in data.Nodes)
                     {
-                       // datamax = (node.Value()[1] > datamax) ? node.Value()[1] : datamax;
+                        datamax = (node.Value()[1] > datamax) ? node.Value()[1] : datamax;
                         if (!nodeNames.ContainsKey(node.NodeName)) nodeNames.Add(node.NodeName, 1);
                         else nodeNames[node.NodeName] = nodeNames[node.NodeName] + 1;
                     }
@@ -77,7 +77,7 @@ namespace DataGraph
                 Height = (nodeNames.Count < 10) ? nodeNames.Count * YMIN_INCREMENTSIZE : NUMBEROFYMININCREMENTS * YMIN_INCREMENTSIZE;
                 //Children.Add(GenerateGraphText(Height.ToString(), SUMMARISER_TEXT_OFFSET, 0));
                 //datamax = (Math.Ceiling(datamax / divisor) * divisor);
-                datamax = length; //CHANGE THIS TO TRUE WHEN USING ACTUAL VIDEOS TO MAKE ACCURATE todo
+                //datamax = length; //CHANGE THIS TO TRUE WHEN USING ACTUAL VIDEOS TO MAKE ACCURATE todo
                 List<string> topData = new List<string>();
                 Path path = DrawSummariserLayout(nodeNames, datamax, topData);
                 DrawSummariserData(topData, datasets, datamax, nodeNames.Count);

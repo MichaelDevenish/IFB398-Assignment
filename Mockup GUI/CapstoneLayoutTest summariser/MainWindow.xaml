@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="907" Width="709" Closing="Window_Closing" KeyDown="Window_KeyDown">
+        Title="MainWindow" Height="907" Width="709" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="VideoButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -75,8 +75,8 @@
                 <RowDefinition />
                 <RowDefinition Height=".07*"/>
             </Grid.RowDefinitions>
-            <MediaElement Grid.RowSpan="2" IsMuted="True" x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" 
-                          VerticalAlignment="Top" Source="C:\Users\Michael\Desktop\Capstone\Mockup GUI\CapstoneLayoutTest/videoplayback1.mp4"
+            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" 
+                          VerticalAlignment="Top" Source="C:/Users/Michael/documents/visual studio 2015/Projects/CapstoneLayoutTest/CapstoneLayoutTest/videoplayback1.mp4"
                           IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" />
 
             <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
