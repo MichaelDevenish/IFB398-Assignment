@@ -33,6 +33,8 @@ namespace CapstoneLayoutTest
         private BackgroundWorker HideControlsThread;
         private BackgroundWorker VideoProgressThread;
         private BackgroundWorker ShowControllsThread;
+        private List<double> startingTimes;
+        private List<double> endingTimes;
 
         /// <summary>
         /// Default Constructor
@@ -56,7 +58,8 @@ namespace CapstoneLayoutTest
             double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] testArray = { { 0, 1 }, { 1, 21 }, { 2, 21 }, { 3, 11 }, { 4, 21 }, { 5, 31 }, { 6, 41 }, { 7, 51 }, { 8, 51 }, { 9, 51 }, { 10, 51 }, { 11, 51 }, { 12, 21 }, { 13, 21 }, { 14, 51 }, { 15, 61 }, { 16, 51 }, { 17, 41 }, { 18, 51 }, { 19, 61 }, { 20, 61 } };
 
-
+            startingTimes = new List<double>();
+            endingTimes = new List<double>();
             GraphDataset left = BuildDataset2("left", leftArray2, Brushes.SteelBlue, 0);
             GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 1);
             GraphDataset test = BuildDataset("test", testArray, Brushes.Tan, 0);
@@ -78,9 +81,11 @@ namespace CapstoneLayoutTest
         /// <summary>
         /// converts a csv of probability,start,end,activity to a GraphDataset
         /// </summary>
-        private static GraphDataset CSVToDataset(string url, string name, Brush brush)
+        private GraphDataset CSVToDataset(string url, string name, Brush brush)
         {
             List<string[]> lines = File.ReadAllLines(url).Select(a => a.Split(',')).ToList();
+            startingTimes = startingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(1)))).ToList();
+            endingTimes = endingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(2)))).ToList();
             GraphDataset temp = new GraphDataset(name, brush);
             foreach (string[] line in lines)
             {
@@ -244,11 +249,20 @@ namespace CapstoneLayoutTest
         /// <param name="e"></param>
         private void VideoSliderbarMove(object sender, MouseEventArgs e)
         {
+            if (videoState) { mediaElement.Pause(); }
             mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X));
             //if ((Slider)sender == graphSlider)
             playerSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             //if ((Slider)sender == playerSlider)
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
+            if (videoState) { mediaElement.Play(); }
+        }
+
+        private void setPositionInSeconds(double time)
+        {
+            mediaElement.Position = TimeSpan.FromSeconds(time);
+            playerSlider.Value = time;
+            graphSlider.Value = time;
         }
 
         /// <summary>
@@ -422,13 +436,39 @@ namespace CapstoneLayoutTest
         private void scrollBar2_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             VideoSliderbarMove(sender, e);
-            PausePlay();
+
         }
 
         private void scrollBar2_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            PausePlay();
         }
 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+
+
+            if (e.Key == Key.Space)
+            {
+                PausePlay();
+            }
+            if (e.Key == Key.Left)
+            {
+                int index = startingTimes.BinarySearch(mediaElement.Position.TotalSeconds);
+                if (index < 0) index = (~index) - 1;
+                double time = startingTimes[index];
+                double current = mediaElement.Position.TotalSeconds;
+                if (endingTimes[index] >= current && index - 1 >= 0) time = startingTimes[index - 1];
+                setPositionInSeconds(time);
+            }
+            if (e.Key == Key.Right)
+            {
+                int index = startingTimes.BinarySearch(mediaElement.Position.TotalSeconds);
+                if (index < 0) index = (~index) - 1;
+                double time = startingTimes[index];
+                double current = mediaElement.Position.TotalSeconds;
+                if (time <= current && index + 1 < startingTimes.Count) time = startingTimes[index + 1];
+                setPositionInSeconds(time);
+            }
+        }
     }
 }
