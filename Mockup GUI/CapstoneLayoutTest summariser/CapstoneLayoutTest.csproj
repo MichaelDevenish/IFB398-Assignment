@@ -40,6 +40,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -61,8 +63,11 @@
     <Compile Include="Load.xaml.cs">
       <DependentUpon>Load.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Upload.xaml.cs">
-      <DependentUpon>Upload.xaml</DependentUpon>
+    <Compile Include="ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UploadWindow.xaml.cs">
+      <DependentUpon>UploadWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="VideoData.cs" />
     <Page Include="Load.xaml">
@@ -81,7 +86,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Upload.xaml">
+    <Page Include="ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UploadWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

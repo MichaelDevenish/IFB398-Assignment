@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.IO.Compression;
+using System.IO;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -63,19 +65,48 @@ namespace CapstoneLayoutTest
             GraphDataset left = BuildDataset2("left", leftArray2, Brushes.SteelBlue, 0);
             GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 1);
             GraphDataset test = BuildDataset("test", testArray, Brushes.Tan, 0);
-            GraphDataset csvDataset = CSVToDataset("..\\..\\output.csv", "left", Brushes.SteelBlue);
+            string path = "..\\..\\test.zip";
+
+            // GraphDataset csvDataset = CSVToDataset("..\\..\\output.csv", "left", Brushes.SteelBlue);
             //dummy
 
+            canGraph.AddDataset(ImportData(path));
             mediaElement.Play();
-
-            canGraph.AddDataset(csvDataset);
             //canGraph.AddDataset(right);
+
             //canGraph.AddDataset(test);
             //canGraph.XAxisName = "Minutes";
             //canGraph.YAxisName = "Moves";
             //canGraph.XDivisor = 1;
             //canGraph.YDivisor = 5;
             // graphSlider.Width = canGraph.SummariserWidth;
+        }
+
+        private GraphDataset ImportData(string path)
+        {
+            GraphDataset csvDataset = null;
+            using (ZipArchive archive = ZipFile.OpenRead(path))
+            {
+                File.Delete("tempvideo.mp4");
+                File.Delete("tempfile.csv");
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    string a = entry.FullName;
+                    if (a == "output.csv")
+                    {
+                        entry.ExtractToFile("tempfile.csv");
+                        csvDataset = CSVToDataset("tempfile.csv", "left", Brushes.SteelBlue);
+                        File.Delete("tempfile.csv");
+                    }
+                    else if (entry.Name == "video.mp4")
+                    {
+                        entry.ExtractToFile("tempvideo.mp4");
+                        mediaElement.Source = new Uri("tempvideo.mp4", UriKind.Relative);
+                    }
+                }
+            }
+
+            return csvDataset;
         }
 
         /// <summary>
@@ -242,6 +273,27 @@ namespace CapstoneLayoutTest
             return builder;
         }
 
+        private void LoadNewData(Load load)
+        {
+            startingTimes = new List<double>();
+            endingTimes = new List<double>();
+
+            canGraph.ClearDatasets();
+            if (HideControlsThread != null) HideControlsThread.CancelAsync();
+            if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
+            if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
+
+            Thread.Sleep(25);
+            mediaElement.Stop();
+            mediaElement.Source = null;
+
+            Thread.Sleep(25);
+            string output = load.OkResult;
+            canGraph.AddDataset(ImportData(output));
+            mediaElement.Play();
+        }
+
+
         /// <summary>
         /// Moves the video to the position of the selected slider and updates the other slider
         /// </summary>
@@ -288,16 +340,12 @@ namespace CapstoneLayoutTest
         /// <param name="e">arguments</param>
         private void VideoProgressThread_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            while (true)
+            while (!VideoProgressThread.CancellationPending)
             {
-                if (VideoProgressThread.CancellationPending)
-                {
-                    e.Cancel = true;
-                    return;
-                }
                 int currentTime = 0; int totalTime = 0;
                 if (videoState && !VideoProgressThread.CancellationPending) Dispatcher.Invoke(() =>
                 {
+                    if (VideoProgressThread.CancellationPending) return;
                     currentTime = (int)mediaElement.Position.TotalSeconds;
                     totalTime = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                 });
@@ -311,6 +359,8 @@ namespace CapstoneLayoutTest
 
                 Thread.Sleep(PROGRESS_BAR_UPDATE_SPEED);
             }
+            e.Cancel = true;
+            return;
         }
 
         /// <summary>
@@ -393,7 +443,7 @@ namespace CapstoneLayoutTest
         }
         private void Upload_Click(object sender, RoutedEventArgs e)
         {
-            Upload upload = new Upload();
+            UploadWindow upload = new UploadWindow();
             upload.ShowDialog();
         }
 
@@ -401,6 +451,11 @@ namespace CapstoneLayoutTest
         {
             Load load = new Load();
             load.ShowDialog();
+            if ((bool)load.DialogResult)
+            {
+                LoadNewData(load);
+
+            }
         }
 
         private void scrollBar_Scroll(object sender, RoutedPropertyChangedEventArgs<double> e)

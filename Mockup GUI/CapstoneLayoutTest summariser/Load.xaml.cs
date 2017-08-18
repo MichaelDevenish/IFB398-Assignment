@@ -19,15 +19,15 @@ namespace CapstoneLayoutTest
     /// </summary>
     public partial class Load : Window
     {
-        private bool okResult = false;
-        public bool OkResult { get { return okResult; } }
+        private string okResult = "";
+        public string OkResult { get { return okResult; } }
         public Load()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             Owner = Application.Current.MainWindow;
-            listView.Items.Add(new VideoData { Name = "Patient 1", Status = "Complete", URL = "file1" });
-            listView.Items.Add(new VideoData { Name = "Patient 2", Status = "74%", URL = "file2" });
+            listView.Items.Add(new VideoData { Name = "Patient 1", Status = "Complete", URL = "..\\..\\test2.zip" });
+            listView.Items.Add(new VideoData { Name = "Patient 2", Status = "Complete", URL = "..\\..\\test.zip" });
         }
 
         private void cancel_button_Click(object sender, RoutedEventArgs e)
@@ -46,17 +46,19 @@ namespace CapstoneLayoutTest
             }
             else if (data.Complete)
             {
-                Upload upload = new Upload(data.URL);
-                upload.ShowDialog();
-                if (upload.Result == true)
-                {
-                    DialogResult = true;
-                    Close();
-                }
-                else
-                {
-                    MessageBox.Show("An error was encountered when downloading files.", "Error");
-                }
+                //Upload upload = new Upload(data.URL);
+                //upload.ShowDialog();
+                //if (upload.Result == true)
+                //{
+                okResult = data.URL;
+                DialogResult = true;
+
+                Close();
+                //}
+                //else
+                //{
+                //    MessageBox.Show("An error was encountered when downloading files.", "Error");
+                //}
             }
             else
             {

@@ -17,16 +17,17 @@ using System.Windows.Shapes;
 namespace CapstoneLayoutTest
 {
     /// <summary>
-    /// Interaction logic for Upload.xaml
+    /// Interaction logic for UploadWindow.xaml
     /// </summary>
-    public partial class Upload : Window
+    public partial class UploadWindow : Window
     {
         private bool finalResult = false;
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private int loadBarPercentage = 0;
         private BackgroundWorker demoCodeWorker1;
-        public Upload()
+
+        public UploadWindow()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -35,7 +36,7 @@ namespace CapstoneLayoutTest
             demoCodeWorker1.DoWork += DemoCodeWorker1_DoWork;
             progressBar.Maximum = 100;
         }
-        public Upload(string fileToRead)
+        public UploadWindow(string fileToRead)
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -216,3 +217,4 @@ namespace CapstoneLayoutTest
         }
     }
 }
+
