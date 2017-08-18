@@ -85,10 +85,10 @@
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
                 <Label x:Name="VideoTime" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Foreground="White">0:00/0:00</Label>
-                <Slider x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
+                <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
             </DockPanel>
         </Grid>
-        <Slider x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,419,13,0" Height="41" Width="568" 
+        <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,419,13,0" Height="41" Width="568" 
                 HorizontalAlignment="Right"  VerticalAlignment="Top" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
     </Grid>
 </Window>
