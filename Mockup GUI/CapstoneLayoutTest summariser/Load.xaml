@@ -6,26 +6,28 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         mc:Ignorable="d"
         Title="Load" Height="500" Width="400
-        ">
+        " MinWidth="400" MinHeight="500" MaxWidth="400" MaxHeight="500">
     <Grid>
         <Button x:Name="load_button" Content="Load" HorizontalAlignment="Right" Margin="0,0,10,10" Width="75" VerticalAlignment="Bottom" Click="load_button_Click"/>
         <Button x:Name="cancel_button" Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="75" Click="cancel_button_Click"/>
         <ListView x:Name="listView" Height="410" Margin="10,10,10,0" VerticalAlignment="Top" VerticalContentAlignment="Center">
+            <ListView.ContextMenu>
+                <ContextMenu StaysOpen="true" >
+                    <MenuItem Header="Remove" Click="RemoveItem_OnClick"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="250" DisplayMemberBinding="{Binding Name}" >
+                    <GridViewColumn Width="350" DisplayMemberBinding="{Binding Name}" >
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag = "Name" >Name</GridViewColumnHeader>
+                            <GridViewColumnHeader Tag = "Name" Width="350" >Name</GridViewColumnHeader>
                         </GridViewColumn.Header>
                     </GridViewColumn>
-                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Status}" >
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag = "Status" >Status</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                   
                 </GridView>
             </ListView.View>
         </ListView>
+        <Button x:Name="ImportButton" Content="Import" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Click="ImportButton_Click"/>
 
 
     </Grid>

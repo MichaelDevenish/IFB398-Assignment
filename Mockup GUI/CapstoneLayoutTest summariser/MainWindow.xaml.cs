@@ -89,6 +89,7 @@ namespace CapstoneLayoutTest
             {
                 File.Delete("tempvideo.mp4");
                 File.Delete("tempfile.csv");
+                bool good = true;
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
                     string a = entry.FullName;
@@ -98,12 +99,13 @@ namespace CapstoneLayoutTest
                         csvDataset = CSVToDataset("tempfile.csv", "left", Brushes.SteelBlue);
                         File.Delete("tempfile.csv");
                     }
-                    else if (entry.Name == "video.mp4")
+                    else if (entry.Name == "video.mp4" && good)
                     {
                         entry.ExtractToFile("tempvideo.mp4");
                         mediaElement.Source = new Uri("tempvideo.mp4", UriKind.Relative);
                     }
                 }
+                if (!good) return null;
             }
 
             return csvDataset;
@@ -275,6 +277,7 @@ namespace CapstoneLayoutTest
 
         private void LoadNewData(Load load)
         {
+
             startingTimes = new List<double>();
             endingTimes = new List<double>();
 
@@ -288,8 +291,14 @@ namespace CapstoneLayoutTest
             mediaElement.Source = null;
 
             Thread.Sleep(25);
-            string output = load.OkResult;
-            canGraph.AddDataset(ImportData(output));
+            GraphDataset data = ImportData(load.OkResult);
+            if (data == null)
+            {
+                MessageBox.Show("invalid data");
+                return;
+            }
+            Thread.Sleep(25);
+            canGraph.AddDataset(data);
             mediaElement.Play();
         }
 
@@ -410,8 +419,12 @@ namespace CapstoneLayoutTest
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        ControlPanel.Height--;
-                        ControlGrid.Height--;
+                        if (ControlPanel.Height - 1 > 0)
+                        {
+                            ControlPanel.Height--;
+                            ControlGrid.Height--;
+                        }
+                        else { run = false; }
                     });
                 }
                 Thread.Sleep(CONTROLS_HIDE_SPEED);
