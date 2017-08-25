@@ -31,7 +31,6 @@ namespace CapstoneLayoutTest
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            Owner = Application.Current.MainWindow;
             demoCodeWorker1 = new BackgroundWorker();
             demoCodeWorker1.DoWork += DemoCodeWorker1_DoWork;
             progressBar.Maximum = 100;

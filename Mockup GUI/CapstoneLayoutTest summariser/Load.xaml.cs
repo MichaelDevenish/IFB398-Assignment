@@ -30,7 +30,6 @@ namespace CapstoneLayoutTest
             InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            Owner = Application.Current.MainWindow;
             LoadFile("testfile.bin");
             //listView.Items.Add(new VideoData { Name = "Patient 1", URL = "..\\..\\test2.zip" });
             //listView.Items.Add(new VideoData { Name = "Patient 2", URL = "..\\..\\test.zip" });
