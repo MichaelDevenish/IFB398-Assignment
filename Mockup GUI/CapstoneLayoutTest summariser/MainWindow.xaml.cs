@@ -44,7 +44,6 @@ namespace CapstoneLayoutTest
         public MainWindow()
         {
             InitializeComponent();
-            SizeToContent = SizeToContent.Height;
             SetupWindow();
         }
 
@@ -53,7 +52,7 @@ namespace CapstoneLayoutTest
         /// </summary>
         private void SetupWindow()
         {
-
+            this.Hide();
 
             double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
             double[,] leftArray2 = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 8 }, { 8, 9 }, { 9, 10 }, { 10, 11 }, { 11, 12 }, { 12.5, 13 }, { 13, 14 }, { 14, 15 }, { 15, 16 }, { 16, 17 }, { 17, 18 }, { 18, 19 }, { 19, 20 } };
@@ -80,6 +79,7 @@ namespace CapstoneLayoutTest
             //canGraph.XDivisor = 1;
             //canGraph.YDivisor = 5;
             // graphSlider.Width = canGraph.SummariserWidth;
+
         }
 
         private GraphDataset ImportData(string path)
@@ -440,11 +440,18 @@ namespace CapstoneLayoutTest
 
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
+            Width = 709;
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            ShowInTaskbar = true;
+            ShowActivated = true;
+            SizeToContent = SizeToContent.Height;
             playerSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             graphSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
             VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
             canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
             graphSlider.Height = canGraph.Height;
+            this.Show();
+            this.Activate();
 
         }
 
