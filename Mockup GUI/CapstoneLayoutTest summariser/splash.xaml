@@ -5,9 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         mc:Ignorable="d"
-        Title="splash" Height="300" Width="300">
-    <Grid>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="145,125,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        Title="splash" Width="400" MinWidth="400" MinHeight="500" MaxWidth="400" MaxHeight="500" Height="500">
+    <Window.Resources>
+        <Style TargetType="Button" x:Key="splashButton">
+
+            <Setter Property="FontFamily" Value="Corbel"/>
+            <Setter Property="FontSize" Value="16px"/>
+            <Setter Property="BorderBrush" Value="#1FA3FF"/>
+            <Setter Property="Background" Value="#0073e6"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="5" Background="{TemplateBinding Background}"
+                                BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                            </ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1a8cff"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="LightGray" />
+                    <Setter Property="Background" Value="#a3b3c2"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="FontSize" Value="15px"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="0,0,0,0">
+        <Label x:Name="label" Content="Choose one of the following" HorizontalAlignment="Center" Margin="0,4,0,0" VerticalAlignment="Top" FontFamily="Corbel" FontSize="18"/>
+        <Button x:Name="button" Style="{StaticResource splashButton}" Content="Import Preprocessed Data" HorizontalAlignment="Center" Margin="0,71,0,0" VerticalAlignment="Top" Width="372" Click="ImportPreprocessed_Click" Height="25"/>
+        <Button x:Name="button_Copy" Style="{StaticResource splashButton}" Content="Import Video to Process" HorizontalAlignment="Center" Margin="0,41,0,0" VerticalAlignment="Top" Width="372" Click="ImportToProcess_Click" Height="25"/>
+        <GroupBox x:Name="groupBox" HorizontalAlignment="Center" Margin="10,101,10,0" VerticalAlignment="Top" Height="358" Width="372" RenderTransformOrigin="0.5,0.5">
+            <GroupBox.Header>
+                <Label FontFamily="Corbel" FontSize="14">Select Existing Data</Label>
+            </GroupBox.Header>
+            <Grid HorizontalAlignment="Center" Height="329" Margin="0" VerticalAlignment="Top" Width="352">
+                <ListView x:Name="listView" Height="294" VerticalAlignment="Top" VerticalContentAlignment="Center" Margin="5,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="350" DisplayMemberBinding="{Binding Name}" >
+                                <GridViewColumnHeader Tag = "Name" Width="342" Content="Name" />
+                            </GridViewColumn>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Button x:Name="button_Copy1" Style="{StaticResource splashButton}" Content="Select" HorizontalAlignment="Right" Margin="0,0,5,5" VerticalAlignment="Bottom" Width="75" Click="SelectExisting_Click" Height="25"/>
+
+
+            </Grid>
+        </GroupBox>
 
     </Grid>
 </Window>

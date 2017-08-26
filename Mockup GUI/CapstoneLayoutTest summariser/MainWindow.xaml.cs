@@ -8,8 +8,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.IO.Compression;
-using System.IO;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -41,47 +39,30 @@ namespace CapstoneLayoutTest
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public MainWindow()
+        public MainWindow(string loadPath)
         {
             InitializeComponent();
-            SetupWindow();
+            SetupWindow(loadPath);
         }
 
         /// <summary>
         /// Main function that controls setting everything up
         /// </summary>
-        private void SetupWindow()
+        private void SetupWindow(string loadPath)
         {
             this.Hide();
-
-            double[,] leftArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 10 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 60 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 50 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
-            double[,] leftArray2 = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 4 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 8 }, { 8, 9 }, { 9, 10 }, { 10, 11 }, { 11, 12 }, { 12.5, 13 }, { 13, 14 }, { 14, 15 }, { 15, 16 }, { 16, 17 }, { 17, 18 }, { 18, 19 }, { 19, 20 } };
-            double[,] rightArray = { { 0, 0 }, { 1, 20 }, { 2, 20 }, { 3, 10 }, { 4, 20 }, { 5, 30 }, { 6, 40 }, { 7, 50 }, { 8, 50 }, { 9, 50 }, { 10, 50 }, { 11, 50 }, { 12, 20 }, { 13, 20 }, { 14, 50 }, { 15, 60 }, { 16, 50 }, { 17, 40 }, { 18, 50 }, { 19, 60 }, { 20, 60 } };
-            double[,] testArray = { { 0, 1 }, { 1, 21 }, { 2, 21 }, { 3, 11 }, { 4, 21 }, { 5, 31 }, { 6, 41 }, { 7, 51 }, { 8, 51 }, { 9, 51 }, { 10, 51 }, { 11, 51 }, { 12, 21 }, { 13, 21 }, { 14, 51 }, { 15, 61 }, { 16, 51 }, { 17, 41 }, { 18, 51 }, { 19, 61 }, { 20, 61 } };
-
             startingTimes = new List<double>();
             endingTimes = new List<double>();
-            GraphDataset left = BuildDataset2("left", leftArray2, Brushes.SteelBlue, 0);
-            GraphDataset right = BuildDataset("right", rightArray, Brushes.Orange, 1);
-            GraphDataset test = BuildDataset("test", testArray, Brushes.Tan, 0);
-            string path = "..\\..\\test.zip";
-
-            // GraphDataset csvDataset = CSVToDataset("..\\..\\output.csv", "left", Brushes.SteelBlue);
-            //dummy
-
-            canGraph.AddDataset(ImportData(path));
+            canGraph.AddDataset(ImportData(loadPath));
             mediaElement.Play();
-            //canGraph.AddDataset(right);
-
-            //canGraph.AddDataset(test);
-            //canGraph.XAxisName = "Minutes";
-            //canGraph.YAxisName = "Moves";
-            //canGraph.XDivisor = 1;
-            //canGraph.YDivisor = 5;
-            // graphSlider.Width = canGraph.SummariserWidth;
 
         }
 
+        /// <summary>
+        /// Loads the selected path into the mediaElement and returns the accompanying data
+        /// </summary>
+        /// <param name="path">the path to load</param>
+        /// <returns>the meta-data for when activities happen</returns>
         private GraphDataset ImportData(string path)
         {
             GraphDataset csvDataset = null;
@@ -119,6 +100,8 @@ namespace CapstoneLayoutTest
             List<string[]> lines = File.ReadAllLines(url).Select(a => a.Split(',')).ToList();
             startingTimes = startingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(1)))).ToList();
             endingTimes = endingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(2)))).ToList();
+            startingTimes.Sort();
+            endingTimes.Sort();
             GraphDataset temp = new GraphDataset(name, brush);
             foreach (string[] line in lines)
             {
@@ -134,68 +117,6 @@ namespace CapstoneLayoutTest
             }
             return temp;
         }
-
-        //dummy
-        private GraphDataset BuildDataset(string name, double[,] data, Brush brush, int inc)
-        {
-            string[] datatypes = { "walking", "running", "sprinting", "jogging", "skipping", "test", "sgfesa", "dsafaef", "feafasdf", "a", "s", "d", "f", "g", "h", "j" };
-            GraphDataset temp = new GraphDataset(name, brush);
-            for (int i = 0; i <= data.GetUpperBound(0); i++)
-            {
-                GraphNode node = new GraphNode(data[i, 0], data[i, 1], datatypes[i % 3]);
-                //node.AddButtonHover(HoverButtonHandeler(node));
-                //node.AddButtonClick(ClickButtonHandeler(node));
-                temp.AddNode(node);
-            }
-            return temp;
-        }
-        private GraphDataset BuildDataset2(string name, double[,] data, Brush brush, int inc)
-        {
-            string[] datatypes = { "walking", "running", "sprinting", "jogging", "skipping", "test", "sgfesa", "dsafaef", "feafasdf", "a", "s", "d", "f", "g", "h", "j" };
-            GraphDataset temp = new GraphDataset(name, brush);
-            for (int i = 0; i <= data.GetUpperBound(0); i++)
-            {
-                SummariserNode node = new SummariserNode(data[i, 0], data[i, 1], datatypes[i % 11]);
-                //node.AddButtonHover(HoverButtonHandeler(node));
-                //node.AddButtonClick(ClickButtonHandeler(node));
-                temp.AddNode(node);
-            }
-            return temp;
-        }
-        //dummy
-
-        /// <summary>
-        /// Returns an event handler for the supplied node that handles clicking on the button 
-        /// </summary>
-        /// <param name="node">the node the handler relates to</param>
-        /// <returns>a click event relating to the supplied node</returns>
-        //private RoutedEventHandler ClickButtonHandeler(GraphNode node)
-        //{
-        //    return new RoutedEventHandler((object subSender, RoutedEventArgs subE) =>
-        //    {
-        //        mediaElement.Pause();
-        //        mediaElement.Position = TimeSpan.FromSeconds((int)node.GetCoords()[0]);
-        //        mediaElement.Play();
-        //    });
-        //}
-
-        /// <summary>
-        /// Returns an event handler for the supplied node that handles hovering over the button 
-        /// </summary>
-        /// <param name="node">the node the handler relates to</param>
-        /// <returns>a mouse event relating to the supplied node</returns>
-        //private MouseEventHandler HoverButtonHandeler(GraphNode node)
-        //{
-        //    return new MouseEventHandler((object subSender, MouseEventArgs subE) =>
-        //    {
-        //        if (node.NodeButton.ToolTip == null && !currentlyRenderingPopup)
-        //        {
-        //            currentlyRenderingPopup = true;
-        //            ToolTipService.SetToolTip(node.NodeButton, GetScreenshotAtTime((int)node.GetCoords()[0], mediaElement));
-        //            currentlyRenderingPopup = false;
-        //        }
-        //    });
-        //}
 
         /// <summary>
         /// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
@@ -275,31 +196,38 @@ namespace CapstoneLayoutTest
             return builder;
         }
 
-        private void LoadNewData(Load load)
+        /// <summary>
+        /// opens up a load window and loads the result into the GUI
+        /// </summary>
+        private void LoadNewData()
         {
-
-            startingTimes = new List<double>();
-            endingTimes = new List<double>();
-
-            canGraph.ClearDatasets();
-            if (HideControlsThread != null) HideControlsThread.CancelAsync();
-            if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
-            if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
-
-            Thread.Sleep(25);
-            mediaElement.Stop();
-            mediaElement.Source = null;
-
-            Thread.Sleep(25);
-            GraphDataset data = ImportData(load.OkResult);
-            if (data == null)
+            Load load = new Load();
+            load.ShowDialog();
+            if ((bool)load.DialogResult)
             {
-                MessageBox.Show("invalid data");
-                return;
+                startingTimes = new List<double>();
+                endingTimes = new List<double>();
+
+                canGraph.ClearDatasets();
+                if (HideControlsThread != null) HideControlsThread.CancelAsync();
+                if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
+                if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
+
+                Thread.Sleep(25);
+                mediaElement.Stop();
+                mediaElement.Source = null;
+
+                Thread.Sleep(25);
+                GraphDataset data = ImportData(load.OkResult);
+                if (data == null)
+                {
+                    MessageBox.Show("invalid data");
+                    return;
+                }
+                Thread.Sleep(25);
+                canGraph.AddDataset(data);
+                mediaElement.Play();
             }
-            Thread.Sleep(25);
-            canGraph.AddDataset(data);
-            mediaElement.Play();
         }
 
 
@@ -312,9 +240,7 @@ namespace CapstoneLayoutTest
         {
             if (videoState) { mediaElement.Pause(); }
             mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X));
-            //if ((Slider)sender == graphSlider)
             playerSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
-            //if ((Slider)sender == playerSlider)
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             if (videoState) { mediaElement.Play(); }
         }
@@ -324,6 +250,65 @@ namespace CapstoneLayoutTest
             mediaElement.Position = TimeSpan.FromSeconds(time);
             playerSlider.Value = time;
             graphSlider.Value = time;
+        }
+
+        /// <summary>
+        /// Holds the code that is shared between the left and right button presses
+        /// </summary>
+        /// <param name="result">whether to round up or down to the next data point</param>
+        private void ProcessLeftRightKeys(Func<int, double, double, double> result)
+        {
+            int index = startingTimes.BinarySearch(mediaElement.Position.TotalSeconds);
+            if (index < 0) index = (~index) - 1;
+            double time = startingTimes[index];
+            time = result(index, time, mediaElement.Position.TotalSeconds);
+            setPositionInSeconds(time);
+        }
+
+        /// <summary>
+        /// Called when the right key is pressed, moves the video to the next data point
+        /// </summary>
+        private void ProcessRightKey()
+        {
+            var result = new Func<int, double, double, double>((index, time, current) =>
+            {
+                if (time <= current && index + 1 < startingTimes.Count) time = startingTimes[index + 1];
+                return time;
+            });
+            ProcessLeftRightKeys(result);
+        }
+
+        /// <summary>
+        /// Called when the left key is pressed, moves the video to the previous data point
+        /// </summary>
+        private void ProcessLeftKey()
+        {
+            var result = new Func<int, double, double, double>((index, time, current) =>
+            {
+                if (endingTimes[index] >= current && index - 1 >= 0) time = startingTimes[index - 1];
+                return time;
+            });
+            ProcessLeftRightKeys(result);
+        }
+
+        /// <summary>
+        /// The second half of the window loading, called when the video loads
+        /// </summary>
+        private void SetupAfterVideoLoaded()
+        {
+            Width = 709;
+            mediaElement.Position = new TimeSpan(0);
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            ShowInTaskbar = true;
+            ShowActivated = true;
+            SizeToContent = SizeToContent.Height;
+            playerSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            graphSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
+            canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
+            graphSlider.Height = canGraph.Height;
+            this.Show();
+            this.Activate();
         }
 
         /// <summary>
@@ -440,18 +425,7 @@ namespace CapstoneLayoutTest
 
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
-            Width = 709;
-            WindowStyle = WindowStyle.SingleBorderWindow;
-            ShowInTaskbar = true;
-            ShowActivated = true;
-            SizeToContent = SizeToContent.Height;
-            playerSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            graphSlider.Maximum = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            VideoProgressThread = SetupBackgroundWorker(VideoProgressThread_DoWork, false);
-            canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
-            graphSlider.Height = canGraph.Height;
-            this.Show();
-            this.Activate();
+            SetupAfterVideoLoaded();
 
         }
 
@@ -469,13 +443,8 @@ namespace CapstoneLayoutTest
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            Load load = new Load();
-            load.ShowDialog();
-            if ((bool)load.DialogResult)
-            {
-                LoadNewData(load);
+            LoadNewData();
 
-            }
         }
 
         private void scrollBar_Scroll(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -520,31 +489,9 @@ namespace CapstoneLayoutTest
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-
-
-            if (e.Key == Key.Space)
-            {
-                PausePlay();
-            }
-            if (e.Key == Key.Left)
-            {
-                int index = startingTimes.BinarySearch(mediaElement.Position.TotalSeconds);
-                if (index < 0) index = (~index) - 1;
-                double time = startingTimes[index];
-                double current = mediaElement.Position.TotalSeconds;
-                if (endingTimes[index] >= current && index - 1 >= 0) time = startingTimes[index - 1];
-                setPositionInSeconds(time);
-            }
-            if (e.Key == Key.Right)
-            {
-                int index = startingTimes.BinarySearch(mediaElement.Position.TotalSeconds);
-                if (index < 0) index = (~index) - 1;
-                double time = startingTimes[index];
-                double current = mediaElement.Position.TotalSeconds;
-                if (time <= current && index + 1 < startingTimes.Count) time = startingTimes[index + 1];
-                setPositionInSeconds(time);
-            }
+            if (e.Key == Key.Space) PausePlay();
+            if (e.Key == Key.Left) ProcessLeftKey();
+            if (e.Key == Key.Right) ProcessRightKey();
         }
-
     }
 }

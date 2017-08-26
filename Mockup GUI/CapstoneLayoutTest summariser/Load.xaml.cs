@@ -1,20 +1,7 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Xml.Serialization;
 
 namespace CapstoneLayoutTest
 {
@@ -30,37 +17,13 @@ namespace CapstoneLayoutTest
             InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            LoadFile("testfile.bin");
-            //listView.Items.Add(new VideoData { Name = "Patient 1", URL = "..\\..\\test2.zip" });
-            //listView.Items.Add(new VideoData { Name = "Patient 2", URL = "..\\..\\test.zip" });
+            DataManager.LoadFile("testfile.bin", listView);
         }
 
-        private void cancel_button_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
-
-        private void load_button_Click(object sender, RoutedEventArgs e)
-        {
-            //disable if the current item is not complete
-            VideoData data = (VideoData)listView.SelectedItem;
-            if (data == null)
-            {
-                MessageBox.Show("Must select an item.", "Error");
-            }
-            else
-            {
-
-                okResult = data.URL;
-                DialogResult = true;
-
-                Close();
-            }
-
-        }
-
-        private void ImportButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// imports a preprocessed data file (unless it is already in the view then it shows a warning and aborts) and shows the result 
+        /// </summary>
+        private void ImportPreprocessed()
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "*.zip|*.zip";
@@ -79,7 +42,7 @@ namespace CapstoneLayoutTest
                             }
                         }
                         listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
-                        SaveFile("testfile.bin");
+                        DataManager.SaveFile("testfile.bin", listView);
                         okResult = dlg.FileName;
                         DialogResult = true;
 
@@ -94,46 +57,49 @@ namespace CapstoneLayoutTest
 
                 }
             }
-
         }
-        private void SaveFile(string filePath)
+
+        /// <summary>
+        /// Loads the currently selected item in the listview
+        /// </summary>
+        private void LoadExisting()
         {
-            VideoData[] items = new VideoData[listView.Items.Count];
-            listView.Items.CopyTo(items, 0);
-
-            // Serialize the items and save it to a file.
-            using (FileStream fs = File.Create(filePath))
+            VideoData data = (VideoData)listView.SelectedItem;
+            if (data == null) MessageBox.Show("Must select an item.", "Error");
+            else
             {
-                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                bf.Serialize(fs, items);
+                okResult = data.URL;
+                DialogResult = true;
+                Close();
             }
+        }
+
+
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadExisting();
 
         }
+
+        private void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            ImportPreprocessed();
+
+        }
+
         private void RemoveItem_OnClick(object sender, RoutedEventArgs e)
         {
             listView.Items.Remove(listView.SelectedItem);  // remove the selected Item 
-            SaveFile("testfile.bin"); //save the data
+            DataManager.SaveFile("testfile.bin", listView); //save the data
         }
 
-        private void LoadFile(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                VideoData[] items = null;
 
-                using (FileStream fs = File.OpenRead(filePath))
-                {
-                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    items = (VideoData[])bf.Deserialize(fs);
-                }
-
-                listView.Items.Clear();
-                foreach (VideoData item in items)
-                {
-                    if (File.Exists(item.URL))
-                        listView.Items.Add(item);
-                }
-            }
-        }
     }
 }
