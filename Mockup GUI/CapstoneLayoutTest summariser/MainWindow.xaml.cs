@@ -118,28 +118,28 @@ namespace CapstoneLayoutTest
             return temp;
         }
 
-        /// <summary>
-        /// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
-        /// </summary>
-        /// <param name="currentSecond">the second to take the screen-shot at</param>
-        /// <param name="player">the MediaElement to screen-shot</param>
-        /// <returns>an image of the screen-shot</returns>
-        private Image GetScreenshotAtTime(int currentSecond, MediaElement player)
-        {
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)player.Width, (int)player.Height, 96, 96, PixelFormats.Pbgra32);
-            Image img = new Image();
+        ///// <summary>
+        ///// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
+        ///// </summary>
+        ///// <param name="currentSecond">the second to take the screen-shot at</param>
+        ///// <param name="player">the MediaElement to screen-shot</param>
+        ///// <returns>an image of the screen-shot</returns>
+        //private Image GetScreenshotAtTime(int currentSecond, MediaElement player)
+        //{
+        //    RenderTargetBitmap rtb = new RenderTargetBitmap((int)player.Width, (int)player.Height, 96, 96, PixelFormats.Pbgra32);
+        //    Image img = new Image();
 
-            TimeSpan prePos = player.Position;
-            if (videoState) player.Pause();
-            player.Position = TimeSpan.FromSeconds(currentSecond);
-            Thread.Sleep(SCREENSHOT_TIME);
-            rtb.Render(player);
-            img.Source = BitmapFrame.Create(rtb);
+        //    TimeSpan prePos = player.Position;
+        //    if (videoState) player.Pause();
+        //    player.Position = TimeSpan.FromSeconds(currentSecond);
+        //    Thread.Sleep(SCREENSHOT_TIME);
+        //    rtb.Render(player);
+        //    img.Source = BitmapFrame.Create(rtb);
 
-            player.Position = prePos;
-            if (videoState) player.Play();
-            return img;
-        }
+        //    player.Position = prePos;
+        //    if (videoState) player.Play();
+        //    return img;
+        //}
 
         /// <summary>
         /// Plays or pauses the video depending on the current video state
@@ -243,12 +243,24 @@ namespace CapstoneLayoutTest
             playerSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             if (videoState) { mediaElement.Play(); }
+            colorRectangle.Fill = PercentToProbabilityColour(100 * (playerSlider.Value / playerSlider.Maximum));
+        }
+
+        private static Brush PercentToProbabilityColour(double percent)
+        {
+            byte red = (byte)((percent > 51) ? 255 * (1 - 2 * (percent - 50)) / 100 : 255);
+            byte green = (byte)((percent > 50) ? 255 : 255 * (2 * percent / 100));
+            byte blue = 0;
+            Brush color = new SolidColorBrush(Color.FromRgb(red, green, blue));
+            return color;
         }
 
         private void setPositionInSeconds(double time)
         {
             mediaElement.Position = TimeSpan.FromSeconds(time);
+
             playerSlider.Value = time;
+
             graphSlider.Value = time;
         }
 

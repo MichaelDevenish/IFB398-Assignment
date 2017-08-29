@@ -69,8 +69,8 @@
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:SummariserOnly Name="canGraph"  Height="381" Width="673" VerticalAlignment="Top" Margin="0,419,13,5" HorizontalAlignment="Right"/>
-        <Grid HorizontalAlignment="Left" Height="384" Margin="5,30,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+        <control:SummariserOnly Name="canGraph"  Height="381" Width="673" VerticalAlignment="Top" Margin="0,463,10,5" HorizontalAlignment="Right"/>
+        <Grid HorizontalAlignment="Left" Height="384" Margin="8,74,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height=".07*"/>
@@ -87,7 +87,8 @@
                 <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
             </DockPanel>
         </Grid>
-        <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,419,13,0" Height="41" Width="568" 
+        <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,463,10,0" Height="41" Width="568" 
                 HorizontalAlignment="Right"  VerticalAlignment="Top" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
+        <Rectangle x:Name="colorRectangle"  Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="36" Margin="591,25,0,0" Stroke="Black" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>
