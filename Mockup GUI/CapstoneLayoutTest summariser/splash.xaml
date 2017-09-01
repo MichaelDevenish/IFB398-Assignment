@@ -53,8 +53,8 @@
                 <ListView x:Name="listView" Height="294" VerticalAlignment="Top" VerticalContentAlignment="Center" Margin="5,0">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="350" DisplayMemberBinding="{Binding Name}" >
-                                <GridViewColumnHeader Tag = "Name" Width="342" Content="Name" />
+                            <GridViewColumn Width="330" DisplayMemberBinding="{Binding Name}" >
+                                <GridViewColumnHeader Tag = "Name" Width="330" Content="Name" />
                             </GridViewColumn>
 
                         </GridView>

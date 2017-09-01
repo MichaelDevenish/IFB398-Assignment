@@ -17,9 +17,8 @@ namespace DataGraph
         public string DatasetName { get { return datasetName; } }
         public Brush Colour { get { return colour; } }
 
-        public GraphDataset(string name, Brush colour)
+        public GraphDataset(string name)
         {
-            this.colour = colour;
             datasetName = name;
             nodes = new List<Node>();
         }

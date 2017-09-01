@@ -102,12 +102,14 @@ namespace CapstoneLayoutTest
             endingTimes = endingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(2)))).ToList();
             startingTimes.Sort();
             endingTimes.Sort();
-            GraphDataset temp = new GraphDataset(name, brush);
+            GraphDataset temp = new GraphDataset(name);
             foreach (string[] line in lines)
             {
                 try
                 {
-                    SummariserNode node = new SummariserNode(double.Parse(line[1]), double.Parse(line[2]), line[3]);
+                    double per = double.Parse(line[0]) * 100;
+                    Brush col = PercentToProbabilityColour(per);
+                    SummariserNode node = new SummariserNode(double.Parse(line[1]), double.Parse(line[2]), line[3], col);
                     temp.AddNode(node);
                 }
                 catch (Exception)
@@ -243,7 +245,7 @@ namespace CapstoneLayoutTest
             playerSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             if (videoState) { mediaElement.Play(); }
-            colorRectangle.Fill = PercentToProbabilityColour(100 * (playerSlider.Value / playerSlider.Maximum));
+            //colorRectangle.Fill = PercentToProbabilityColour(100 * (playerSlider.Value / playerSlider.Maximum));
         }
 
         private static Brush PercentToProbabilityColour(double percent)

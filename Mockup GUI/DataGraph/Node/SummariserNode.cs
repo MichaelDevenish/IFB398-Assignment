@@ -14,9 +14,12 @@ namespace DataGraph
     {
         private double start;
         private double end;
+        private Brush colour;
+        public Brush Colour { get { return colour; } }
 
-        public SummariserNode(double start, double end, string nodeName) : base(nodeName)
+        public SummariserNode(double start, double end, string nodeName, Brush colour) : base(nodeName)
         {
+            this.colour = colour;
             this.start = start;
             this.end = end;
         }

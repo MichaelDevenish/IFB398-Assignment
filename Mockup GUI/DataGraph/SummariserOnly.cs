@@ -160,7 +160,7 @@ namespace DataGraph
                     double xpoint1 = smallestIncrement * value[0] + XMIN;
                     double xpoint2 = smallestIncrement * value[1] + XMIN;
                     string itemName = dataset.Nodes[i].NodeName;
-                    Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, dataset, xpoint1, xpoint2, countOfNames);
+                    Rectangle rect = GenerateSummariserDatapoint(itemsNotInOther, orderOfOther, datasetHeight, e, itemName, ((SummariserNode)dataset.Nodes[i]).Colour, xpoint1, xpoint2, countOfNames);
                     Children.Add(rect);
                 }
             }
@@ -180,9 +180,9 @@ namespace DataGraph
         /// <param name="end">the ending x position of the data point</param>
         /// <param name="countOfNames">the number of names that are being used for points</param>
         /// <returns>a rectangle that represents a single data point in the summarizer</returns>
-        private Rectangle GenerateSummariserDatapoint(List<string> notInOther, List<string> orderOfOther, double itemHeight, int verticalIndex, string itemName, GraphDataset parent, double start, double end, int countOfNames)
+        private Rectangle GenerateSummariserDatapoint(List<string> notInOther, List<string> orderOfOther, double itemHeight, int verticalIndex, string itemName, Brush colour, double start, double end, int countOfNames)
         {
-            Rectangle rect = GenerateRectangle(itemHeight, end - start, parent.Colour, itemName);
+            Rectangle rect = GenerateRectangle(itemHeight, end - start, colour, itemName);
             if (notInOther.Contains(itemName))
             {
                 int startingPosition = 0;
