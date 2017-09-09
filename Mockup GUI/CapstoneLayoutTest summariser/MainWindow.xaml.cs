@@ -545,7 +545,33 @@ namespace CapstoneLayoutTest
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return new Thickness(0, 24, 0, (double)value + 50);
+            return new Thickness(0, 20, 0, (double)value + 50);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("Cannot convert back");
+        }
+
+    }
+    public class MarginConverter2 : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return new Thickness(0, 0, (double)value - 40, 0);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("Cannot convert back");
+        }
+
+    }
+    public class MarginConverter3 : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return new Thickness(0, 0, (double)value + 60, 0);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

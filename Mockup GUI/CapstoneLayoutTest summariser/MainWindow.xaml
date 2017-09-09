@@ -63,6 +63,8 @@
             </Setter>
         </Style>
         <local:InlineCanGraph x:Key="InlineCanGraph" />
+        <local:MarginConverter2 x:Key="MarginConverter2" />
+        <local:MarginConverter3 x:Key="MarginConverter3" />
         <local:MarginConverter x:Key="MarginConverter" />
     </Window.Resources>
     <Grid x:Name="outer" Margin="0">
@@ -75,18 +77,21 @@
         <Grid Margin="{Binding ActualHeight, ElementName=canGraph, Converter={StaticResource MarginConverter} }" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
-                <RowDefinition Height=".07*"/>
+                <RowDefinition Height=".2*"/>
             </Grid.RowDefinitions>
             <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" IsMuted="True" Margin="0" />
-
             <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
             <Grid x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
-                <Canvas/>
-                <Label x:Name="VideoTime" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,550,0" Foreground="White">0:00/0:00</Label>
-                <Button Width="25" Click="Button_Click" Margin="0,0,650,0" Height="25" Style="{StaticResource VideoButton}" HorizontalAlignment="Center">
+                <Label x:Name="VideoTime" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Margin="{Binding ActualWidth, ElementName=playerSlider, Converter={StaticResource MarginConverter2} }" Foreground="White">0:00/0:00</Label>
+                <Button Width="25" Click="Button_Click" Margin="{Binding ActualWidth, ElementName=playerSlider, Converter={StaticResource MarginConverter3}}"
+                        Height="25" Style="{StaticResource VideoButton}" HorizontalAlignment="Center">
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
-                <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="113,2,9,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp" Width="580" HorizontalAlignment="Center"/>
+                <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="113,2,9,3"
+                        Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown"
+                        PreviewMouseUp="scrollBar2_PreviewMouseUp" HorizontalAlignment="Center"
+                         Width="{Binding ActualWidth, ElementName=canGraph, Converter={StaticResource InlineCanGraph} }"/>
            
             </Grid>
         </Grid>
