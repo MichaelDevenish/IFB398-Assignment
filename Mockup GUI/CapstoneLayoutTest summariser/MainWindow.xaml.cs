@@ -11,6 +11,8 @@ using System.IO.Compression;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace CapstoneLayoutTest
 {
@@ -310,7 +312,7 @@ namespace CapstoneLayoutTest
         /// </summary>
         private void SetupAfterVideoLoaded()
         {
-            Width = 709;
+            Width = 720;
             mediaElement.Position = new TimeSpan(0);
             WindowStyle = WindowStyle.SingleBorderWindow;
             ShowInTaskbar = true;
@@ -507,5 +509,50 @@ namespace CapstoneLayoutTest
             if (e.Key == Key.Left) ProcessLeftKey();
             if (e.Key == Key.Right) ProcessRightKey();
         }
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+        }
+
+        private void Window_SizeChanged_1(object sender, SizeChangedEventArgs e)
+        {
+            int num = canGraph.NumOfDatasets;
+            if (Width > 29 && num > 0 && mediaElement.ActualWidth > 12)
+            {
+                //change to be equal to video width and centered\\
+
+                canGraph.Width = mediaElement.ActualWidth - 11;
+                //SizeToContent = SizeToContent.Height;
+                canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
+            }
+
+        }
+
+    }
+    public class InlineCanGraph : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((double)value) - 100;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("Cannot convert back");
+        }
+
+    }
+    public class MarginConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return new Thickness(0, 24, 0, (double)value + 50);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("Cannot convert back");
+        }
+
     }
 }
+//123/9

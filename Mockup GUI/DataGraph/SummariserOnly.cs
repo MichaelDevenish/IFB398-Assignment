@@ -25,7 +25,9 @@ namespace DataGraph
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SummariserOnly), new FrameworkPropertyMetadata(typeof(SummariserOnly)));
         }
 
-        private List<GraphDataset> datasets;
+        public List<GraphDataset> datasets;
+
+        public int NumOfDatasets { get { return datasets.Count; } }
         private int divisor = 1;
 
         /// <summary>

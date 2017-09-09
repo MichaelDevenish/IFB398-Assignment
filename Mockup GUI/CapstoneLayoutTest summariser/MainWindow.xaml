@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="932" Width="709" Closing="Window_Closing" KeyDown="Window_KeyDown">
+        Title="MainWindow" Height="502" Width="710" Closing="Window_Closing" KeyDown="Window_KeyDown" SizeChanged="Window_SizeChanged_1" MinWidth="700" MinHeight="500">
     <Window.Resources>
         <Style x:Key="VideoButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -62,36 +62,39 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <local:InlineCanGraph x:Key="InlineCanGraph" />
+        <local:MarginConverter x:Key="MarginConverter" />
     </Window.Resources>
-    <Grid Margin="0">
+    <Grid x:Name="outer" Margin="0">
         <Menu Canvas.Left="-11" Canvas.Top="-60" Height="20" VerticalAlignment="Top">
             <MenuItem Header="_Upload" Click="Upload_Click"/>
             <MenuItem Header="_Load" Click="Load_Click"/>
             <MenuItem Header="_About"/>
         </Menu>
-        <control:SummariserOnly Name="canGraph"  Height="381" Width="673" VerticalAlignment="Top" Margin="0,420,10,60" HorizontalAlignment="Right"/>
-        <Grid HorizontalAlignment="Left" Height="384" Margin="8,31,0,0" VerticalAlignment="Top" Width="683" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
+        <control:SummariserOnly Name="canGraph"  Height="95" Width="672" VerticalAlignment="Bottom" Margin="0,420,0,40" HorizontalAlignment="Center"/>
+        <Grid Margin="{Binding ActualHeight, ElementName=canGraph, Converter={StaticResource MarginConverter} }" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height=".07*"/>
             </Grid.RowDefinitions>
-            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" HorizontalAlignment="Left" 
-                          VerticalAlignment="Top" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" Height="386" Width="683" IsMuted="True" />
+            <MediaElement Grid.RowSpan="2"  x:Name="mediaElement" ScrubbingEnabled="True" LoadedBehavior="Manual" IsManipulationEnabled="True" MouseUp="mediaElement_MouseUp" MediaOpened="mediaElement_MediaOpened" IsMuted="True" Margin="0" />
 
             <Grid x:Name="ControlGrid" Grid.Row="1" Opacity=".4" Background="Black" VerticalAlignment="Bottom" Height="0" />
-            <DockPanel x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
-                <Button Width="25" Click="Button_Click" Margin="5,0,0,0" Height="25" Style="{StaticResource VideoButton}">
+            <Grid x:Name="ControlPanel" VerticalAlignment="Bottom" Grid.Row="1" Margin="0" Height="0">
+                <Canvas/>
+                <Label x:Name="VideoTime" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,550,0" Foreground="White">0:00/0:00</Label>
+                <Button Width="25" Click="Button_Click" Margin="0,0,650,0" Height="25" Style="{StaticResource VideoButton}" HorizontalAlignment="Center">
                     <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
                 </Button>
-                <Label x:Name="VideoTime" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" Foreground="White">0:00/0:00</Label>
-                <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="0,2,5,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
-            </DockPanel>
+                <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="113,2,9,3" Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp" Width="580" HorizontalAlignment="Center"/>
+           
+            </Grid>
         </Grid>
-        <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}" Margin="0,420,10,0" Height="41" Width="568" 
-                HorizontalAlignment="Right"  VerticalAlignment="Top" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp"/>
-        <Grid Height="46" VerticalAlignment="Bottom" Margin="18,0,10,10" HorizontalAlignment="Center" Width="673">
-            <Rectangle x:Name="colorRectangle"  HorizontalAlignment="Left" Height="36" Margin="34,5,0,0" Stroke="Black" VerticalAlignment="Top" Width="590">
-
+        <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}"
+                Margin="110,0,7,40" Height="41"  VerticalAlignment="Bottom" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove"
+                PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp" Width="{Binding ActualWidth, ElementName=canGraph, Converter={StaticResource InlineCanGraph} }" HorizontalAlignment="Center"/>
+        <Grid Height="30" VerticalAlignment="Bottom" Margin="18,0,10,5" HorizontalAlignment="Center" Width="673">
+            <Rectangle x:Name="colorRectangle"  HorizontalAlignment="Left" Height="20" Margin="34,5,0,0" Stroke="Black" VerticalAlignment="Top" Width="590">
                 <Rectangle.Fill>
                     <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
                         <GradientStop Color='#FF0000' Offset="0.0"/>
@@ -99,11 +102,9 @@
                         <GradientStop Color="#00FF00" Offset="1"/>
                     </LinearGradientBrush>
                 </Rectangle.Fill>
-
-
             </Rectangle>
-            <Label x:Name="label" Content="0%" HorizontalAlignment="Left" Margin="3,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="-57.1,0.385" Height="31"/>
-            <Label x:Name="label1" Content="100%" HorizontalAlignment="Left" Margin="624,10,0,0" VerticalAlignment="Top" Height="31"/>
+            <Label x:Name="label" Content="0%" HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="-57.1,0.385" Height="31"/>
+            <Label x:Name="label1" Content="100%" HorizontalAlignment="Left" Margin="624,0,0,0" VerticalAlignment="Top" Height="31"/>
         </Grid>
     </Grid>
 </Window>
