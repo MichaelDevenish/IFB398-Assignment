@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -25,7 +27,10 @@ namespace CapstoneLayoutTest
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private int loadBarPercentage = 0;
+        private string path, root, vidFilename, newPath;
+        private int vidNum;
         private BackgroundWorker demoCodeWorker1;
+        private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public Upload()
         {
             InitializeComponent();
@@ -54,7 +59,46 @@ namespace CapstoneLayoutTest
 
             if ((bool)open.ShowDialog())
             {
+                
+                path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                vidFilename = open.FileName;
+                SegmentVideo();
+                ProcessModel();
                 textBox.Text = open.FileName;
+            }
+        }
+
+        private void SegmentVideo()
+        {
+            string splitTime = "10";
+            string originPath = path.Insert(path.Length - 1, vidFilename);
+            newPath = user.Insert(user.Length-1, "/Model/Youtube/");
+            string newPathName = newPath.Insert(newPath.Length - 1, vidFilename);
+            File.Copy(@originPath, @newPathName);
+
+            string cmdWithSplit, cmdWithPath, cmdWithVidDir;
+            string strCmdText = "python python_video_processing.py -f  -s ";
+            cmdWithSplit = strCmdText.Insert(strCmdText.Length - 1, splitTime);
+            cmdWithVidDir = cmdWithSplit.Insert(37, newPathName);
+            cmdWithPath = cmdWithVidDir.Insert(7, newPath);
+
+            System.Diagnostics.Process.Start("CMD.exe", cmdWithPath);
+        }
+
+        private void ProcessModel()
+        {
+            
+            string strCmdText = "python /Model/scripts/run_all_pipeline.py -i ";
+            string cmdWithVid, cmdWithModel, cmdWithVidDir;
+
+            bool processing = true;
+            while (processing) {
+
+                cmdWithVidDir = strCmdText.Insert(strCmdText.Length - 1, newPath);
+                cmdWithVid = cmdWithVidDir.Insert(strCmdText.Length - 1, vidFilename);
+                cmdWithModel = strCmdText.Insert(7, user);
+                System.Diagnostics.Process.Start("CMD.exe", cmdWithModel);
+
             }
         }
 
