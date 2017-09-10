@@ -63,7 +63,7 @@ namespace CapstoneLayoutTest
                 path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 vidFilename = open.FileName;
                 SegmentVideo();
-                ProcessModel();
+                //ProcessModel();
                 textBox.Text = open.FileName;
             }
         }
