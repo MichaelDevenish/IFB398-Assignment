@@ -102,7 +102,8 @@ namespace CapstoneLayoutTest
 
         private void ImportToProcess_Click(object sender, RoutedEventArgs e)
         {
-
+            UploadWindow upload = new UploadWindow();
+            upload.ShowDialog();
         }
     }
 }

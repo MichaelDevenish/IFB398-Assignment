@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,7 +28,7 @@ namespace CapstoneLayoutTest
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private int loadBarPercentage = 0;
-        private string path, root, vidFilename, newPath;
+        private string path, root, vidFileName, vidPathName, newPath;
         private int vidNum;
         private BackgroundWorker demoCodeWorker1;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -60,8 +61,7 @@ namespace CapstoneLayoutTest
 
             if ((bool)open.ShowDialog())
             {
-                path = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                vidFilename = open.FileName;
+                vidPathName = open.FileName;
                 SegmentVideo();
                 //ProcessModel();
                 textBox.Text = open.FileName;
@@ -70,19 +70,34 @@ namespace CapstoneLayoutTest
 
         private void SegmentVideo()
         {
+
             string splitTime = "10";
-            string originPath = path.Insert(path.Length - 1, vidFilename);
-            newPath = user.Insert(user.Length - 1, "/Model/Youtube/");
-            string newPathName = newPath.Insert(newPath.Length - 1, vidFilename);
+            vidFileName = System.IO.Path.GetFileName(vidPathName);
+            string originPath = vidPathName;
+            newPath = user.Insert(user.Length, "\\Model\\Youtube\\");
+            string newPathName = newPath.Insert(newPath.Length, vidFileName);
             File.Copy(@originPath, @newPathName);
 
-            string cmdWithSplit, cmdWithPath, cmdWithVidDir;
             string strCmdText = "python python_video_processing.py -f  -s ";
-            cmdWithSplit = strCmdText.Insert(strCmdText.Length - 1, splitTime);
-            cmdWithVidDir = cmdWithSplit.Insert(37, newPathName);
-            cmdWithPath = cmdWithVidDir.Insert(7, newPath);
+            strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
+            strCmdText = strCmdText.Insert(37, newPathName);
+            strCmdText = strCmdText.Insert(7, newPath);
 
-            System.Diagnostics.Process.Start("CMD.exe", cmdWithPath);
+            Console.WriteLine(strCmdText);
+
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.Start();
+
+            cmd.StandardInput.WriteLine(strCmdText);
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();
+            Console.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
 
         private void ProcessModel()
@@ -95,8 +110,8 @@ namespace CapstoneLayoutTest
             while (processing)
             {
 
-                cmdWithVidDir = strCmdText.Insert(strCmdText.Length - 1, newPath);
-                cmdWithVid = cmdWithVidDir.Insert(strCmdText.Length - 1, vidFilename);
+                cmdWithVidDir = strCmdText.Insert(strCmdText.Length, newPath);
+                cmdWithVid = cmdWithVidDir.Insert(strCmdText.Length, vidFileName);
                 cmdWithModel = strCmdText.Insert(7, user);
                 System.Diagnostics.Process.Start("CMD.exe", cmdWithModel);
 
