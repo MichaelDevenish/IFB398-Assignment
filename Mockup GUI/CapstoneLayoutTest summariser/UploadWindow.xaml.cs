@@ -70,11 +70,12 @@ namespace CapstoneLayoutTest
 
         private void SegmentVideo()
         {
-
+            user = user.Replace("\\", "/");
+            vidPathName = vidPathName.Replace("\\","/");
             string splitTime = "10";
             vidFileName = System.IO.Path.GetFileName(vidPathName);
             string originPath = vidPathName;
-            newPath = user.Insert(user.Length, "\\Model\\Youtube\\");
+            newPath = user.Insert(user.Length, "/Model/Youtube/");
             string newPathName = newPath.Insert(newPath.Length, vidFileName);
             File.Copy(@originPath, @newPathName);
 
@@ -82,8 +83,6 @@ namespace CapstoneLayoutTest
             strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
             strCmdText = strCmdText.Insert(37, newPathName);
             strCmdText = strCmdText.Insert(7, newPath);
-
-            Console.WriteLine(strCmdText);
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
