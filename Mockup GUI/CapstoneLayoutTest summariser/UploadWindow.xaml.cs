@@ -29,7 +29,7 @@ namespace CapstoneLayoutTest
         private int windowMode = 0;
         private int loadBarPercentage = 0;
         private string path, root, vidFileName, vidPathName, newPath, newPathName;
-        private int vidNum;
+        private int vidNum, segNum;
         private BackgroundWorker demoCodeWorker1;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -63,7 +63,7 @@ namespace CapstoneLayoutTest
             {
                 vidPathName = open.FileName;
                 SegmentVideo();
-                //ProcessModel();
+                ProcessModel();
                 textBox.Text = open.FileName;
             }
         }
@@ -107,7 +107,7 @@ namespace CapstoneLayoutTest
             string strCmdText = "python /Model/scripts/run_all_pipeline.py -i ";
 
             bool processing = true;
-            int segNum = 0;
+            segNum = 0;
             while (processing)
             {
                 string newSegName = newPathName.Insert(newPathName.Length-4,"-" + segNum.ToString());
