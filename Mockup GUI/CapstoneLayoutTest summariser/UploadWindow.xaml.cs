@@ -77,8 +77,10 @@ namespace CapstoneLayoutTest
             string originPath = vidPathName;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
             string newPathName = newPath.Insert(newPath.Length, vidFileName);
-            File.Copy(@originPath, @newPathName);
-
+            if (!System.IO.File.Exists(newPathName)) {
+                File.Copy(@originPath, @newPathName);
+            }
+            
             string strCmdText = "python python_video_processing.py -f  -s ";
             strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
             strCmdText = strCmdText.Insert(37, newPathName);
@@ -112,7 +114,19 @@ namespace CapstoneLayoutTest
                 cmdWithVidDir = strCmdText.Insert(strCmdText.Length, newPath);
                 cmdWithVid = cmdWithVidDir.Insert(strCmdText.Length, vidFileName);
                 cmdWithModel = strCmdText.Insert(7, user);
-                System.Diagnostics.Process.Start("CMD.exe", cmdWithModel);
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
+                cmd.Start();
+
+                cmd.StandardInput.WriteLine(strCmdText);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                Console.WriteLine(cmd.StandardOutput.ReadToEnd());
 
             }
         }
