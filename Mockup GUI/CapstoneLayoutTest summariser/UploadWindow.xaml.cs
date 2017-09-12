@@ -28,7 +28,7 @@ namespace CapstoneLayoutTest
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private int loadBarPercentage = 0;
-        private string path, root, vidFileName, vidPathName, newPath;
+        private string path, root, vidFileName, vidPathName, newPath, newPathName;
         private int vidNum;
         private BackgroundWorker demoCodeWorker1;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -76,7 +76,7 @@ namespace CapstoneLayoutTest
             vidFileName = System.IO.Path.GetFileName(vidPathName);
             string originPath = vidPathName;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
-            string newPathName = newPath.Insert(newPath.Length, vidFileName);
+            newPathName = newPath.Insert(newPath.Length, vidFileName);
             if (!System.IO.File.Exists(newPathName)) {
                 File.Copy(@originPath, @newPathName);
             }
@@ -105,29 +105,32 @@ namespace CapstoneLayoutTest
         {
 
             string strCmdText = "python /Model/scripts/run_all_pipeline.py -i ";
-            string cmdWithVid, cmdWithModel, cmdWithVidDir;
 
             bool processing = true;
+            int segNum = 0;
             while (processing)
             {
+                string newSegName = newPathName.Insert(newPathName.Length-4,"-" + segNum.ToString());
+                if (System.IO.File.Exists(newSegName))
+                {
+                    strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
+                    strCmdText = strCmdText.Insert(7, user);
+                    Process cmd = new Process();
+                    cmd.StartInfo.FileName = "cmd.exe";
+                    cmd.StartInfo.RedirectStandardInput = true;
+                    cmd.StartInfo.RedirectStandardOutput = true;
+                    cmd.StartInfo.CreateNoWindow = true;
+                    cmd.StartInfo.UseShellExecute = false;
+                    cmd.Start();
 
-                cmdWithVidDir = strCmdText.Insert(strCmdText.Length, newPath);
-                cmdWithVid = cmdWithVidDir.Insert(strCmdText.Length, vidFileName);
-                cmdWithModel = strCmdText.Insert(7, user);
-                Process cmd = new Process();
-                cmd.StartInfo.FileName = "cmd.exe";
-                cmd.StartInfo.RedirectStandardInput = true;
-                cmd.StartInfo.RedirectStandardOutput = true;
-                cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.UseShellExecute = false;
-                cmd.Start();
-
-                cmd.StandardInput.WriteLine(strCmdText);
-                cmd.StandardInput.Flush();
-                cmd.StandardInput.Close();
-                cmd.WaitForExit();
-                Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-
+                    cmd.StandardInput.WriteLine(strCmdText);
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.Close();
+                    cmd.WaitForExit();
+                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                }
+                else { processing = false; }
+                segNum++;
             }
         }
 
