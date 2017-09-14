@@ -505,9 +505,24 @@ namespace CapstoneLayoutTest
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space) PausePlay();
-            if (e.Key == Key.Left) ProcessLeftKey();
-            if (e.Key == Key.Right) ProcessRightKey();
+            switch (e.Key)
+            {
+                case Key.Space:
+                    PausePlay();
+                    break;
+                case Key.Left:
+                    ProcessLeftKey();
+                    break;
+                case Key.Right:
+                    ProcessRightKey();
+                    break;
+                case Key.Home:
+                    mediaElement.Position = TimeSpan.FromSeconds(0);
+                    break;
+                case Key.End:
+                    mediaElement.Position = TimeSpan.FromSeconds(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
+                    break;
+            }
         }
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {

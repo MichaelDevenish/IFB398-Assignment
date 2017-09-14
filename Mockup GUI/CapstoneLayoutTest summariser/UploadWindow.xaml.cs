@@ -71,16 +71,17 @@ namespace CapstoneLayoutTest
         private void SegmentVideo()
         {
             user = user.Replace("\\", "/");
-            vidPathName = vidPathName.Replace("\\","/");
+            vidPathName = vidPathName.Replace("\\", "/");
             string splitTime = "10";
             vidFileName = System.IO.Path.GetFileName(vidPathName);
             string originPath = vidPathName;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
             newPathName = newPath.Insert(newPath.Length, vidFileName);
-            if (!System.IO.File.Exists(newPathName)) {
+            if (!System.IO.File.Exists(newPathName))
+            {
                 File.Copy(@originPath, @newPathName);
             }
-            
+
             string strCmdText = "python python_video_processing.py -f  -s ";
             strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
             strCmdText = strCmdText.Insert(37, newPathName);
@@ -96,7 +97,7 @@ namespace CapstoneLayoutTest
 
             cmd.StandardInput.WriteLine(strCmdText);
             cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
+                cmd.StandardInput.Close();
             cmd.WaitForExit();
             Console.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
@@ -110,7 +111,7 @@ namespace CapstoneLayoutTest
             segNum = 0;
             while (processing)
             {
-                string newSegName = newPathName.Insert(newPathName.Length-4,"-" + segNum.ToString());
+                string newSegName = newPathName.Insert(newPathName.Length - 4, "-" + segNum.ToString());
                 if (System.IO.File.Exists(newSegName))
                 {
                     strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
@@ -122,12 +123,16 @@ namespace CapstoneLayoutTest
                     cmd.StartInfo.CreateNoWindow = true;
                     cmd.StartInfo.UseShellExecute = false;
                     cmd.Start();
-
+                    cmd.StandardInput.WriteLine("cd " + user + "/Model/");
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.WriteLine("activate capstone");
+                    cmd.StandardInput.Flush();
                     cmd.StandardInput.WriteLine(strCmdText);
                     cmd.StandardInput.Flush();
                     cmd.StandardInput.Close();
-                    cmd.WaitForExit();
                     Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                    cmd.WaitForExit();
+                    // Console.WriteLine(cmd.StandardOutput.ReadToEnd());
                 }
                 else { processing = false; }
                 segNum++;
