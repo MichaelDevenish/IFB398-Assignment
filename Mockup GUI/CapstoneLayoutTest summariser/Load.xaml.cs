@@ -10,8 +10,6 @@ namespace CapstoneLayoutTest
     /// </summary>
     public partial class Load : Window
     {
-        private string okResult = "";
-        public string OkResult { get { return okResult; } }
         public Load()
         {
             InitializeComponent();
@@ -43,9 +41,7 @@ namespace CapstoneLayoutTest
                         }
                         listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
                         DataManager.SaveFile("testfile.bin", listView);
-                        okResult = dlg.FileName;
-                        DialogResult = true;
-
+                        ((MainWindow)Owner).LoadNewData(dlg.FileName);
                         Close();
                         return;
                     }
@@ -68,8 +64,7 @@ namespace CapstoneLayoutTest
             if (data == null) MessageBox.Show("Must select an item.", "Error");
             else
             {
-                okResult = data.URL;
-                DialogResult = true;
+                ((MainWindow)Owner).LoadNewData(data.URL);
                 Close();
             }
         }
@@ -78,7 +73,7 @@ namespace CapstoneLayoutTest
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+
             Close();
         }
 

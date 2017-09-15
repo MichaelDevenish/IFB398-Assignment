@@ -203,35 +203,31 @@ namespace CapstoneLayoutTest
         /// <summary>
         /// opens up a load window and loads the result into the GUI
         /// </summary>
-        private void LoadNewData()
+        public void LoadNewData(string result)
         {
-            Load load = new Load();
-            load.ShowDialog();
-            if ((bool)load.DialogResult)
+            startingTimes = new List<double>();
+            endingTimes = new List<double>();
+
+            canGraph.ClearDatasets();
+            if (HideControlsThread != null) HideControlsThread.CancelAsync();
+            if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
+            if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
+
+            Thread.Sleep(25);
+            mediaElement.Stop();
+            mediaElement.Source = null;
+
+            Thread.Sleep(25);
+            GraphDataset data = ImportData(result);
+            if (data == null)
             {
-                startingTimes = new List<double>();
-                endingTimes = new List<double>();
-
-                canGraph.ClearDatasets();
-                if (HideControlsThread != null) HideControlsThread.CancelAsync();
-                if (VideoProgressThread != null) VideoProgressThread.CancelAsync();
-                if (ShowControllsThread != null) ShowControllsThread.CancelAsync();
-
-                Thread.Sleep(25);
-                mediaElement.Stop();
-                mediaElement.Source = null;
-
-                Thread.Sleep(25);
-                GraphDataset data = ImportData(load.OkResult);
-                if (data == null)
-                {
-                    MessageBox.Show("invalid data");
-                    return;
-                }
-                Thread.Sleep(25);
-                canGraph.AddDataset(data);
-                mediaElement.Play();
+                MessageBox.Show("invalid data");
+                return;
             }
+            Thread.Sleep(25);
+            canGraph.AddDataset(data);
+            mediaElement.Play();
+
         }
 
 
@@ -454,12 +450,15 @@ namespace CapstoneLayoutTest
         private void Upload_Click(object sender, RoutedEventArgs e)
         {
             UploadWindow upload = new UploadWindow();
-            upload.ShowDialog();
+            upload.Owner = Window.GetWindow(this);
+            upload.Show();
         }
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            LoadNewData();
+            Load load = new Load();
+            load.Owner = Window.GetWindow(this);
+            load.ShowDialog();
 
         }
 

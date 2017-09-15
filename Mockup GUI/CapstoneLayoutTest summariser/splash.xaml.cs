@@ -8,9 +8,9 @@ namespace CapstoneLayoutTest
     /// <summary>
     /// Interaction logic for splash.xaml
     /// </summary>
-    public partial class splash : Window
+    public partial class Splash : Window
     {
-        public splash()
+        public Splash()
         {
             InitializeComponent();
             DataManager.LoadFile("testfile.bin", listView);
@@ -20,7 +20,7 @@ namespace CapstoneLayoutTest
         /// Loads the main window with the selected data
         /// </summary>
         /// <param name="path">the path to the data to load</param>
-        private void loadWindow(string path)
+        public void loadWindow(string path)
         {
             MainWindow signIn = new MainWindow(path)
             {
@@ -103,6 +103,7 @@ namespace CapstoneLayoutTest
         private void ImportToProcess_Click(object sender, RoutedEventArgs e)
         {
             UploadWindow upload = new UploadWindow();
+            upload.Owner = Window.GetWindow(this);
             upload.ShowDialog();
         }
     }

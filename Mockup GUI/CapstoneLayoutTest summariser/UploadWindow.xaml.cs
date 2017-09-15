@@ -41,17 +41,31 @@ namespace CapstoneLayoutTest
             demoCodeWorker1.DoWork += DemoCodeWorker1_DoWork;
             progressBar.Maximum = 100;
         }
-        public UploadWindow(string fileToRead)
+
+        /// <summary>
+        /// Call this function to load the data into the main window
+        /// </summary>
+        /// <param name="resultURI">the zip folder containing the data that is to be shown on the main window</param>
+        public void LoadResult(string resultURI)
         {
-            InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            Owner = Application.Current.MainWindow;
-            windowMode = 4;
-            progressBar.Maximum = 100;
-            demoCodeWorker1 = new BackgroundWorker();
-            demoCodeWorker1.DoWork += DemoCodeWorker1_DoWork;
-            LoadCurrent();
+            if (Owner.IsLoaded)
+            {
+                if (Owner is Splash)
+                {
+                    ((Splash)Owner).loadWindow(resultURI);
+                    Close();
+                }
+                else if (Owner is MainWindow)
+                {
+                    ((MainWindow)Owner).LoadNewData(resultURI);
+                    Close();
+                }
+            }
+            else MessageBox.Show("Parent window has been closed, aborting load.");
+
+
         }
+
 
         private void SelectFile()
         {
@@ -97,7 +111,7 @@ namespace CapstoneLayoutTest
 
             cmd.StandardInput.WriteLine(strCmdText);
             cmd.StandardInput.Flush();
-                cmd.StandardInput.Close();
+            cmd.StandardInput.Close();
             cmd.WaitForExit();
             Console.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
