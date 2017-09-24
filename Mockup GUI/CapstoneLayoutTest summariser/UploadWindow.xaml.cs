@@ -132,6 +132,8 @@ namespace CapstoneLayoutTest
                 if (System.IO.File.Exists(newSegName))
                 {
                     segNum++;
+                    progressBar.Value = 100*((segNum-1)/segNum);
+                    label.Content = setProgressText(loadBarPercentage, windowMode);
                     strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
                     strCmdText.Insert(strCmdText.Length - 4, splitTime);
                     strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
@@ -315,4 +317,3 @@ namespace CapstoneLayoutTest
         }
     }
 }
-
