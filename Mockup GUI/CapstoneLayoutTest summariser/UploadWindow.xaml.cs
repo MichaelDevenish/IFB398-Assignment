@@ -28,7 +28,7 @@ namespace CapstoneLayoutTest
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private int loadBarPercentage = 0;
-        private string path, root, vidFileName, vidPathName, newPath, newPathName;
+        private string path, root, vidFileName, vidPathName, newPath, newPathName, splitTime;
         private int vidNum, segNum;
         private BackgroundWorker demoCodeWorker1;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -86,7 +86,7 @@ namespace CapstoneLayoutTest
         {
             user = user.Replace("\\", "/");
             vidPathName = vidPathName.Replace("\\", "/");
-            string splitTime = "10";
+            splitTime = "10";
             vidFileName = System.IO.Path.GetFileName(vidPathName);
             string originPath = vidPathName;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
@@ -119,15 +119,21 @@ namespace CapstoneLayoutTest
         private void ProcessModel()
         {
 
-            string strCmdText = "python /Model/scripts/run_all_pipeline.py -i ";
+            string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -s1  -i ";
 
             bool processing = true;
             segNum = 0;
             while (processing)
             {
+                if (segNum == 0) {
+                    strCmdText.Insert(strCmdText.Length - 14, "y");
+                }
                 string newSegName = newPathName.Insert(newPathName.Length - 4, "-" + segNum.ToString());
                 if (System.IO.File.Exists(newSegName))
                 {
+                    segNum++;
+                    strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
+                    strCmdText.Insert(strCmdText.Length - 4, splitTime);
                     strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
                     strCmdText = strCmdText.Insert(7, user);
                     Process cmd = new Process();
@@ -146,10 +152,8 @@ namespace CapstoneLayoutTest
                     cmd.StandardInput.Close();
                     Console.WriteLine(cmd.StandardOutput.ReadToEnd());
                     cmd.WaitForExit();
-                    // Console.WriteLine(cmd.StandardOutput.ReadToEnd());
                 }
                 else { processing = false; }
-                segNum++;
             }
         }
 
