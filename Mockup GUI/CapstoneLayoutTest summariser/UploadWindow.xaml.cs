@@ -118,7 +118,7 @@ namespace CapstoneLayoutTest
         private void ProcessModel()
         {
 
-            string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -s1  -i ";
+            string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
 
             bool processing = true;
             segNum = 0;
