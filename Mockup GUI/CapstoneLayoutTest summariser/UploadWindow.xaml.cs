@@ -118,12 +118,11 @@ namespace CapstoneLayoutTest
         private void ProcessModel()
         {
 
-            string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
-
             bool processing = true;
             segNum = 0;
             while (processing)
             {
+                string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
                 if (segNum == 0) {
                     strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
                 }
