@@ -123,8 +123,13 @@ namespace CapstoneLayoutTest
             while (processing)
             {
                 string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
-                if (segNum == 0) {
+                if (segNum == 0)
+                {
                     strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
+                }
+                else
+                {
+                    strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
                 }
                 string newSegName = newPathName.Insert(newPathName.Length - 4, "-" + segNum.ToString());
                 if (System.IO.File.Exists(newSegName))
