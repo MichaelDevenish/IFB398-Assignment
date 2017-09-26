@@ -125,7 +125,7 @@ namespace CapstoneLayoutTest
             while (processing)
             {
                 if (segNum == 0) {
-                    strCmdText.Insert(strCmdText.Length - 14, "y");
+                    strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
                 }
                 string newSegName = newPathName.Insert(newPathName.Length - 4, "-" + segNum.ToString());
                 if (System.IO.File.Exists(newSegName))
