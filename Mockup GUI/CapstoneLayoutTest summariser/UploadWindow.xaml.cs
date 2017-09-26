@@ -77,7 +77,6 @@ namespace CapstoneLayoutTest
             {
                 vidPathName = open.FileName;
                 SegmentVideo();
-                ProcessModel();
                 textBox.Text = open.FileName;
             }
         }
@@ -105,7 +104,7 @@ namespace CapstoneLayoutTest
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.CreateNoWindow = false;
             cmd.StartInfo.UseShellExecute = false;
             cmd.Start();
 
@@ -132,22 +131,22 @@ namespace CapstoneLayoutTest
                 if (System.IO.File.Exists(newSegName))
                 {
                     segNum++;
-                    progressBar.Value = 100*((segNum-1)/segNum);
+                    progressBar.Value = 100 * ((segNum - 1) / segNum);
                     label.Content = setProgressText(loadBarPercentage, windowMode);
-                    strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
-                    strCmdText.Insert(strCmdText.Length - 4, splitTime);
+                    strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
+                    strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
                     strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
                     strCmdText = strCmdText.Insert(7, user);
                     Process cmd = new Process();
                     cmd.StartInfo.FileName = "cmd.exe";
                     cmd.StartInfo.RedirectStandardInput = true;
                     cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
+                    cmd.StartInfo.CreateNoWindow = false;
                     cmd.StartInfo.UseShellExecute = false;
                     cmd.Start();
-                    cmd.StandardInput.WriteLine("cd " + user + "/Model/");
-                    cmd.StandardInput.Flush();
                     cmd.StandardInput.WriteLine("activate capstone");
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.WriteLine("cd " + user + "/Model/");
                     cmd.StandardInput.Flush();
                     cmd.StandardInput.WriteLine(strCmdText);
                     cmd.StandardInput.Flush();
@@ -155,7 +154,12 @@ namespace CapstoneLayoutTest
                     Console.WriteLine(cmd.StandardOutput.ReadToEnd());
                     cmd.WaitForExit();
                 }
-                else { processing = false; }
+                else
+                {
+                    windowMode++;
+                    processing = false;
+                }
+
             }
         }
 
@@ -229,6 +233,7 @@ namespace CapstoneLayoutTest
                 leftButton.Visibility = Visibility.Hidden;
                 label.Visibility = Visibility.Visible;
                 progressBar.Visibility = Visibility.Visible;
+                ProcessModel();
                 rightButton.Content = "Close";
                 label.Content = "Uploading 0%";
 
@@ -271,7 +276,7 @@ namespace CapstoneLayoutTest
 
         private void DemoCodeWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            while (loadBarPercentage < 100)
+            /*while (loadBarPercentage < 100)
             {
                 loadBarPercentage++;
                 Dispatcher.Invoke(() =>
@@ -282,12 +287,11 @@ namespace CapstoneLayoutTest
                 });
                 Thread.Sleep(10);
             }
-            loadBarPercentage = 0;
+            loadBarPercentage = 0;*/
 
             switch (windowMode)
             {
                 case 1:
-                    windowMode++;
                     Dispatcher.Invoke(() => rightButton.Content = "Close");
                     DemoCodeWorker1_DoWork(sender, e);
                     break;
