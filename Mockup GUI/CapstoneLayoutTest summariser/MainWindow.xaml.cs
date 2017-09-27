@@ -80,6 +80,7 @@ namespace CapstoneLayoutTest
                         entry.ExtractToFile("tempfile.csv");
                         csvDataset = CSVToDataset("tempfile.csv", "left");
                         File.Delete("tempfile.csv");
+                        if (csvDataset == null) return null;
                     }
                     else if (entry.Name == "video.mp4" && good)
                     {
@@ -98,10 +99,23 @@ namespace CapstoneLayoutTest
         /// </summary>
         private GraphDataset CSVToDataset(string url, string name)
         {
-            CSVDatasetLoader loader = new CSVDatasetLoader(url);
-            startingTimes = loader.AppendSortedStartList(startingTimes);
-            endingTimes = loader.AppendSortedEndList(endingTimes);
-            return loader.GenerateDataset(name);
+            try
+            {
+                CSVDatasetLoader loader = new CSVDatasetLoader(url);
+                startingTimes = loader.AppendSortedStartList(startingTimes);
+                endingTimes = loader.AppendSortedEndList(endingTimes);
+                return loader.GenerateDataset(name);
+            }catch(Exception e)
+            {
+                if(e is FileNotFoundException)
+                {
+                    MessageBox.Show("File does not exist");
+                }
+                else if(e is IOException) {
+                    MessageBox.Show("File is currently being used by another process");
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -203,7 +217,6 @@ namespace CapstoneLayoutTest
             playerSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             if (videoState) { mediaElement.Play(); }
-            //colorRectangle.Fill = PercentToProbabilityColour(100 * (playerSlider.Value / playerSlider.Maximum));
         }
 
         private void setPositionInSeconds(double time)
