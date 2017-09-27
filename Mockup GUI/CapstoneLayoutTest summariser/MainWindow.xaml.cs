@@ -28,7 +28,6 @@ namespace CapstoneLayoutTest
         private const int CONTROLS_MAX_HEIGHT = 25;
         private const int CONTROLS_HIDE_DELAY = 500;
         private const int PROGRESS_BAR_UPDATE_SPEED = 15;
-        private const int SCREENSHOT_TIME = 150;
 
         //GLOBALS
         private bool videoState = true;
@@ -65,7 +64,7 @@ namespace CapstoneLayoutTest
         /// </summary>
         /// <param name="path">the path to load</param>
         /// <returns>the meta-data for when activities happen</returns>
-        private GraphDataset ImportData(string path)
+        public GraphDataset ImportData(string path)
         {
             GraphDataset csvDataset = null;
             using (ZipArchive archive = ZipFile.OpenRead(path))
@@ -121,29 +120,6 @@ namespace CapstoneLayoutTest
             }
             return temp;
         }
-
-        ///// <summary>
-        ///// Returns a screen-shot of the currently playing video in the supplied MediaElement at the supplied seconds
-        ///// </summary>
-        ///// <param name="currentSecond">the second to take the screen-shot at</param>
-        ///// <param name="player">the MediaElement to screen-shot</param>
-        ///// <returns>an image of the screen-shot</returns>
-        //private Image GetScreenshotAtTime(int currentSecond, MediaElement player)
-        //{
-        //    RenderTargetBitmap rtb = new RenderTargetBitmap((int)player.Width, (int)player.Height, 96, 96, PixelFormats.Pbgra32);
-        //    Image img = new Image();
-
-        //    TimeSpan prePos = player.Position;
-        //    if (videoState) player.Pause();
-        //    player.Position = TimeSpan.FromSeconds(currentSecond);
-        //    Thread.Sleep(SCREENSHOT_TIME);
-        //    rtb.Render(player);
-        //    img.Source = BitmapFrame.Create(rtb);
-
-        //    player.Position = prePos;
-        //    if (videoState) player.Play();
-        //    return img;
-        //}
 
         /// <summary>
         /// Plays or pauses the video depending on the current video state
