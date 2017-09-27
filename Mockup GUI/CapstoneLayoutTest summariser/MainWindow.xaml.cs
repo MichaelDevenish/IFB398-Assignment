@@ -64,7 +64,7 @@ namespace CapstoneLayoutTest
         /// </summary>
         /// <param name="path">the path to load</param>
         /// <returns>the meta-data for when activities happen</returns>
-        public GraphDataset ImportData(string path)
+        private GraphDataset ImportData(string path)
         {
             GraphDataset csvDataset = null;
             using (ZipArchive archive = ZipFile.OpenRead(path))
@@ -78,7 +78,7 @@ namespace CapstoneLayoutTest
                     if (a == "output.csv")
                     {
                         entry.ExtractToFile("tempfile.csv");
-                        csvDataset = CSVToDataset("tempfile.csv", "left", Brushes.SteelBlue);
+                        csvDataset = CSVToDataset("tempfile.csv", "left");
                         File.Delete("tempfile.csv");
                     }
                     else if (entry.Name == "video.mp4" && good)
@@ -96,29 +96,12 @@ namespace CapstoneLayoutTest
         /// <summary>
         /// converts a csv of probability,start,end,activity to a GraphDataset
         /// </summary>
-        private GraphDataset CSVToDataset(string url, string name, Brush brush)
+        private GraphDataset CSVToDataset(string url, string name)
         {
-            List<string[]> lines = File.ReadAllLines(url).Select(a => a.Split(',')).ToList();
-            startingTimes = startingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(1)))).ToList();
-            endingTimes = endingTimes.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(2)))).ToList();
-            startingTimes.Sort();
-            endingTimes.Sort();
-            GraphDataset temp = new GraphDataset(name);
-            foreach (string[] line in lines)
-            {
-                try
-                {
-                    double per = double.Parse(line[0]) * 100;
-                    Brush col = PercentToProbabilityColour(per);
-                    SummariserNode node = new SummariserNode(double.Parse(line[1]), double.Parse(line[2]), line[3], col);
-                    temp.AddNode(node);
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-            }
-            return temp;
+            CSVDatasetLoader loader = new CSVDatasetLoader(url);
+            startingTimes = loader.AppendSortedStartList(startingTimes);
+            endingTimes = loader.AppendSortedEndList(endingTimes);
+            return loader.GenerateDataset(name);
         }
 
         /// <summary>
@@ -177,8 +160,9 @@ namespace CapstoneLayoutTest
         }
 
         /// <summary>
-        /// opens up a load window and loads the result into the GUI
+        ///loads the selected file into the GUI
         /// </summary>
+        /// <param name="result">the file to load</param>
         public void LoadNewData(string result)
         {
             startingTimes = new List<double>();
@@ -220,15 +204,6 @@ namespace CapstoneLayoutTest
             graphSlider.Value = ((Slider)sender).Maximum * (1.0d / ((Slider)sender).ActualWidth * e.GetPosition((Slider)sender).X);
             if (videoState) { mediaElement.Play(); }
             //colorRectangle.Fill = PercentToProbabilityColour(100 * (playerSlider.Value / playerSlider.Maximum));
-        }
-
-        private static Brush PercentToProbabilityColour(double percent)
-        {
-            byte red = (byte)((percent > 51) ? 255 * (1 - 2 * (percent - 50)) / 100 : 255);
-            byte green = (byte)((percent > 50) ? 255 : 255 * (2 * percent / 100));
-            byte blue = 0;
-            Brush color = new SolidColorBrush(Color.FromRgb(red, green, blue));
-            return color;
         }
 
         private void setPositionInSeconds(double time)

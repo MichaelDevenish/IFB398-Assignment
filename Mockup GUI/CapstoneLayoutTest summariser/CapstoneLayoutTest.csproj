@@ -79,6 +79,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CSVHelper.cs" />
     <Compile Include="DataManager.cs" />
     <Compile Include="Load.xaml.cs">
       <DependentUpon>Load.xaml</DependentUpon>
