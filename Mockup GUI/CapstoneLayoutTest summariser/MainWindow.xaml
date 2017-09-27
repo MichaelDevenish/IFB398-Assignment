@@ -71,7 +71,6 @@
         <Menu Canvas.Left="-11" Canvas.Top="-60" Height="20" VerticalAlignment="Top">
             <MenuItem Header="_Upload" Click="Upload_Click"/>
             <MenuItem Header="_Load" Click="Load_Click"/>
-            <MenuItem Header="_About"/>
         </Menu>
         <control:SummariserOnly Name="canGraph"  Height="95" Width="672" VerticalAlignment="Bottom" Margin="0,420,0,40" HorizontalAlignment="Center"/>
         <Grid Margin="{Binding ActualHeight, ElementName=canGraph, Converter={StaticResource MarginConverter} }" RenderTransformOrigin="0.5,0.5" MouseEnter="Grid_MouseEnter" MouseLeave="Grid_MouseLeave">
