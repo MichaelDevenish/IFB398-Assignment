@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         xmlns:control="clr-namespace:DataGraph;assembly=DataGraph"
         mc:Ignorable="d"
-        Title="MainWindow" Height="502" Width="710" Closing="Window_Closing" KeyDown="Window_KeyDown" SizeChanged="Window_SizeChanged_1" MinWidth="700" MinHeight="500">
+        Title="MainWindow" Height="502" Width="710" Closing="Window_Closing" KeyDown="Window_KeyDown" SizeChanged="Window_SizeChanged" MinWidth="700" MinHeight="500">
     <Window.Resources>
         <Style x:Key="VideoButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -85,18 +85,18 @@
                        Margin="{Binding ActualWidth, ElementName=playerSlider, Converter={StaticResource MarginConverter2} }" Foreground="White">0:00/0:00</Label>
                 <Button Width="25" Click="Button_Click" Margin="{Binding ActualWidth, ElementName=playerSlider, Converter={StaticResource MarginConverter3}}"
                         Height="25" Style="{StaticResource VideoButton}" HorizontalAlignment="Center">
-                    <Image x:Name="pausePlayImage" Source="Images/ic_pause_white_24dp.png"/>
+                    <Image x:Name="pausePlayImage" Source="../Images/ic_pause_white_24dp.png"/>
                 </Button>
                 <Slider Focusable="False" x:Name="playerSlider" Orientation="Horizontal" ValueChanged="scrollBar_Scroll" Margin="113,2,9,3"
                         Height="20" PreviewMouseMove="scrollBar2_PreviewMouseMove" PreviewMouseDown="scrollBar2_PreviewMouseDown"
-                        PreviewMouseUp="scrollBar2_PreviewMouseUp" HorizontalAlignment="Center"
+                         HorizontalAlignment="Center"
                          Width="{Binding ActualWidth, ElementName=canGraph, Converter={StaticResource InlineCanGraph} }"/>
            
             </Grid>
         </Grid>
         <Slider Focusable="False" x:Name="graphSlider"  Orientation="Horizontal" Style="{StaticResource SinglePointSlider}"
                 Margin="110,0,7,40" Height="41"  VerticalAlignment="Bottom" ValueChanged="scrollBar_Scroll" PreviewMouseMove="scrollBar2_PreviewMouseMove"
-                PreviewMouseDown="scrollBar2_PreviewMouseDown" PreviewMouseUp="scrollBar2_PreviewMouseUp" Width="{Binding ActualWidth, ElementName=canGraph, Converter={StaticResource InlineCanGraph} }" HorizontalAlignment="Center"/>
+                PreviewMouseDown="scrollBar2_PreviewMouseDown"  Width="{Binding ActualWidth, ElementName=canGraph, Converter={StaticResource InlineCanGraph} }" HorizontalAlignment="Center"/>
         <Grid Height="30" VerticalAlignment="Bottom" Margin="18,0,10,5" HorizontalAlignment="Center" Width="673">
             <Rectangle x:Name="colorRectangle"  HorizontalAlignment="Left" Height="20" Margin="34,5,0,0" Stroke="Black" VerticalAlignment="Top" Width="590">
                 <Rectangle.Fill>

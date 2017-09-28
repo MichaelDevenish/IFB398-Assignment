@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Data;
 using System.Globalization;
+using CapstoneLayoutTest.Helper_Functions;
 
 namespace CapstoneLayoutTest
 {
@@ -105,13 +106,15 @@ namespace CapstoneLayoutTest
                 startingTimes = loader.AppendSortedStartList(startingTimes);
                 endingTimes = loader.AppendSortedEndList(endingTimes);
                 return loader.GenerateDataset(name);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                if(e is FileNotFoundException)
+                if (e is FileNotFoundException)
                 {
                     MessageBox.Show("File does not exist");
                 }
-                else if(e is IOException) {
+                else if (e is IOException)
+                {
                     MessageBox.Show("File is currently being used by another process");
                 }
             }
@@ -127,50 +130,15 @@ namespace CapstoneLayoutTest
             {
                 case true:
                     mediaElement.Pause();
-                    SetPausePlayImage(false);
+                    ControlBarHelper.SetPausePlayImage(false, pausePlayImage);
                     videoState = false;
                     break;
                 case false:
                     mediaElement.Play();
-                    SetPausePlayImage(true);
+                    ControlBarHelper.SetPausePlayImage(true, pausePlayImage);
                     videoState = true;
                     break;
             }
-        }
-
-        /// <summary>
-        /// Sets the pausePlayImage to either pause(true) or play(false)
-        /// </summary>
-        /// <param name="pausePlay">the state of the button</param>
-        private void SetPausePlayImage(bool pausePlay)
-        {
-            Uri uriSource = null;
-            if (pausePlay) uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_pause_white_24dp.png", UriKind.Relative);
-            else uriSource = new Uri(@"/CapstoneLayoutTest;component/Images/ic_play_arrow_white_24dp.png", UriKind.Relative);
-            pausePlayImage.Source = new BitmapImage(uriSource);
-        }
-
-        /// <summary>
-        /// Converts an int to a string that represents [HH:]MM:SS
-        /// </summary>
-        /// <param name="seconds">the seconds to convert</param>
-        /// <returns>a string representing [HH:]MM:SS</returns>
-        private string IntToTimeString(int seconds)
-        {
-            string builder = "";
-            if (seconds >= 3600) builder += seconds / 3600 + ":";
-            if (seconds % 3600 > 60)
-            {
-                int min = seconds % 3600 / 60;
-                if (min < 10) builder += "0";
-                builder += min + ":";
-            }
-            else builder += "00:";
-
-            int sec = seconds % 60;
-            if (sec < 10) builder += "0";
-            builder += sec;
-            return builder;
         }
 
         /// <summary>
@@ -204,7 +172,6 @@ namespace CapstoneLayoutTest
 
         }
 
-
         /// <summary>
         /// Moves the video to the position of the selected slider and updates the other slider
         /// </summary>
@@ -219,12 +186,14 @@ namespace CapstoneLayoutTest
             if (videoState) { mediaElement.Play(); }
         }
 
+        /// <summary>
+        /// Sets all of the sliders positions in seconds
+        /// </summary>
+        /// <param name="time">the time to set</param>
         private void setPositionInSeconds(double time)
         {
             mediaElement.Position = TimeSpan.FromSeconds(time);
-
             playerSlider.Value = time;
-
             graphSlider.Value = time;
         }
 
@@ -319,7 +288,7 @@ namespace CapstoneLayoutTest
                     currentTime = (int)mediaElement.Position.TotalSeconds;
                     totalTime = (int)mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                 });
-                string timeString = IntToTimeString(currentTime) + "/" + IntToTimeString(totalTime);
+                string timeString = ControlBarHelper.IntToTimeString(currentTime) + "/" + ControlBarHelper.IntToTimeString(totalTime);
                 if (videoState && !VideoProgressThread.CancellationPending) Dispatcher.Invoke(() =>
                 {
                     VideoTime.Content = timeString;
@@ -402,7 +371,6 @@ namespace CapstoneLayoutTest
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             SetupAfterVideoLoaded();
-
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -423,13 +391,11 @@ namespace CapstoneLayoutTest
             Load load = new Load();
             load.Owner = Window.GetWindow(this);
             load.ShowDialog();
-
         }
 
         private void scrollBar_Scroll(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             mediaElement.Position = TimeSpan.FromSeconds(((Slider)sender).Value);
-
         }
 
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
@@ -451,19 +417,12 @@ namespace CapstoneLayoutTest
 
         private void scrollBar2_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-                VideoSliderbarMove(sender, e);
-
+            if (e.LeftButton == MouseButtonState.Pressed) VideoSliderbarMove(sender, e);
         }
 
         private void scrollBar2_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             VideoSliderbarMove(sender, e);
-
-        }
-
-        private void scrollBar2_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -487,25 +446,18 @@ namespace CapstoneLayoutTest
                     break;
             }
         }
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-        }
 
-        private void Window_SizeChanged_1(object sender, SizeChangedEventArgs e)
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int num = canGraph.NumOfDatasets;
             if (Width > 29 && num > 0 && mediaElement.ActualWidth > 12)
             {
-                //change to be equal to video width and centered\\
-
                 canGraph.Width = mediaElement.ActualWidth - 11;
-                //SizeToContent = SizeToContent.Height;
                 canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
             }
-
         }
-
     }
+
     public class InlineCanGraph : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -559,4 +511,3 @@ namespace CapstoneLayoutTest
 
     }
 }
-//123/9

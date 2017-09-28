@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xunit.StaFact</name>
+    </assembly>
+    <members>
+        <member name="T:Xunit.StaFactAttribute">
+            <summary>
+            Identifies an xunit test that starts on an STA thread.
+            </summary>
+        </member>
+        <member name="T:Xunit.UIFactAttribute">
+            <summary>
+            Identifies an xunit test that starts on an STA thread
+            with a UI thread-like SynchronizationContext.
+            </summary>
+        </member>
+        <member name="T:Xunit.WpfFactAttribute">
+            <summary>
+            Identifies an xunit test that starts on an STA thread
+            with a WPF DispatcherSynchronizationContext.
+            </summary>
+        </member>
+        <member name="T:Xunit.WpfTheoryAttribute">
+            <summary>
+            Identifies an xunit theory that starts on an STA thread
+            with a WPF DispatcherSynchronizationContext.
+            </summary>
+        </member>
+    </members>
+</doc>

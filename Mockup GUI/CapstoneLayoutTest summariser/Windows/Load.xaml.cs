@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CapstoneLayoutTest.Helper_Functions;
+using Microsoft.Win32;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows;

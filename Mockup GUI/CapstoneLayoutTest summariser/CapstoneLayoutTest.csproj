@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Xunit.StaFact.0.1.29-alpha\build\net45\Xunit.StaFact.props" Condition="Exists('packages\Xunit.StaFact.0.1.29-alpha\build\net45\Xunit.StaFact.props')" />
   <Import Project="packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -79,27 +80,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CSVHelper.cs" />
-    <Compile Include="DataManager.cs" />
-    <Compile Include="Load.xaml.cs">
+    <Compile Include="Helper Functions\ControlBarHelper.cs" />
+    <Compile Include="Helper Functions\CSVHelper.cs" />
+    <Compile Include="Helper Functions\DataManager.cs" />
+    <Compile Include="Windows\Load.xaml.cs">
       <DependentUpon>Load.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ProgressWindow.xaml.cs">
+    <Compile Include="Windows\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="splash.xaml.cs">
+    <Compile Include="Windows\splash.xaml.cs">
       <DependentUpon>splash.xaml</DependentUpon>
     </Compile>
     <Compile Include="tests.cs" />
-    <Compile Include="UploadWindow.xaml.cs">
+    <Compile Include="Windows\UploadWindow.xaml.cs">
       <DependentUpon>UploadWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VideoData.cs" />
-    <Page Include="Load.xaml">
+    <Compile Include="Helper Functions\VideoData.cs" />
+    <Page Include="Windows\Load.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -107,19 +109,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ProgressWindow.xaml">
+    <Page Include="Windows\ProgressWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="splash.xaml">
+    <Page Include="Windows\splash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UploadWindow.xaml">
+    <Page Include="Windows\UploadWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,6 +175,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
+    <Error Condition="!Exists('packages\Xunit.StaFact.0.1.29-alpha\build\net45\Xunit.StaFact.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Xunit.StaFact.0.1.29-alpha\build\net45\Xunit.StaFact.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

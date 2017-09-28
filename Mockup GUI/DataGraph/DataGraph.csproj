@@ -48,11 +48,11 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graph.cs" />
+    <Compile Include="Graphs\Graph.cs" />
     <Compile Include="Node\Node.cs" />
     <Compile Include="Node\SummariserNode.cs" />
-    <Compile Include="SummariserOnly.cs" />
-    <Page Include="Dictionary.xaml">
+    <Compile Include="Graphs\SummariserOnly.cs" />
+    <Page Include="Themes\Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -60,14 +60,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="DataGraph.cs">
+    <Compile Include="Graphs\DataGraph.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphDataset.cs" />
     <Compile Include="Node\GraphNode.cs" />
-    <Compile Include="NoDatasetsException.cs" />
+    <Compile Include="Exceptions\NoDatasetsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CapstoneLayoutTest
+namespace CapstoneLayoutTest.Helper_Functions
 {
-    public  class CSVDatasetLoader
+    public class CSVDatasetLoader
     {
         List<string[]> lines;
         public CSVDatasetLoader(string url)
@@ -53,7 +53,8 @@ namespace CapstoneLayoutTest
         }
         private static Brush PercentToProbabilityColour(double percent)
         {
-            byte red = (byte)((percent > 51) ? 255 * (1 - 2 * (percent - 50)) / 100 : 255);
+            double t = ((2 * (percent - 50)) / 100);
+            byte red = (byte)((percent > 51) ? 255 - (255 * ((2 * (percent - 50)) / 100)) : 255);
             byte green = (byte)((percent > 50) ? 255 : 255 * (2 * percent / 100));
             byte blue = 0;
             Brush color = new SolidColorBrush(Color.FromRgb(red, green, blue));

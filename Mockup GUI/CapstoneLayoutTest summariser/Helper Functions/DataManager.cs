@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace CapstoneLayoutTest
+namespace CapstoneLayoutTest.Helper_Functions
 {
     class DataManager
     {
