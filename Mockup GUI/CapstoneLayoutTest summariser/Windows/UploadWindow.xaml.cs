@@ -135,8 +135,12 @@ namespace CapstoneLayoutTest
                 if (System.IO.File.Exists(newSegName))
                 {
                     segNum++;
-                    progressBar.Value = 100 * ((segNum - 1) / segNum);
-                    label.Content = setProgressText(loadBarPercentage, windowMode);
+                    Dispatcher.Invoke(() =>
+                    {
+                        progressBar.Value = 100 * ((segNum - 1) / segNum);
+                        label.Content = setProgressText(loadBarPercentage, windowMode);
+
+                    });
                     strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
                     strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
                     strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
@@ -150,8 +154,7 @@ namespace CapstoneLayoutTest
                     cmd.Start();
                     cmd.StandardInput.WriteLine("activate capstone");
                     cmd.StandardInput.Flush();
-                    cmd.StandardInput.WriteLine("cd " + user + "/Model/");
-                    cmd.StandardInput.Flush();
+                    cmd.StartInfo.WorkingDirectory = user + "/Model/";
                     cmd.StandardInput.WriteLine(strCmdText);
                     cmd.StandardInput.Flush();
                     cmd.StandardInput.Close();
