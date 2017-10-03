@@ -104,7 +104,7 @@ namespace CapstoneLayoutTest
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = false;
+            cmd.StartInfo.CreateNoWindow = true;
             cmd.StartInfo.UseShellExecute = false;
             cmd.Start();
 
@@ -145,7 +145,7 @@ namespace CapstoneLayoutTest
                     cmd.StartInfo.FileName = "cmd.exe";
                     cmd.StartInfo.RedirectStandardInput = true;
                     cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = false;
+                    cmd.StartInfo.CreateNoWindow = true;
                     cmd.StartInfo.UseShellExecute = false;
                     cmd.Start();
                     cmd.StandardInput.WriteLine("activate capstone");
