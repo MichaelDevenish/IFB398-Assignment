@@ -151,10 +151,10 @@ namespace CapstoneLayoutTest
                     cmd.StartInfo.RedirectStandardOutput = true;
                     cmd.StartInfo.CreateNoWindow = true;
                     cmd.StartInfo.UseShellExecute = false;
+                    cmd.StartInfo.WorkingDirectory = user + "/Model/";
                     cmd.Start();
                     cmd.StandardInput.WriteLine("activate capstone");
                     cmd.StandardInput.Flush();
-                    cmd.StartInfo.WorkingDirectory = user + "/Model/";
                     cmd.StandardInput.WriteLine(strCmdText);
                     cmd.StandardInput.Flush();
                     cmd.StandardInput.Close();
