@@ -29,6 +29,7 @@ namespace CapstoneLayoutTest
         private int windowMode = 0;
         private int loadBarPercentage = 0;
         private string path, root, vidFileName, vidPathName, newPath, newPathName, splitTime;
+        private List<string> vidList = new List<string>();
         private int vidNum, segNum;
         private BackgroundWorker demoCodeWorker1;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -90,6 +91,7 @@ namespace CapstoneLayoutTest
             string originPath = vidPathName;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
             newPathName = newPath.Insert(newPath.Length, vidFileName);
+            vidList.Add(newPathName);
             if (!System.IO.File.Exists(newPathName))
             {
                 File.Copy(@originPath, @newPathName);
@@ -118,56 +120,60 @@ namespace CapstoneLayoutTest
         private void ProcessModel()
         {
 
-            bool processing = true;
-            segNum = 0;
-            while (processing)
-            {
-                string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
-                if (segNum == 0)
+           for (int i = 0; i < vidList.Count;i++) {
+                bool processing = true;
+                segNum = 0;
+                while (processing)
                 {
-                    strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
-                }
-                else
-                {
-                    strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
-                }
-                string newSegName = newPathName.Insert(newPathName.Length - 4, "-" + segNum.ToString());
-                if (System.IO.File.Exists(newSegName))
-                {
-                    segNum++;
-                    Dispatcher.Invoke(() =>
+                    string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
+                    if (segNum == 0)
                     {
-                        progressBar.Value = 100 * ((segNum - 1) / segNum);
-                        label.Content = setProgressText(loadBarPercentage, windowMode);
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
+                    }
+                    else
+                    {
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
+                    }
+                    string newSegName = vidList[i].Insert(vidList[i].Length - 4, "-" + segNum.ToString());
+                    if (System.IO.File.Exists(newSegName))
+                    {
+                        segNum++;
+                        Dispatcher.Invoke(() =>
+                        {
+                            progressBar.Value = 100 * ((segNum - 1) / segNum);
+                            label.Content = setProgressText(loadBarPercentage, windowMode);
 
-                    });
-                    strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
-                    strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
-                    strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
-                    strCmdText = strCmdText.Insert(7, user);
-                    Process cmd = new Process();
-                    cmd.StartInfo.FileName = "cmd.exe";
-                    cmd.StartInfo.RedirectStandardInput = true;
-                    cmd.StartInfo.RedirectStandardOutput = true;
-                    cmd.StartInfo.CreateNoWindow = true;
-                    cmd.StartInfo.UseShellExecute = false;
-                    cmd.StartInfo.WorkingDirectory = user + "/Model/";
-                    cmd.Start();
-                    cmd.StandardInput.WriteLine("activate capstone");
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.WriteLine(strCmdText);
-                    cmd.StandardInput.Flush();
-                    cmd.StandardInput.Close();
-                    Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-                    cmd.WaitForExit();
-                }
-                else
-                {
-                    windowMode++;
-                    processing = false;
+                        });
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
+                        strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
+                        strCmdText = strCmdText.Insert(7, user);
+                        Process cmd = new Process();
+                        cmd.StartInfo.FileName = "cmd.exe";
+                        cmd.StartInfo.RedirectStandardInput = true;
+                        cmd.StartInfo.RedirectStandardOutput = true;
+                        cmd.StartInfo.CreateNoWindow = true;
+                        cmd.StartInfo.UseShellExecute = false;
+                        cmd.StartInfo.WorkingDirectory = user + "/Model/";
+                        cmd.Start();
+                        cmd.StandardInput.WriteLine("activate capstone");
+                        cmd.StandardInput.Flush();
+                        cmd.StandardInput.WriteLine(strCmdText);
+                        cmd.StandardInput.Flush();
+                        cmd.StandardInput.Close();
+                        Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                        cmd.WaitForExit();
+                    }
+                    else
+                    {
+                        windowMode++;
+                        processing = false;
+                    }
+
                 }
 
-            }
+           }
+            
         }
 
         private void leftButton_Click(object sender, RoutedEventArgs e)
