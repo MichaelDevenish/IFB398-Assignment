@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WMPLib;
 
 namespace CapstoneLayoutTest
 {
@@ -97,30 +98,44 @@ namespace CapstoneLayoutTest
                 File.Copy(@originPath, @newPathName);
             }
 
-            string strCmdText = "python python_video_processing.py -f  -s ";
-            strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
-            strCmdText = strCmdText.Insert(37, newPathName);
-            strCmdText = strCmdText.Insert(7, newPath);
+            WindowsMediaPlayer wmp = new WindowsMediaPlayer();
+            IWMPMedia mediainfo = wmp.newMedia(newPathName);
+            int split = 10;
+            double dur = mediainfo.duration;
+            int split_count = (int)(Math.Ceiling(dur / split));
+            string[] splitPath = vidFileName.Split('.');
+            for (int i = 0; i < split_count; i++)
+            {
+                int split_start = split * i;
+                string currentPath = newPath + splitPath[0] + "_" + i + "." + splitPath[1];
+                string process = "ffmpeg -i " + newPathName + " -vcodec copy -ss " + split_start + " -t " + split + " " + currentPath;
 
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = "cmd.exe";
+                cmd.StartInfo.RedirectStandardInput = true;
+                cmd.StartInfo.RedirectStandardOutput = true;
+                cmd.StartInfo.CreateNoWindow = true;
+                cmd.StartInfo.UseShellExecute = false;
+                cmd.Start();
 
-            cmd.StandardInput.WriteLine(strCmdText);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-            Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                cmd.StandardInput.WriteLine(process);
+                cmd.StandardInput.Flush();
+                cmd.StandardInput.Close();
+                cmd.WaitForExit();
+                //change this to write to screen
+                Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+            }
+            //string strCmdText = "python python_video_processing.py -f  -s ";
+            //strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
+            //strCmdText = strCmdText.Insert(37, newPathName);
+            //strCmdText = strCmdText.Insert(7, newPath);
         }
 
         private void ProcessModel()
         {
 
-           for (int i = 0; i < vidList.Count;i++) {
+            for (int i = 0; i < vidList.Count; i++)
+            {
                 bool processing = true;
                 segNum = 0;
                 while (processing)
@@ -137,13 +152,9 @@ namespace CapstoneLayoutTest
                     string newSegName = vidList[i].Insert(vidList[i].Length - 4, "-" + segNum.ToString());
                     if (System.IO.File.Exists(newSegName))
                     {
-                        segNum++;
-                        Dispatcher.Invoke(() =>
-                        {
-                            progressBar.Value = 100 * ((segNum - 1) / segNum);
-                            label.Content = setProgressText(loadBarPercentage, windowMode);
 
-                        });
+                        progressBar.Value = 100 * ((segNum - 1) / segNum);
+                        label.Content = setProgressText(loadBarPercentage, windowMode);
                         strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
                         strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
                         strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
@@ -172,8 +183,8 @@ namespace CapstoneLayoutTest
 
                 }
 
-           }
-            
+            }
+
         }
 
         private void leftButton_Click(object sender, RoutedEventArgs e)
