@@ -85,6 +85,7 @@ namespace CapstoneLayoutTest
 
         private void SegmentVideo()
         {
+            //start in backgroundworker and do callbacks to enable the buttons and move the progressbar
             user = user.Replace("\\", "/");
             vidPathName = vidPathName.Replace("\\", "/");
             splitTime = "10";
@@ -101,34 +102,25 @@ namespace CapstoneLayoutTest
             WindowsMediaPlayer wmp = new WindowsMediaPlayer();
             IWMPMedia mediainfo = wmp.newMedia(newPathName);
             int split = 10;
-            double dur = mediainfo.duration;
-            int split_count = (int)(Math.Ceiling(dur / split));
+
             string[] splitPath = vidFileName.Split('.');
-            for (int i = 0; i < split_count; i++)
-            {
-                int split_start = split * i;
-                string currentPath = newPath + splitPath[0] + "-" + i + "." + splitPath[1];
-                string process = "ffmpeg -i " + newPathName + " -vcodec copy -ss " + split_start + " -t " + split + " " + currentPath;
+            string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
+            + split + " " + newPath + splitPath[0] + "-%d." + splitPath[1];
 
-                Process cmd = new Process();
-                cmd.StartInfo.FileName = "cmd.exe";
-                cmd.StartInfo.RedirectStandardInput = true;
-                cmd.StartInfo.RedirectStandardOutput = true;
-                cmd.StartInfo.CreateNoWindow = true;
-                cmd.StartInfo.UseShellExecute = false;
-                cmd.Start();
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.Start();
 
-                cmd.StandardInput.WriteLine(process);
-                cmd.StandardInput.Flush();
-                cmd.StandardInput.Close();
-                cmd.WaitForExit();
-                //change this to write to screen
-                Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-            }
-            //string strCmdText = "python python_video_processing.py -f  -s ";
-            //strCmdText = strCmdText.Insert(strCmdText.Length, splitTime);
-            //strCmdText = strCmdText.Insert(37, newPathName);
-            //strCmdText = strCmdText.Insert(7, newPath);
+            cmd.StandardInput.WriteLine(process);
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();
+            //change this to write to screen in callback
+            //Console.WriteLine(cmd.StandardOutput.ReadToEnd());
         }
 
         private void ProcessModel()
