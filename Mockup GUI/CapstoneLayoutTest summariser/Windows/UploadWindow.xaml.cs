@@ -95,9 +95,14 @@ namespace CapstoneLayoutTest
             if ((bool)open.ShowDialog())
             {
                 vidPathName = open.FileName;
+                string p = System.IO.Path.GetFileName(vidPathName);
                 if (vidList.Any(e => e.OldDir == vidPathName))
                 {
                     MessageBox.Show("Video is already selected");
+                }
+                else if (vidList.Any(e => e.Title == System.IO.Path.GetFileName(vidPathName)))
+                {
+                    MessageBox.Show("Cant have two files with the same name");
                 }
                 else
                 {
