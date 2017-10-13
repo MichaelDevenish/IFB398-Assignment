@@ -11,6 +11,7 @@ namespace CapstoneLayoutTest
     /// </summary>
     public partial class Splash : Window
     {
+        private UploadWindow upload;
         public Splash()
         {
             InitializeComponent();
@@ -32,6 +33,7 @@ namespace CapstoneLayoutTest
                 ShowActivated = false
             };
             signIn.Show();
+            if (upload != null) upload.Owner = signIn;
             this.Close();
         }
 
@@ -103,9 +105,9 @@ namespace CapstoneLayoutTest
 
         private void ImportToProcess_Click(object sender, RoutedEventArgs e)
         {
-            UploadWindow upload = new UploadWindow();
+            upload = new UploadWindow();
             upload.Owner = Window.GetWindow(this);
-            upload.ShowDialog();
+            upload.Show();
         }
     }
 }

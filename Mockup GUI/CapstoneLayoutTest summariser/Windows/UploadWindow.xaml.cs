@@ -28,19 +28,23 @@ namespace CapstoneLayoutTest
         private bool finalResult = false;
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
-        private int loadBarPercentage = 0;
-        private string path, root, vidFileName, vidPathName, newPath, newPathName, splitTime;
+        private string vidFileName, vidPathName, newPath, newPathName;
         private List<string> vidList = new List<string>();
-        private int vidNum, segNum;
-        private BackgroundWorker demoCodeWorker1;
+        private int segNum;
+        private int videosToProcess = 0;
+        private BackgroundWorker processingWorker;
+        private BackgroundWorker splittingWorker;
         private string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
         public UploadWindow()
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            demoCodeWorker1 = new BackgroundWorker();
-            demoCodeWorker1.DoWork += DemoCodeWorker1_DoWork;
+            processingWorker = new BackgroundWorker();
+            processingWorker.DoWork += processingWorker_DoWork;
+            processingWorker.WorkerSupportsCancellation = true;
+            splittingWorker = new BackgroundWorker();
+            splittingWorker.DoWork += splittingWorker_DoWork;
             progressBar.Maximum = 100;
         }
 
@@ -78,106 +82,9 @@ namespace CapstoneLayoutTest
             if ((bool)open.ShowDialog())
             {
                 vidPathName = open.FileName;
-                SegmentVideo();
+                splittingWorker.RunWorkerAsync();
                 textBox.Text = open.FileName;
             }
-        }
-
-        private void SegmentVideo()
-        {
-            //start in backgroundworker and do callbacks to enable the buttons and move the progressbar
-            user = user.Replace("\\", "/");
-            vidPathName = vidPathName.Replace("\\", "/");
-            splitTime = "10";
-            vidFileName = System.IO.Path.GetFileName(vidPathName);
-            string originPath = vidPathName;
-            newPath = user.Insert(user.Length, "/Model/Youtube/");
-            newPathName = newPath.Insert(newPath.Length, vidFileName);
-            vidList.Add(newPathName);
-            if (!System.IO.File.Exists(newPathName))
-            {
-                File.Copy(@originPath, @newPathName);
-            }
-
-            WindowsMediaPlayer wmp = new WindowsMediaPlayer();
-            IWMPMedia mediainfo = wmp.newMedia(newPathName);
-            int split = 10;
-
-            string[] splitPath = vidFileName.Split('.');
-            string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
-            + split + " " + newPath + splitPath[0] + "-%d." + splitPath[1];
-
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.Start();
-
-            cmd.StandardInput.WriteLine(process);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-            //change this to write to screen in callback
-            //Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-        }
-
-        private void ProcessModel()
-        {
-
-            for (int i = 0; i < vidList.Count; i++)
-            {
-                bool processing = true;
-                segNum = 0;
-                while (processing)
-                {
-                    string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
-                    if (segNum == 0)
-                    {
-                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
-                    }
-                    else
-                    {
-                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
-                    }
-                    string newSegName = vidList[i].Insert(vidList[i].Length - 4, "-" + segNum.ToString());
-                    if (System.IO.File.Exists(newSegName))
-                    {
-
-                        segNum++;
-                        progressBar.Value = 100 * ((segNum - 1) / segNum);
-                        label.Content = setProgressText(loadBarPercentage, windowMode);
-                        strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
-                        strCmdText = strCmdText.Insert(strCmdText.Length - 4, splitTime);
-                        strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
-                        strCmdText = strCmdText.Insert(7, user);
-                        Process cmd = new Process();
-                        cmd.StartInfo.FileName = "cmd.exe";
-                        cmd.StartInfo.RedirectStandardInput = true;
-                        cmd.StartInfo.RedirectStandardOutput = true;
-                        cmd.StartInfo.CreateNoWindow = true;
-                        cmd.StartInfo.UseShellExecute = false;
-                        cmd.StartInfo.WorkingDirectory = user + "/Model/";
-                        cmd.Start();
-                        cmd.StandardInput.WriteLine("activate capstone");
-                        cmd.StandardInput.Flush();
-                        cmd.StandardInput.WriteLine(strCmdText);
-                        cmd.StandardInput.Flush();
-                        cmd.StandardInput.Close();
-                        Console.WriteLine(cmd.StandardOutput.ReadToEnd());
-                        cmd.WaitForExit();
-                    }
-                    else
-                    {
-                        windowMode++;
-                        processing = false;
-                    }
-
-                }
-
-            }
-
         }
 
         private void leftButton_Click(object sender, RoutedEventArgs e)
@@ -204,14 +111,8 @@ namespace CapstoneLayoutTest
                 case 1://upload
                     QuitMenu("Are you sure you wish to cancel?");
                     break;
-                case 2://processing
-                    QuitMenu("Do you wish to close the window?\nNote processing will still continue and\nprogress can be found in the load menu.");
-                    break;
                 case 3://complete
                     LoadCurrent();
-                    break;
-                case 4://loading
-                    QuitMenu("Are you sure you wish to cancel?");
                     break;
             }
         }
@@ -220,6 +121,7 @@ namespace CapstoneLayoutTest
             MessageBoxResult result = MessageBox.Show(message, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
+                processingWorker.CancelAsync();
                 finalResult = false;
                 Close();
             }
@@ -227,17 +129,8 @@ namespace CapstoneLayoutTest
 
         private void LoadCurrent()
         {
-            windowMode = 4;
-            nameBox.Visibility = Visibility.Hidden;
-            textBox.Visibility = Visibility.Hidden;
-            leftButton.Visibility = Visibility.Hidden;
-            rightButton.Visibility = Visibility.Visible;
-            progressBar.Visibility = Visibility.Visible;
-            label.Visibility = Visibility.Visible;
-            rightButton.Content = "Cancel";
-            label.Content = "Loading 0%";
 
-            demoCodeWorker1.RunWorkerAsync();
+            //load into the main window
         }
 
         private void UploadFile()
@@ -250,11 +143,10 @@ namespace CapstoneLayoutTest
                 leftButton.Visibility = Visibility.Hidden;
                 label.Visibility = Visibility.Visible;
                 progressBar.Visibility = Visibility.Visible;
-                ProcessModel();
                 rightButton.Content = "Close";
                 label.Content = "Uploading 0%";
 
-                demoCodeWorker1.RunWorkerAsync();
+                processingWorker.RunWorkerAsync();
             }
 
             else
@@ -263,6 +155,15 @@ namespace CapstoneLayoutTest
             }
         }
 
+        private void ProcessingComplete()
+        {
+            progressBar.Visibility = Visibility.Hidden;
+            windowMode = 3;
+            leftButton.Visibility = Visibility.Visible;
+            leftButton.Content = "Close";
+            rightButton.Content = "Load";
+            label.Content = "Processing Complete";
+        }
 
         private void textBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -273,68 +174,122 @@ namespace CapstoneLayoutTest
             }
         }
 
-        private string setProgressText(int progress, int mode)
+        private void splittingWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            string result = "";
-            switch (mode)
+            Dispatcher.Invoke(() => { rightButton.IsEnabled = false; });
+            //start in backgroundworker and do callbacks to enable the buttons and move the progressbar
+            user = user.Replace("\\", "/");
+            vidPathName = vidPathName.Replace("\\", "/");
+            vidFileName = System.IO.Path.GetFileName(vidPathName);
+            string originPath = vidPathName;
+            newPath = user.Insert(user.Length, "/Model/Youtube/");
+            newPathName = newPath.Insert(newPath.Length, vidFileName);
+            vidList.Add(newPathName);
+            if (!System.IO.File.Exists(newPathName))
             {
-                case 1://upload
-                    result = "Uploading " + progress + "%";
-                    break;
-                case 2://processing
-                    result = "Processing " + progress + "%";
-                    break;
-                case 4://loading
-                    result = "Loading " + progress + "%";
-                    break;
+                File.Copy(@originPath, @newPathName);
             }
-            return result;
-        }
+            int split = 10;//TEMP change to gui prop
 
-        private void DemoCodeWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            /*while (loadBarPercentage < 100)
+            string[] splitPath = vidFileName.Split('.');
+            string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
+            + split + " " + newPath + splitPath[0] + "-%d." + splitPath[1];
+
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.RedirectStandardInput = true;
+            cmd.StartInfo.RedirectStandardOutput = true;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.Start();
+
+            cmd.StandardInput.WriteLine(process);
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();
+
+            DirectoryInfo d = new DirectoryInfo(newPath);
+            FileInfo[] Files = d.GetFiles("*");
+            List<string> countList = new List<string>();
+            foreach (FileInfo file in Files)
             {
-                loadBarPercentage++;
-                Dispatcher.Invoke(() =>
-                {
-                    progressBar.Value = loadBarPercentage;
-                    label.Content = setProgressText(loadBarPercentage, windowMode);
-
-                });
-                Thread.Sleep(10);
+                if (file.Name.Contains(splitPath[0] + "-"))
+                    countList.Add(file.Name);
             }
-            loadBarPercentage = 0;*/
+            videosToProcess += countList.Count();
+            Dispatcher.Invoke(() => { rightButton.IsEnabled = true; });
+            //change this to write to screen in callback
+            //Console.WriteLine(cmd.StandardOutput.ReadToEnd());
 
-            switch (windowMode)
-            {
-                case 1:
-                    Dispatcher.Invoke(() => rightButton.Content = "Close");
-                    DemoCodeWorker1_DoWork(sender, e);
-                    break;
-                case 2:
-                    windowMode++;
-                    Dispatcher.Invoke(() => ProcessingComplete());
-                    break;
-                case 4:
-                    Dispatcher.Invoke(() =>
-                    {
-                        finalResult = true;
-                        Close();
-                    });
-                    break;
-            }
             e.Cancel = true;
             return;
         }
 
-        private void ProcessingComplete()
+        private void processingWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            progressBar.Visibility = Visibility.Hidden;
-            leftButton.Visibility = Visibility.Visible;
-            leftButton.Content = "Close";
-            rightButton.Content = "Load";
-            label.Content = "Processing Complete";
+            for (int i = 0; i < vidList.Count; i++)
+            {
+                bool processing = true;
+                segNum = 0;
+                while (processing && !processingWorker.CancellationPending)
+                {
+                    string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
+                    if (segNum == 0)
+                    {
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
+                    }
+                    else
+                    {
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
+                    }
+                    string newSegName = vidList[i].Insert(vidList[i].Length - 4, "-" + segNum.ToString());
+                    if (System.IO.File.Exists(newSegName))
+                    {
+                        int split = 10;//TEMP change to gui prop
+
+
+                        segNum++;
+                        Dispatcher.Invoke(() =>
+                           {
+
+                               progressBar.Value = 100 * (((double)segNum - 1) / ((double)videosToProcess));
+                               label.Content = "Processing " + progressBar.Value + "%";
+                           });
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
+                        strCmdText = strCmdText.Insert(strCmdText.Length - 4, split.ToString());
+                        strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
+                        strCmdText = strCmdText.Insert(7, user);
+                        Process cmd = new Process();
+                        cmd.StartInfo.FileName = "cmd.exe";
+                        cmd.StartInfo.RedirectStandardInput = true;
+                        cmd.StartInfo.RedirectStandardOutput = true;
+                        cmd.StartInfo.CreateNoWindow = true;
+                        cmd.StartInfo.UseShellExecute = false;
+                        cmd.StartInfo.WorkingDirectory = user + "/Model/";
+                        cmd.Start();
+                        cmd.StandardInput.WriteLine("activate capstone");
+                        cmd.StandardInput.Flush();
+                        cmd.StandardInput.WriteLine(strCmdText);
+                        cmd.StandardInput.Flush();
+                        cmd.StandardInput.Close();
+                        Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                        cmd.WaitForExit();
+                    }
+                    else
+                    {
+                        processing = false;
+                    }
+
+
+                }
+
+            }
+            //TODO export the data into a zip file and clean the working directory
+            Dispatcher.Invoke(() => { ProcessingComplete(); });
+
+            e.Cancel = true;
+            return;
         }
+
     }
 }

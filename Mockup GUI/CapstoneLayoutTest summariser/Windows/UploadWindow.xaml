@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
         <TextBox x:Name="textBox" Height="23" Margin="11,37,9,0" TextWrapping="Wrap" Text="Video Link" VerticalAlignment="Top" GotFocus="textBox_GotFocus" Grid.ColumnSpan="2"/>
         <Button x:Name="leftButton" Content="Open" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="75" Click="leftButton_Click"/>
-        <Button x:Name="rightButton" Content="Upload" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="rightButton_Click" Grid.Column="1"/>
+        <Button x:Name="rightButton" Content="Upload" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="rightButton_Click" Grid.Column="1" IsEnabled="False"/>
         <ProgressBar x:Name="progressBar" Height="10" Margin="10,37,10,0" VerticalAlignment="Top" Visibility="Hidden" Grid.ColumnSpan="2"/>
         <Label x:Name="label" Content="Label" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Width="272" HorizontalContentAlignment="Center" Visibility="Hidden" Grid.ColumnSpan="2" />
         <TextBox x:Name="nameBox" Height="23" Margin="11,9,9,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" GotFocus="textBox_GotFocus" Grid.ColumnSpan="2"/>
