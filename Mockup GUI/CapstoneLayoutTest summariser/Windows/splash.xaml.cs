@@ -1,5 +1,6 @@
 ﻿using CapstoneLayoutTest.Helper_Functions;
 using Microsoft.Win32;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace CapstoneLayoutTest
         public Splash()
         {
             InitializeComponent();
-            DataManager.LoadFile("testfile.bin", listView);
+            DataManager.LoadFile("processedData.bin", listView);
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace CapstoneLayoutTest
                         if (!exists)
                         {
                             listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
-                            DataManager.SaveFile("testfile.bin", listView);
+                            DataManager.SaveFile("processedData.bin", listView);
                         }
                         loadWindow(dlg.FileName);
                         return;
@@ -105,9 +106,16 @@ namespace CapstoneLayoutTest
 
         private void ImportToProcess_Click(object sender, RoutedEventArgs e)
         {
-            upload = new UploadWindow();
-            upload.Owner = Window.GetWindow(this);
-            upload.Show();
+            try
+            {
+                upload = new UploadWindow();
+                upload.Owner = Window.GetWindow(this);
+                upload.Show();
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Model must be installed to upload data");
+            }
         }
     }
 }

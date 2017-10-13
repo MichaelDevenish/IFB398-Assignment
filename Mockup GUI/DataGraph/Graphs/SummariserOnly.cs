@@ -17,7 +17,7 @@ namespace DataGraph
         const double XMIN = 105;
         private const int TEXT_HEIGHT = 20;
         private const int YMIN_INCREMENTSIZE = 20;
-        private const int NUMBEROFYMININCREMENTS = 10;
+        private const int NUMBEROFYMININCREMENTS = 25;
         private const int SUMMARISER_TEXT_OFFSET = 5;
 
         static SummariserOnly()
@@ -76,7 +76,7 @@ namespace DataGraph
                     }
 
                 }
-                Height = (nodeNames.Count < 10) ? nodeNames.Count * YMIN_INCREMENTSIZE : NUMBEROFYMININCREMENTS * YMIN_INCREMENTSIZE;
+                Height = (nodeNames.Count < NUMBEROFYMININCREMENTS) ? nodeNames.Count * YMIN_INCREMENTSIZE : NUMBEROFYMININCREMENTS * YMIN_INCREMENTSIZE;
                 //Children.Add(GenerateGraphText(Height.ToString(), SUMMARISER_TEXT_OFFSET, 0));
                 //datamax = (Math.Ceiling(datamax / divisor) * divisor);
                 //datamax = length; //CHANGE THIS TO TRUE WHEN USING ACTUAL VIDEOS TO MAKE ACCURATE todo

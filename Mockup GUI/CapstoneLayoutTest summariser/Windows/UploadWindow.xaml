@@ -5,18 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CapstoneLayoutTest"
         mc:Ignorable="d"
-        Title="UploadWindow" Height="131" Width="300">
+        Title="UploadWindow" Height="150" Width="500" MinWidth="500" MaxWidth="500" MinHeight="150" MaxHeight="150" Closing="Window_Closing">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="42*"/>
-            <ColumnDefinition Width="31*"/>
-        </Grid.ColumnDefinitions>
-        <TextBox x:Name="textBox" Height="23" Margin="11,37,9,0" TextWrapping="Wrap" Text="Video Link" VerticalAlignment="Top" GotFocus="textBox_GotFocus" Grid.ColumnSpan="2"/>
-        <Button x:Name="leftButton" Content="Open" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="75" Click="leftButton_Click"/>
-        <Button x:Name="rightButton" Content="Upload" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="rightButton_Click" Grid.Column="1" IsEnabled="False"/>
-        <ProgressBar x:Name="progressBar" Height="10" Margin="10,37,10,0" VerticalAlignment="Top" Visibility="Hidden" Grid.ColumnSpan="2"/>
-        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Width="272" HorizontalContentAlignment="Center" Visibility="Hidden" Grid.ColumnSpan="2" />
-        <TextBox x:Name="nameBox" Height="23" Margin="11,9,9,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" GotFocus="textBox_GotFocus" Grid.ColumnSpan="2"/>
+        <Button x:Name="leftButton" Content="Open" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="leftButton_Click"/>
+        <Button x:Name="rightButton" Content="Process" HorizontalAlignment="Right" Margin="0,80,10,0" VerticalAlignment="Top" Width="75" Click="rightButton_Click" IsEnabled="False"/>
+        <ProgressBar x:Name="progressBar" Height="20" Margin="10,10,0,0" VerticalAlignment="Top" Visibility="Visible" HorizontalAlignment="Left" Width="380"/>
+
+        <Button x:Name="removeButton" Content="Remove" HorizontalAlignment="Right" Margin="0,52,10,0" VerticalAlignment="Top" Width="75"  IsEnabled="False" Click="removeButton_Click"/>
+        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="380" SelectionChanged="listBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,2">
+                        <TextBlock Text="{Binding Title}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Label x:Name="label1" Content="The video will split every" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label2" Content="Seconds" HorizontalAlignment="Left" Margin="205,77,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="splitCountBox" HorizontalAlignment="Left" Height="23" Margin="149,80,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="56"/>
+        <TextBox x:Name="textBox" Visibility="Hidden" Height="300" Margin="10,35,10,-216" TextWrapping="Wrap"  VerticalAlignment="Top" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+
 
     </Grid>
 </Window>

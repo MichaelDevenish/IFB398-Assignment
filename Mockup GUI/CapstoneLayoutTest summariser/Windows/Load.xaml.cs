@@ -16,7 +16,7 @@ namespace CapstoneLayoutTest
             InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            DataManager.LoadFile("testfile.bin", listView);
+            DataManager.LoadFile("processedData.bin", listView);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace CapstoneLayoutTest
                             }
                         }
                         listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
-                        DataManager.SaveFile("testfile.bin", listView);
+                        DataManager.SaveFile("processedData.bin", listView);
                         ((MainWindow)Owner).LoadNewData(dlg.FileName);
                         Close();
                         return;
@@ -93,7 +93,7 @@ namespace CapstoneLayoutTest
         private void RemoveItem_OnClick(object sender, RoutedEventArgs e)
         {
             listView.Items.Remove(listView.SelectedItem);  // remove the selected Item 
-            DataManager.SaveFile("testfile.bin", listView); //save the data
+            DataManager.SaveFile("processedData.bin", listView); //save the data
         }
 
 

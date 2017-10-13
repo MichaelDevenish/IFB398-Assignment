@@ -381,9 +381,16 @@ namespace CapstoneLayoutTest
         }
         private void Upload_Click(object sender, RoutedEventArgs e)
         {
-            UploadWindow upload = new UploadWindow();
-            upload.Owner = Window.GetWindow(this);
-            upload.Show();
+            try
+            {
+                UploadWindow upload = new UploadWindow();
+                upload.Owner = Window.GetWindow(this);
+                upload.Show();
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Model must be installed to upload data");
+            }
         }
 
         private void Load_Click(object sender, RoutedEventArgs e)

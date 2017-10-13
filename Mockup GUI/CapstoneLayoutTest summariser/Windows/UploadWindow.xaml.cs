@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WMPLib;
+using System.Collections.ObjectModel;
 
 namespace CapstoneLayoutTest
 {
@@ -29,8 +30,10 @@ namespace CapstoneLayoutTest
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
         private string vidFileName, vidPathName, newPath, newPathName;
-        private List<string> vidList = new List<string>();
+        public ObservableCollection<VideoItem> VidList { get { return vidList; } }
+        private ObservableCollection<VideoItem> vidList = new ObservableCollection<VideoItem>();
         private int segNum;
+        int split = 0;
         private int videosToProcess = 0;
         private BackgroundWorker processingWorker;
         private BackgroundWorker splittingWorker;
@@ -38,14 +41,23 @@ namespace CapstoneLayoutTest
 
         public UploadWindow()
         {
-            InitializeComponent();
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            processingWorker = new BackgroundWorker();
-            processingWorker.DoWork += processingWorker_DoWork;
-            processingWorker.WorkerSupportsCancellation = true;
-            splittingWorker = new BackgroundWorker();
-            splittingWorker.DoWork += splittingWorker_DoWork;
-            progressBar.Maximum = 100;
+            string file = user.Insert(user.Length, "\\Model\\");
+            if (Directory.Exists(file))
+            {
+                InitializeComponent();
+                listBox.ItemsSource = VidList;
+                WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                processingWorker = new BackgroundWorker();
+                processingWorker.DoWork += processingWorker_DoWork;
+                processingWorker.WorkerSupportsCancellation = true;
+                splittingWorker = new BackgroundWorker();
+                splittingWorker.DoWork += splittingWorker_DoWork;
+                progressBar.Maximum = 100;
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
         }
 
         /// <summary>
@@ -75,6 +87,7 @@ namespace CapstoneLayoutTest
 
         private void SelectFile()
         {
+
             Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog();
             open.DefaultExt = ".mp4";
             open.Filter = "mpeg Files (*.mpeg)|*.mp4";
@@ -82,8 +95,25 @@ namespace CapstoneLayoutTest
             if ((bool)open.ShowDialog())
             {
                 vidPathName = open.FileName;
-                splittingWorker.RunWorkerAsync();
-                textBox.Text = open.FileName;
+                if (vidList.Any(e => e.OldDir == vidPathName))
+                {
+                    MessageBox.Show("Video is already selected");
+                }
+                else
+                {
+                    bool result = Int32.TryParse(splitCountBox.Text, out split);
+                    if (result)
+                    {
+                        splitCountBox.IsEnabled = false;
+                        splittingWorker.RunWorkerAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("invalid split format");
+                    }
+
+
+                }
             }
         }
 
@@ -94,9 +124,29 @@ namespace CapstoneLayoutTest
                 case 0://link
                     SelectFile();
                     break;
+                case 1:
+                    if (leftButton.Content == "More")
+                    {
+                        MinHeight = 390;
+                        Height = 390;
+                        MaxHeight = 390;
+                        textBox.Visibility = Visibility.Visible;
+                        leftButton.Content = "Less";
+                    }
+                    else
+                    {
+                        MinHeight = 80;
+                        Height = 80;
+                        MaxHeight = 80;
+                        textBox.Visibility = Visibility.Hidden;
+                        leftButton.Content = "More";
+                    }
+                    //show more
+                    break;
                 case 3://complete
                     finalResult = false;
                     Close();
+
                     break;
             }
         }
@@ -111,9 +161,7 @@ namespace CapstoneLayoutTest
                 case 1://upload
                     QuitMenu("Are you sure you wish to cancel?");
                     break;
-                case 3://complete
-                    LoadCurrent();
-                    break;
+
             }
         }
         private void QuitMenu(string message)
@@ -131,38 +179,88 @@ namespace CapstoneLayoutTest
         {
 
             //load into the main window
+            //call loadResult to do so
         }
 
         private void UploadFile()
         {
-            if (System.IO.Path.GetExtension(textBox.Text) == ".mp4")
-            {
-                windowMode = 1;
-                nameBox.Visibility = Visibility.Hidden;
-                textBox.Visibility = Visibility.Hidden;
-                leftButton.Visibility = Visibility.Hidden;
-                label.Visibility = Visibility.Visible;
-                progressBar.Visibility = Visibility.Visible;
-                rightButton.Content = "Close";
-                label.Content = "Uploading 0%";
 
-                processingWorker.RunWorkerAsync();
-            }
+            windowMode = 1;
+            leftButton.Content = "More";
+            MinHeight = 80;
+            Height = 80;
+            MaxHeight = 80;
+            removeButton.Visibility = Visibility.Hidden;
+            listBox.Visibility = Visibility.Hidden;
+            rightButton.Visibility = Visibility.Hidden;
+            label1.Visibility = Visibility.Hidden;
+            label2.Visibility = Visibility.Hidden;
+            splitCountBox.Visibility = Visibility.Hidden;
 
-            else
-            {
-                MessageBox.Show("Invalid File Type", "Error");
-            }
+            rightButton.Content = "Close";
+
+            processingWorker.RunWorkerAsync();
+
         }
 
         private void ProcessingComplete()
         {
-            progressBar.Visibility = Visibility.Hidden;
             windowMode = 3;
-            leftButton.Visibility = Visibility.Visible;
+            MinHeight = 125;
+            Height = 125;
+            MaxHeight = 125;
+
+            textBox.Visibility = Visibility.Hidden;
+            listBox.Visibility = Visibility.Visible;
+            removeButton.Visibility = Visibility.Visible;
             leftButton.Content = "Close";
-            rightButton.Content = "Load";
-            label.Content = "Processing Complete";
+            removeButton.Content = "Show";
+        }
+
+        private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (listBox.SelectedItem != null)
+            {
+
+                removeButton.IsEnabled = true;
+            }
+            else
+            {
+                removeButton.IsEnabled = false;
+            }
+        }
+
+        private void removeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (windowMode != 3)
+            {
+                DirectoryInfo d = new DirectoryInfo(newPath);
+                FileInfo[] Files = d.GetFiles("*");
+                List<string> countList = new List<string>();
+                string[] splitPath = ((VideoItem)listBox.SelectedItem).Title.Split('.');
+                foreach (FileInfo file in Files)
+                {
+                    if (file.Name.Contains(splitPath[0] + "-"))
+                        countList.Add(file.Name);
+                }
+                videosToProcess -= countList.Count();
+
+                vidList.Remove((VideoItem)listBox.SelectedItem);
+                if (vidList.Count == 0)
+                {
+                    splitCountBox.IsEnabled = true;
+                    rightButton.IsEnabled = false;
+                }
+            }
+            else
+            {
+                LoadCurrent();
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            processingWorker.CancelAsync();
         }
 
         private void textBox_GotFocus(object sender, RoutedEventArgs e)
@@ -177,19 +275,20 @@ namespace CapstoneLayoutTest
         private void splittingWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             Dispatcher.Invoke(() => { rightButton.IsEnabled = false; });
-            //start in backgroundworker and do callbacks to enable the buttons and move the progressbar
+
             user = user.Replace("\\", "/");
-            vidPathName = vidPathName.Replace("\\", "/");
-            vidFileName = System.IO.Path.GetFileName(vidPathName);
-            string originPath = vidPathName;
+
+            string path = vidPathName.Replace("\\", "/");
+            vidFileName = System.IO.Path.GetFileName(path);
+            string originPath = path;
             newPath = user.Insert(user.Length, "/Model/Youtube/");
             newPathName = newPath.Insert(newPath.Length, vidFileName);
-            vidList.Add(newPathName);
+            Dispatcher.Invoke(() => { vidList.Add(new VideoItem() { Title = vidFileName, OldDir = vidPathName, NewDir = newPathName }); });
             if (!System.IO.File.Exists(newPathName))
             {
                 File.Copy(@originPath, @newPathName);
             }
-            int split = 10;//TEMP change to gui prop
+
 
             string[] splitPath = vidFileName.Split('.');
             string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
@@ -217,9 +316,13 @@ namespace CapstoneLayoutTest
                     countList.Add(file.Name);
             }
             videosToProcess += countList.Count();
-            Dispatcher.Invoke(() => { rightButton.IsEnabled = true; });
-            //change this to write to screen in callback
-            //Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+            Dispatcher.Invoke(() =>
+            {
+                rightButton.IsEnabled = true;
+                textBox.Text += cmd.StandardOutput.ReadToEnd();
+                textBox.ScrollToEnd();
+            });
+
 
             e.Cancel = true;
             return;
@@ -242,19 +345,11 @@ namespace CapstoneLayoutTest
                     {
                         strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
                     }
-                    string newSegName = vidList[i].Insert(vidList[i].Length - 4, "-" + segNum.ToString());
+                    string newSegName = vidList[i].NewDir.Insert(vidList[i].NewDir.Length - 4, "-" + segNum.ToString());
                     if (System.IO.File.Exists(newSegName))
                     {
-                        int split = 10;//TEMP change to gui prop
-
-
                         segNum++;
-                        Dispatcher.Invoke(() =>
-                           {
-
-                               progressBar.Value = 100 * (((double)segNum - 1) / ((double)videosToProcess));
-                               label.Content = "Processing " + progressBar.Value + "%";
-                           });
+                        Dispatcher.Invoke(() => { progressBar.Value = 100 * (((double)segNum - 1) / ((double)videosToProcess)); });
                         strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
                         strCmdText = strCmdText.Insert(strCmdText.Length - 4, split.ToString());
                         strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
@@ -272,19 +367,24 @@ namespace CapstoneLayoutTest
                         cmd.StandardInput.WriteLine(strCmdText);
                         cmd.StandardInput.Flush();
                         cmd.StandardInput.Close();
-                        Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+                        string output = cmd.StandardOutput.ReadToEnd();
+                        Console.WriteLine(output);
                         cmd.WaitForExit();
+                        Dispatcher.Invoke(() =>
+                        {
+                            textBox.Text += output;
+                            textBox.ScrollToEnd();
+                        });
                     }
                     else
                     {
                         processing = false;
                     }
-
-
                 }
-
             }
-            //TODO export the data into a zip file and clean the working directory
+            //TODO export the data into zip files and clean the working directory
+            //add the zip files to the processedData.bin file (basically load the current processedData and add it to it, if there isnt one initialise one)
+
             Dispatcher.Invoke(() => { ProcessingComplete(); });
 
             e.Cancel = true;
@@ -292,4 +392,11 @@ namespace CapstoneLayoutTest
         }
 
     }
+}
+public class VideoItem
+{
+    public string Title { get; set; }
+    public string OldDir { get; set; }
+    public string NewDir { get; set; }
+
 }
