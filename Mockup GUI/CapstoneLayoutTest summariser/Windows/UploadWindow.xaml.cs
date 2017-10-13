@@ -107,7 +107,7 @@ namespace CapstoneLayoutTest
             for (int i = 0; i < split_count; i++)
             {
                 int split_start = split * i;
-                string currentPath = newPath + splitPath[0] + "_" + i + "." + splitPath[1];
+                string currentPath = newPath + splitPath[0] + "-" + i + "." + splitPath[1];
                 string process = "ffmpeg -i " + newPathName + " -vcodec copy -ss " + split_start + " -t " + split + " " + currentPath;
 
                 Process cmd = new Process();
@@ -153,6 +153,7 @@ namespace CapstoneLayoutTest
                     if (System.IO.File.Exists(newSegName))
                     {
 
+                        segNum++;
                         progressBar.Value = 100 * ((segNum - 1) / segNum);
                         label.Content = setProgressText(loadBarPercentage, windowMode);
                         strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
