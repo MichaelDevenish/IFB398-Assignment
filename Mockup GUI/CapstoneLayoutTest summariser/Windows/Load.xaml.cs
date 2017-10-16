@@ -1,5 +1,7 @@
 ﻿using CapstoneLayoutTest.Helper_Functions;
 using Microsoft.Win32;
+using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows;
@@ -92,6 +94,13 @@ namespace CapstoneLayoutTest
 
         private void RemoveItem_OnClick(object sender, RoutedEventArgs e)
         {
+            string link = ((VideoData)listView.SelectedItem).URL;
+            string dir = System.IO.Directory.GetParent(link).FullName;
+            string cdir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).ToString() + "\\Model\\processed";
+            if (dir == cdir)
+            {
+                File.Delete(link);
+            }
             listView.Items.Remove(listView.SelectedItem);  // remove the selected Item 
             DataManager.SaveFile("processedData.bin", listView); //save the data
         }

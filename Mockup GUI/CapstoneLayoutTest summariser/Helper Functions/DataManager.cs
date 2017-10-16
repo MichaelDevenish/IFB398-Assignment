@@ -5,11 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace CapstoneLayoutTest.Helper_Functions
 {
     class DataManager
     {
+        public static ListView CreateListView()
+        {
+            ListView lview = new ListView();
+            GridView gview = new GridView();
+            GridViewColumn gvc1 = new GridViewColumn();
+            gvc1.DisplayMemberBinding = new Binding("Name");
+            gvc1.Header = "Name";
+            gvc1.Width = 350;
+            gview.Columns.Add(gvc1);
+            lview.View = gview;
+            return lview;
+        }
+
         public static void SaveFile(string filePath, ListView saveFrom)
         {
             VideoData[] items = new VideoData[saveFrom.Items.Count];

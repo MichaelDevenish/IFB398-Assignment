@@ -18,6 +18,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WMPLib;
 using System.Collections.ObjectModel;
+using System.IO.Compression;
+using CapstoneLayoutTest.Helper_Functions;
 
 namespace CapstoneLayoutTest
 {
@@ -29,7 +31,7 @@ namespace CapstoneLayoutTest
         private bool finalResult = false;
         public bool Result { get { return finalResult; } }
         private int windowMode = 0;
-        private string vidFileName, vidPathName, newPath, newPathName;
+        private string vidFileName, vidPathName, processingLocation, newPathName, saveLocation;
         public ObservableCollection<VideoItem> VidList { get { return vidList; } }
         private ObservableCollection<VideoItem> vidList = new ObservableCollection<VideoItem>();
         private int segNum;
@@ -53,6 +55,8 @@ namespace CapstoneLayoutTest
                 splittingWorker = new BackgroundWorker();
                 splittingWorker.DoWork += splittingWorker_DoWork;
                 progressBar.Maximum = 100;
+                saveLocation = user.Insert(user.Length, "/Model/processed/");
+                processingLocation = user.Insert(user.Length, "/Model/Youtube/");
             }
             else
             {
@@ -103,6 +107,10 @@ namespace CapstoneLayoutTest
                 else if (vidList.Any(e => e.Title == System.IO.Path.GetFileName(vidPathName)))
                 {
                     MessageBox.Show("Cant have two files with the same name");
+                }
+                else if (File.Exists(saveLocation + p.Split('.')[0] + ".zip"))
+                {
+                    MessageBox.Show("A video by that name has already been processed");
                 }
                 else
                 {
@@ -239,7 +247,7 @@ namespace CapstoneLayoutTest
         {
             if (windowMode != 3)
             {
-                DirectoryInfo d = new DirectoryInfo(newPath);
+                DirectoryInfo d = new DirectoryInfo(processingLocation);
                 FileInfo[] Files = d.GetFiles("*");
                 List<string> countList = new List<string>();
                 string[] splitPath = ((VideoItem)listBox.SelectedItem).Title.Split('.');
@@ -286,8 +294,7 @@ namespace CapstoneLayoutTest
             string path = vidPathName.Replace("\\", "/");
             vidFileName = System.IO.Path.GetFileName(path);
             string originPath = path;
-            newPath = user.Insert(user.Length, "/Model/Youtube/");
-            newPathName = newPath.Insert(newPath.Length, vidFileName);
+            newPathName = processingLocation.Insert(processingLocation.Length, vidFileName);
             Dispatcher.Invoke(() => { vidList.Add(new VideoItem() { Title = vidFileName, OldDir = vidPathName, NewDir = newPathName }); });
             if (!System.IO.File.Exists(newPathName))
             {
@@ -297,7 +304,7 @@ namespace CapstoneLayoutTest
 
             string[] splitPath = vidFileName.Split('.');
             string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
-            + split + " " + newPath + splitPath[0] + "-%d." + splitPath[1];
+            + split + " " + processingLocation + splitPath[0] + "-%d." + splitPath[1];
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -312,7 +319,7 @@ namespace CapstoneLayoutTest
             cmd.StandardInput.Close();
             cmd.WaitForExit();
 
-            DirectoryInfo d = new DirectoryInfo(newPath);
+            DirectoryInfo d = new DirectoryInfo(processingLocation);
             FileInfo[] Files = d.GetFiles("*");
             List<string> countList = new List<string>();
             foreach (FileInfo file in Files)
@@ -333,8 +340,16 @@ namespace CapstoneLayoutTest
             return;
         }
 
+
         private void processingWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
+            ListView list = null;
+            Dispatcher.Invoke(() =>
+            {
+                list = DataManager.CreateListView();
+                DataManager.LoadFile("processedData.bin", list);
+            });
+
             for (int i = 0; i < vidList.Count; i++)
             {
                 bool processing = true;
@@ -386,11 +401,23 @@ namespace CapstoneLayoutTest
                         processing = false;
                     }
                 }
+                string name = vidList[i].Title.Split('.')[0];
+                using (ZipArchive zip = ZipFile.Open(saveLocation + name + ".zip", ZipArchiveMode.Create))
+                {
+                    zip.CreateEntryFromFile(processingLocation + name + ".mp4", "video.mp4");
+                    zip.CreateEntryFromFile(processingLocation + name + ".csv", "output.csv");
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    list.Items.Add(new VideoData { Name = name, URL = saveLocation + name + ".zip" });
+                });
             }
-            //TODO export the data into zip files and clean the working directory
-            //add the zip files to the processedData.bin file (basically load the current processedData and add it to it, if there isnt one initialise one)
-
-            Dispatcher.Invoke(() => { ProcessingComplete(); });
+            Array.ForEach(Directory.GetFiles(processingLocation), File.Delete);
+            Dispatcher.Invoke(() =>
+            {
+                DataManager.SaveFile("processedData.bin", list);
+                ProcessingComplete();
+            });
 
             e.Cancel = true;
             return;

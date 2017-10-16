@@ -18,19 +18,6 @@ namespace CapstoneUnitTests
     {
         const string testFilesLocation = "../../TestFiles/";
         #region Helpers
-        private static ListView CreateTestListView()
-        {
-            ListView lview = new ListView();
-            GridView gview = new GridView();
-            GridViewColumn gvc1 = new GridViewColumn();
-            gvc1.DisplayMemberBinding = new Binding("Name");
-            gvc1.Header = "Name";
-            gvc1.Width = 350;
-            gview.Columns.Add(gvc1);
-            lview.View = gview;
-            return lview;
-        }
-
         public static Task StartSTATask(Action action)
         {
             var tcs = new TaskCompletionSource<object>();
@@ -225,7 +212,7 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = "testurl1" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = "testurl2" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = "testurl3" });
@@ -239,7 +226,7 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = "testurl1" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = "testurl2" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = "testurl3" });
@@ -253,7 +240,7 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = "testurl1" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = "testurl2" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = "testurl3" });
@@ -267,7 +254,7 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = "testurl1" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = "testurl2" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = "testurl3" });
@@ -282,14 +269,14 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = testFilesLocation + "cloned.csv" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = testFilesLocation + "sameTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "outoforder.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test5", URL = testFilesLocation + "colourTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = CreateTestListView();
+                ListView lviewLoad = DataManager.CreateListView();
                 DataManager.LoadFile("test1.txt", lviewLoad);
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count, lviewLoad.Items.Count);
@@ -300,7 +287,7 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = testFilesLocation + "cloned.csv" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = testFilesLocation + "sameTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "outoforder.csv" });
@@ -309,7 +296,7 @@ namespace CapstoneUnitTests
                 DataManager.SaveFile("test1.txt", lview);
                 lview.Items.RemoveAt(3);
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = CreateTestListView();
+                ListView lviewLoad = DataManager.CreateListView();
                 DataManager.LoadFile("test1.txt", lviewLoad);
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count, lviewLoad.Items.Count);
@@ -320,13 +307,13 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = testFilesLocation + "cloned.csv" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = testFilesLocation + "sameTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "dosentExist.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = CreateTestListView();
+                ListView lviewLoad = DataManager.CreateListView();
                 DataManager.LoadFile("test1.txt", lviewLoad);
                 File.Delete("test1.txt");
                 Assert.Equal((lviewLoad.Items.GetItemAt(2) as VideoData).Name, "test4");
@@ -337,13 +324,13 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = testFilesLocation + "cloned.csv" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = testFilesLocation + "sameTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "dosentExist.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = CreateTestListView();
+                ListView lviewLoad = DataManager.CreateListView();
                 DataManager.LoadFile("test1.txt", lviewLoad);
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count - 1, lviewLoad.Items.Count);
@@ -354,13 +341,13 @@ namespace CapstoneUnitTests
         {
             await StartSTATask(() =>
             {
-                ListView lview = CreateTestListView();
+                ListView lview = DataManager.CreateListView();
                 lview.Items.Add(new VideoData { Name = "test1", URL = testFilesLocation + "cloned.csv" });
                 lview.Items.Add(new VideoData { Name = "test2", URL = testFilesLocation + "sameTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "EmptyTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "dosentExist.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = CreateTestListView();
+                ListView lviewLoad = DataManager.CreateListView();
                 DataManager.LoadFile("test1.txt", lviewLoad);
                 File.Delete("test1.txt");
                 var exception = Record.Exception(() => lviewLoad.Items.GetItemAt(3));
