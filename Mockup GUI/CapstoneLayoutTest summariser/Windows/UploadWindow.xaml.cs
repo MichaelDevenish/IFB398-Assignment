@@ -190,9 +190,9 @@ namespace CapstoneLayoutTest
 
         private void LoadCurrent()
         {
-
-            //load into the main window
-            //call loadResult to do so
+            VideoItem video = ((VideoItem)listBox.SelectedItem);
+            string name = video.Title.Split('.')[0];
+            LoadResult(saveLocation + name + ".zip");
         }
 
         private void UploadFile()
