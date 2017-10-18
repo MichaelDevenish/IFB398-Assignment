@@ -20,6 +20,7 @@ using WMPLib;
 using System.Collections.ObjectModel;
 using System.IO.Compression;
 using CapstoneLayoutTest.Helper_Functions;
+using System.Text.RegularExpressions;
 
 namespace CapstoneLayoutTest
 {
@@ -56,7 +57,7 @@ namespace CapstoneLayoutTest
                 splittingWorker.DoWork += splittingWorker_DoWork;
                 progressBar.Maximum = 100;
                 saveLocation = user.Insert(user.Length, "/Model/processed/");
-                processingLocation = user.Insert(user.Length, "/Model/Youtube/");
+                processingLocation = user.Insert(user.Length, "/Model/processing/");
             }
             else
             {
@@ -94,7 +95,7 @@ namespace CapstoneLayoutTest
 
             Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog();
             open.DefaultExt = ".mp4";
-            open.Filter = "mpeg Files (*.mpeg)|*.mp4";
+            open.Filter = "video files (*.mov,*.mp4)|*.mov;*.mp4";
 
             if ((bool)open.ShowDialog())
             {
@@ -294,17 +295,38 @@ namespace CapstoneLayoutTest
             string path = vidPathName.Replace("\\", "/");
             vidFileName = System.IO.Path.GetFileName(path);
             string originPath = path;
-            newPathName = processingLocation.Insert(processingLocation.Length, vidFileName);
+            if (!Directory.Exists(processingLocation)) Directory.CreateDirectory(processingLocation);
+            newPathName = processingLocation.Insert(processingLocation.Length, vidFileName.Split('.')[0] + ".mp4");
             Dispatcher.Invoke(() => { vidList.Add(new VideoItem() { Title = vidFileName, OldDir = vidPathName, NewDir = newPathName }); });
+            string[] splitPath = vidFileName.Split('.');
             if (!System.IO.File.Exists(newPathName))
             {
-                File.Copy(@originPath, @newPathName);
+                if (splitPath[1] == "mp4")
+                    File.Copy(@originPath, @newPathName);
+                else
+                {
+                    Process movcmd = new Process();
+                    movcmd.StartInfo.FileName = "cmd.exe";
+                    movcmd.StartInfo.RedirectStandardInput = true;
+                    movcmd.StartInfo.RedirectStandardOutput = true;
+                    movcmd.StartInfo.CreateNoWindow = true;
+                    movcmd.StartInfo.UseShellExecute = false;
+                    movcmd.Start();
+
+                    string movProcess = "ffmpeg -i \"" + originPath
+                        + "\" -vcodec h264 -acodec aac -strict -2 \"" + newPathName + "\"";
+                    Console.WriteLine(movProcess);
+                    movcmd.StandardInput.WriteLine(movProcess);
+                    movcmd.StandardInput.Flush();
+                    movcmd.StandardInput.Close();
+                    movcmd.WaitForExit();
+                }
             }
 
 
-            string[] splitPath = vidFileName.Split('.');
-            string process = "ffmpeg -i " + newPathName + " -c copy -f segment -segment_time "
-            + split + " " + processingLocation + splitPath[0] + "-%d." + splitPath[1];
+
+            string process = "ffmpeg -i \"" + newPathName + "\" -c copy -f segment -segment_time "
+            + split + " \"" + processingLocation + splitPath[0] + "-%d.mp4\"";
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -372,7 +394,7 @@ namespace CapstoneLayoutTest
                         Dispatcher.Invoke(() => { progressBar.Value = 100 * (((double)segNum - 1) / ((double)videosToProcess)); });
                         strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
                         strCmdText = strCmdText.Insert(strCmdText.Length - 4, split.ToString());
-                        strCmdText = strCmdText.Insert(strCmdText.Length, newSegName);
+                        strCmdText = strCmdText.Insert(strCmdText.Length, "\"" + newSegName + "\"");
                         strCmdText = strCmdText.Insert(7, user);
                         Process cmd = new Process();
                         cmd.StartInfo.FileName = "cmd.exe";
@@ -402,6 +424,7 @@ namespace CapstoneLayoutTest
                     }
                 }
                 string name = vidList[i].Title.Split('.')[0];
+                if (!Directory.Exists(saveLocation)) Directory.CreateDirectory(saveLocation);
                 using (ZipArchive zip = ZipFile.Open(saveLocation + name + ".zip", ZipArchiveMode.Create))
                 {
                     zip.CreateEntryFromFile(processingLocation + name + ".mp4", "video.mp4");

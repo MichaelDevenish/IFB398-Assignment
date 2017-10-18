@@ -91,7 +91,6 @@ namespace CapstoneLayoutTest
 
                 }
             }
-            loadWindow("..\\..\\test.zip");
         }
 
         private void ImportPreprocessed_Click(object sender, RoutedEventArgs e)
