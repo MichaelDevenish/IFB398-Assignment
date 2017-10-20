@@ -9,7 +9,7 @@
     <Grid>
         <Button x:Name="leftButton" Content="Open" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Click="leftButton_Click"/>
         <Button x:Name="rightButton" Content="Process" HorizontalAlignment="Right" Margin="0,80,10,0" VerticalAlignment="Top" Width="75" Click="rightButton_Click" IsEnabled="False"/>
-        <ProgressBar x:Name="progressBar" Height="20" Margin="10,10,0,0" VerticalAlignment="Top" Visibility="Visible" HorizontalAlignment="Left" Width="380"/>
+        <ProgressBar x:Name="progressBar" Height="20" Maximum="100" Margin="10,10,0,0" VerticalAlignment="Top" Visibility="Visible" HorizontalAlignment="Left" Width="380"/>
 
         <Button x:Name="removeButton" Content="Remove" HorizontalAlignment="Right" Margin="0,52,10,0" VerticalAlignment="Top" Width="75"  IsEnabled="False" Click="removeButton_Click"/>
         <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="380" SelectionChanged="listBox_SelectionChanged">
