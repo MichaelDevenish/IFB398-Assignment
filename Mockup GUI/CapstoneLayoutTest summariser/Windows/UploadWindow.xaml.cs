@@ -1,26 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using WMPLib;
 using System.Collections.ObjectModel;
-using System.IO.Compression;
 using CapstoneLayoutTest.Helper_Functions;
-using System.Text.RegularExpressions;
 
 namespace CapstoneLayoutTest
 {
@@ -62,13 +47,19 @@ namespace CapstoneLayoutTest
                 throw new FileNotFoundException();
             }
         }
-
+        #region setup functions
+        /// <summary>
+        /// sets up the loading and saving locations
+        /// </summary>
         private void SetDataLocations()
         {
             saveLocation = user.Insert(user.Length, SAVELOCATION);
             processingLocation = user.Insert(user.Length, PROCESSINGLOCATION);
         }
 
+        /// <summary>
+        /// Creates all of the background workers
+        /// </summary>
         private void CreateWorkers()
         {
             processingWorker = new BackgroundWorker();
@@ -77,6 +68,7 @@ namespace CapstoneLayoutTest
             splittingWorker = new BackgroundWorker();
             splittingWorker.DoWork += splittingWorker_DoWork;
         }
+        #endregion
 
         /// <summary>
         /// Call this function to load the data into the main window
@@ -98,14 +90,13 @@ namespace CapstoneLayoutTest
                 }
             }
             else MessageBox.Show("Parent window has been closed, aborting load.");
-
-
         }
 
-
+        /// <summary>
+        /// Opens a file dialog to select a video and starts a background worker to 
+        /// </summary>
         private void SelectFile()
         {
-
             Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog();
             open.DefaultExt = ".mp4";
             open.Filter = "video files (*.mov,*.mp4)|*.mov;*.mp4";
@@ -119,7 +110,7 @@ namespace CapstoneLayoutTest
                     MessageBox.Show("Video is already selected");
                 else if (vidList.Any(e => e.Title == System.IO.Path.GetFileName(vidPathName)))
                     MessageBox.Show("Cant have two files with the same name");
-                else if (File.Exists(saveLocation + p.Split('.')[0] + ".zip"))
+                else if (File.Exists(saveLocation + System.IO.Path.GetFileNameWithoutExtension(p) + ".zip"))
                     MessageBox.Show("A video by that name has already been processed");
                 else
                 {
@@ -134,25 +125,18 @@ namespace CapstoneLayoutTest
             }
         }
 
-
-        private void QuitMenu(string message)
-        {
-            MessageBoxResult result = MessageBox.Show(message, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                processingWorker.CancelAsync();
-                finalResult = false;
-                Close();
-            }
-        }
-
+        /// <summary>
+        /// calls LoadResult on the selected video in the listBox
+        /// </summary>
         private void LoadCurrent()
         {
             VideoItem video = ((VideoItem)listBox.SelectedItem);
-            string name = video.Title.Split('.')[0];
-            LoadResult(saveLocation + name + ".zip");
+            LoadResult(saveLocation + System.IO.Path.GetFileNameWithoutExtension(video.Title) + ".zip");
         }
 
+        /// <summary>
+        /// Starts processing the imported videos 
+        /// </summary>
         private void UploadFile()
         {
             windowMode = 1;
@@ -161,7 +145,8 @@ namespace CapstoneLayoutTest
         }
         private void ProcessAllVideos()
         {
-            ListView list = LoadSAvedData();
+            ListView list = null;
+            Dispatcher.Invoke(() => list = DataManager.FirstLoad("processedData.bin"));
             for (int i = 0; i < vidList.Count; i++) ProcessVideo(list, i);
             Array.ForEach(Directory.GetFiles(processingLocation), File.Delete);
             Dispatcher.Invoke(() =>
@@ -191,7 +176,9 @@ namespace CapstoneLayoutTest
                 }
                 else processing = false;
             }
-            CompressAndSaveResults(list, vidList[i].Title.Split('.')[0]);
+            Dispatcher.Invoke(() => FileManager.CompressAndSaveResults(list,
+                System.IO.Path.GetFileNameWithoutExtension(vidList[i].Title),
+                saveLocation, processingLocation));
         }
 
         private void ComputeSingleSegment(int segNum, string strCmdText, string newSegName)
@@ -201,7 +188,7 @@ namespace CapstoneLayoutTest
             strCmdText = strCmdText.Insert(strCmdText.Length, "\"" + newSegName + "\"");
             strCmdText = strCmdText.Insert(7, user);
 
-            Process cmd = setupBasicCMDShell();
+            Shell cmd = new Shell();
             cmd.StartInfo.WorkingDirectory = user + "/Model/";
             cmd.Start();
             cmd.StandardInput.WriteLine("activate capstone");
@@ -219,56 +206,6 @@ namespace CapstoneLayoutTest
             });
         }
 
-        private static void CMDWriteLastItem(string strCmdText, Process cmd)
-        {
-            cmd.StandardInput.WriteLine(strCmdText);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-        }
-
-        private static Process setupBasicCMDShell()
-        {
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            return cmd;
-        }
-
-        /// <summary>
-        /// loads in the processedData list
-        /// </summary>
-        /// <returns> the processedData list</returns>
-        private ListView LoadSAvedData()
-        {
-            ListView list = null;
-            Dispatcher.Invoke(() =>
-            {
-                list = DataManager.CreateListView();
-                DataManager.LoadFile("processedData.bin", list);
-            });
-            return list;
-        }
-
-        /// <summary>
-        /// compresses the files that matches the name and adds them to the save list
-        /// </summary>
-        /// <param name="list">the save list</param>
-        /// <param name="name">the name of the file to save</param>
-        private void CompressAndSaveResults(ListView list, string name)
-        {
-            if (!Directory.Exists(saveLocation)) Directory.CreateDirectory(saveLocation);
-            using (ZipArchive zip = ZipFile.Open(saveLocation + name + ".zip", ZipArchiveMode.Create))
-            {
-                zip.CreateEntryFromFile(processingLocation + name + ".mp4", "video.mp4");
-                zip.CreateEntryFromFile(processingLocation + name + ".csv", "output.csv");
-            }
-            Dispatcher.Invoke(() => list.Items.Add(new VideoData { Name = name, URL = saveLocation + name + ".zip" }));
-        }
-
         private void Splitter()
         {
             Dispatcher.Invoke(() => rightButton.IsEnabled = false);
@@ -276,28 +213,28 @@ namespace CapstoneLayoutTest
             string path = vidPathName.Replace("\\", "/");
 
             string vidFileName = System.IO.Path.GetFileName(path);
-            string[] splitPath = vidFileName.Split('.');
+            string[] splitPath = { System.IO.Path.GetFileNameWithoutExtension(vidFileName), System.IO.Path.GetExtension(vidFileName) };
             string newPathName = processingLocation.Insert(processingLocation.Length, splitPath[0] + ".mp4");
 
             if (!Directory.Exists(processingLocation)) Directory.CreateDirectory(processingLocation);
             Dispatcher.Invoke(() => vidList.Add(new VideoItem() { Title = vidFileName, OldDir = vidPathName, NewDir = newPathName }));
 
             if (!System.IO.File.Exists(newPathName))
-                CopyVideo(path, newPathName, splitPath[1]);
+                FileManager.CopyVideo(path, newPathName, splitPath[1]);
 
             SplitVideo(newPathName, splitPath[0]);
             Dispatcher.Invoke(() => rightButton.IsEnabled = true);
 
-            videosToProcess += GetNumberofSubfiles(vidFileName);
+            videosToProcess += FileManager.GetNumberofSubfiles(vidFileName, processingLocation);
         }
 
         private void SplitVideo(string newPathName, string name)
         {
             string process = "ffmpeg -i \"" + newPathName + "\" -c copy -f segment -segment_time "
                         + split + " \"" + processingLocation + name + "-%d.mp4\"";
-            Process cmd = setupBasicCMDShell();
+            Shell cmd = new Shell();
             cmd.Start();
-            CMDWriteLastItem(process, cmd);
+            cmd.WriteLastItem(process);
             string output = cmd.StandardOutput.ReadToEnd();
             Console.WriteLine(output);
             Dispatcher.Invoke(() =>
@@ -305,36 +242,6 @@ namespace CapstoneLayoutTest
                 textBox.Text += output;
                 textBox.ScrollToEnd();
             });
-        }
-
-        private static void CopyVideo(string originPath, string newPathName, string filetype)
-        {
-            if (filetype == "mp4") File.Copy(@originPath, @newPathName);
-            else
-            {
-                string movProcess = "ffmpeg -i \"" + originPath
-                    + "\" -vcodec h264 -acodec aac -strict -2 \"" + newPathName + "\"";
-
-                Process movcmd = setupBasicCMDShell();
-                movcmd.Start();
-                CMDWriteLastItem(movProcess, movcmd);
-            }
-        }
-        /// <summary>
-        /// Pass the name of a file, e.g test.mp4, and it will get the count of files that
-        /// have been created by the splitting code for that file
-        /// </summary>
-        /// <param name="name">the name of the file to test</param>
-        /// <returns>the count of subfiles</returns>
-        private int GetNumberofSubfiles(string name)
-        {
-            List<string> countList = new List<string>();
-            FileInfo[] Files = new DirectoryInfo(processingLocation).GetFiles("*");
-            string[] splitPath = name.Split('.');
-            foreach (FileInfo file in Files)
-                if (file.Name.Contains(splitPath[0] + "-"))
-                    countList.Add(file.Name);
-            return countList.Count();
         }
 
         #region layouts
@@ -409,15 +316,7 @@ namespace CapstoneLayoutTest
 
         private void rightButton_Click(object sender, RoutedEventArgs e)
         {
-            switch (windowMode)
-            {
-                case 0://link
-                    UploadFile();
-                    break;
-                case 1://upload
-                    QuitMenu("Are you sure you wish to cancel?");
-                    break;
-            }
+            UploadFile();
         }
 
         private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -430,7 +329,7 @@ namespace CapstoneLayoutTest
         {
             if (windowMode != 3)
             {
-                videosToProcess -= GetNumberofSubfiles(((VideoItem)listBox.SelectedItem).Title);
+                videosToProcess -= FileManager.GetNumberofSubfiles(((VideoItem)listBox.SelectedItem).Title, processingLocation);
                 vidList.Remove((VideoItem)listBox.SelectedItem);
                 if (vidList.Count == 0)
                 {

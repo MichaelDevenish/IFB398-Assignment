@@ -38,6 +38,18 @@ namespace CapstoneLayoutTest.Helper_Functions
 
         }
 
+        /// <summary>
+        /// loads in the processedData list
+        /// </summary>
+        /// <returns> the processedData list</returns>
+        public static ListView FirstLoad(string file)
+        {
+            ListView list = null;
+            list = DataManager.CreateListView();
+            DataManager.LoadFile(file, list);
+            return list;
+        }
+
         public static void LoadFile(string filePath, ListView loadTo)
         {
             if (File.Exists(filePath))

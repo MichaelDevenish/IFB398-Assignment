@@ -83,6 +83,10 @@
     <Compile Include="Helper Functions\ControlBarHelper.cs" />
     <Compile Include="Helper Functions\CSVHelper.cs" />
     <Compile Include="Helper Functions\DataManager.cs" />
+    <Compile Include="Helper Functions\FileManager.cs" />
+    <Compile Include="Helper Functions\ShellHelper.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Windows\Load.xaml.cs">
       <DependentUpon>Load.xaml</DependentUpon>
     </Compile>

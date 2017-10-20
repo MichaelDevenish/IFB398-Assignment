@@ -77,7 +77,7 @@ namespace CapstoneLayoutTest
                         }
                         if (!exists)
                         {
-                            listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
+                            listView.Items.Add(new VideoData { Name = System.IO.Path.GetFileNameWithoutExtension(dlg.SafeFileName), URL = dlg.FileName });
                             DataManager.SaveFile("processedData.bin", listView);
                         }
                         loadWindow(dlg.FileName);

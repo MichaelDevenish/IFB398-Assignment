@@ -42,7 +42,7 @@ namespace CapstoneLayoutTest
                                 return;
                             }
                         }
-                        listView.Items.Add(new VideoData { Name = dlg.SafeFileName.Split('.')[0], URL = dlg.FileName });
+                        listView.Items.Add(new VideoData { Name = System.IO.Path.GetFileNameWithoutExtension(dlg.SafeFileName), URL = dlg.FileName });
                         DataManager.SaveFile("processedData.bin", listView);
                         ((MainWindow)Owner).LoadNewData(dlg.FileName);
                         Close();
@@ -71,8 +71,6 @@ namespace CapstoneLayoutTest
                 Close();
             }
         }
-
-
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
