@@ -10,6 +10,10 @@ using System.Windows.Controls;
 
 namespace CapstoneLayoutTest.Helper_Functions
 {
+
+    /// <summary>
+    /// Deals with all of the file writing, processing, splitting and moving for the upload window 
+    /// </summary>
     class FileManager
     {
 
@@ -66,5 +70,42 @@ namespace CapstoneLayoutTest.Helper_Functions
             }
         }
 
+        /// <summary>
+        /// Splits a video into multiple sub videos depending on the split size
+        /// </summary>
+        /// <param name="VideoToSplit"></param>
+        /// <param name="nameOfFile"></param>
+        /// <returns></returns>
+        public static string SplitVideoFile(string VideoToSplit, string nameOfFile, string processingLocation, int splitLength)
+        {
+            string process = "ffmpeg -i \"" + VideoToSplit + "\" -c copy -f segment -segment_time "
+                                    + splitLength + " \"" + processingLocation + nameOfFile + "-%d.mp4\"";
+            Shell cmd = new Shell();
+            cmd.Start();
+            cmd.WriteLastItem(process);
+            string output = cmd.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
+            return output;
+        }
+        
+        /// <summary>
+        /// Processes the specified file using the model found in the supplied location
+        /// </summary>
+        /// <param name="ProcessingCommand">The file that is to be processed</param>
+        /// <param name="ModelLocation">the location of the model</param>
+        /// <returns></returns>
+        public static string processSpecifiedFile(string ProcessingCommand, string ModelLocation)
+        {
+            Shell cmd = new Shell();
+            cmd.StartInfo.WorkingDirectory = ModelLocation;
+            cmd.Start();
+            cmd.WriteItem("activate capstone");
+            cmd.WriteItem(ProcessingCommand);
+            cmd.StandardInput.Close();
+            string output = cmd.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
+            cmd.WaitForExit();
+            return output;
+        }
     }
 }

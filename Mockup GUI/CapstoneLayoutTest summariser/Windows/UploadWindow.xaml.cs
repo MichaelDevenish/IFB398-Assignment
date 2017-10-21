@@ -143,11 +143,15 @@ namespace CapstoneLayoutTest
             ProcessingLayoutSmall();
             processingWorker.RunWorkerAsync();
         }
+
+        /// <summary>
+        /// Processes all of the videos that are in the vidList
+        /// </summary>
         private void ProcessAllVideos()
         {
             ListView list = null;
             Dispatcher.Invoke(() => list = DataManager.FirstLoad("processedData.bin"));
-            for (int i = 0; i < vidList.Count; i++) ProcessVideo(list, i);
+            for (int i = 0; i < vidList.Count; i++) ProcessVideo(list, vidList[i]);
             Array.ForEach(Directory.GetFiles(processingLocation), File.Delete);
             Dispatcher.Invoke(() =>
             {
@@ -156,7 +160,12 @@ namespace CapstoneLayoutTest
             });
         }
 
-        private void ProcessVideo(ListView list, int i)
+        /// <summary>
+        /// processes the supplied video and adds it to the supplied list
+        /// </summary>
+        /// <param name="list">the list of processed items</param>
+        /// <param name="itemToProcess">The item that is to be processed</param>
+        private void ProcessVideo(ListView list, VideoItem itemToProcess)
         {
             bool processing = true;
             int segNum = 0;
@@ -166,7 +175,7 @@ namespace CapstoneLayoutTest
                 if (segNum == 0) strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
                 else strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
 
-                string newSegName = vidList[i].NewDir.Insert(vidList[i].NewDir.Length - 4, "-" + segNum.ToString());
+                string newSegName = itemToProcess.NewDir.Insert(itemToProcess.NewDir.Length - 4, "-" + segNum.ToString());
 
                 if (System.IO.File.Exists(newSegName))
                 {
@@ -177,10 +186,16 @@ namespace CapstoneLayoutTest
                 else processing = false;
             }
             Dispatcher.Invoke(() => FileManager.CompressAndSaveResults(list,
-                System.IO.Path.GetFileNameWithoutExtension(vidList[i].Title),
+                System.IO.Path.GetFileNameWithoutExtension(itemToProcess.Title),
                 saveLocation, processingLocation));
         }
 
+        /// <summary>
+        /// Computes the model for one of the segments of a video
+        /// </summary>
+        /// <param name="segNum">the segment of the video</param>
+        /// <param name="strCmdText">the processing command</param>
+        /// <param name="newSegName">the name of the parent file</param>
         private void ComputeSingleSegment(int segNum, string strCmdText, string newSegName)
         {
             strCmdText = strCmdText.Insert(strCmdText.Length - 9, segNum.ToString());
@@ -188,17 +203,7 @@ namespace CapstoneLayoutTest
             strCmdText = strCmdText.Insert(strCmdText.Length, "\"" + newSegName + "\"");
             strCmdText = strCmdText.Insert(7, user);
 
-            Shell cmd = new Shell();
-            cmd.StartInfo.WorkingDirectory = user + "/Model/";
-            cmd.Start();
-            cmd.StandardInput.WriteLine("activate capstone");
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.WriteLine(strCmdText);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            string output = cmd.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
-            cmd.WaitForExit();
+            string output = FileManager.processSpecifiedFile(strCmdText, user + "/Model/");
             Dispatcher.Invoke(() =>
             {
                 textBox.Text += output;
@@ -206,6 +211,9 @@ namespace CapstoneLayoutTest
             });
         }
 
+        /// <summary>
+        /// Manages to split the imported video
+        /// </summary>
         private void Splitter()
         {
             Dispatcher.Invoke(() => rightButton.IsEnabled = false);
@@ -213,36 +221,28 @@ namespace CapstoneLayoutTest
             string path = vidPathName.Replace("\\", "/");
 
             string vidFileName = System.IO.Path.GetFileName(path);
-            string[] splitPath = { System.IO.Path.GetFileNameWithoutExtension(vidFileName), System.IO.Path.GetExtension(vidFileName) };
+            string[] splitPath = { System.IO.Path.GetFileNameWithoutExtension(vidFileName)
+                , System.IO.Path.GetExtension(vidFileName) };
             string newPathName = processingLocation.Insert(processingLocation.Length, splitPath[0] + ".mp4");
 
             if (!Directory.Exists(processingLocation)) Directory.CreateDirectory(processingLocation);
-            Dispatcher.Invoke(() => vidList.Add(new VideoItem() { Title = vidFileName, OldDir = vidPathName, NewDir = newPathName }));
-
-            if (!System.IO.File.Exists(newPathName))
-                FileManager.CopyVideo(path, newPathName, splitPath[1]);
-
-            SplitVideo(newPathName, splitPath[0]);
-            Dispatcher.Invoke(() => rightButton.IsEnabled = true);
-
-            videosToProcess += FileManager.GetNumberofSubfiles(vidFileName, processingLocation);
-        }
-
-        private void SplitVideo(string newPathName, string name)
-        {
-            string process = "ffmpeg -i \"" + newPathName + "\" -c copy -f segment -segment_time "
-                        + split + " \"" + processingLocation + name + "-%d.mp4\"";
-            Shell cmd = new Shell();
-            cmd.Start();
-            cmd.WriteLastItem(process);
-            string output = cmd.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
+            Dispatcher.Invoke(() => vidList.Add(new VideoItem()
+            {
+                Title = vidFileName,
+                OldDir = vidPathName,
+                NewDir = newPathName
+            }));
+            if (!System.IO.File.Exists(newPathName)) FileManager.CopyVideo(path, newPathName, splitPath[1]);
+            string output = FileManager.SplitVideoFile(newPathName, splitPath[0], processingLocation, split);
             Dispatcher.Invoke(() =>
             {
                 textBox.Text += output;
                 textBox.ScrollToEnd();
+                rightButton.IsEnabled = true;
             });
+            videosToProcess += FileManager.GetNumberofSubfiles(vidFileName, processingLocation);
         }
+
 
         #region layouts
 
