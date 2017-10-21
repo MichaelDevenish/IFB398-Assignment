@@ -85,25 +85,25 @@ namespace CapstoneUnitTests
         public void SimpleStartTest()
         {
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "SimpleTest.csv");
-            Assert.Equal(loader.AppendSortedStartList(new List<double>()), new List<double>() { 0, 30, 44.9, 60, 90, 120, 150, 180, 210, 240, 270, 300, 360, 390, 420, 450, 480, 510, 540 });
+            Assert.Equal(loader.AppendDataToSortedList(1, new List<double>()), new List<double>() { 0, 30, 44.9, 60, 90, 120, 150, 180, 210, 240, 270, 300, 360, 390, 420, 450, 480, 510, 540 });
         }
         [Fact]
         public void SimpleEndTest()
         {
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "SimpleTest.csv");
-            Assert.Equal(loader.AppendSortedEndList(new List<double>()), new List<double>() { 29.9, 41.7, 59.9, 89.9, 118.8, 148.8, 178.8, 209.9, 238.8, 269.9, 298.8, 329.9, 389.9, 418.8, 449.9, 478.8, 500.9, 538.8, 557.6 });
+            Assert.Equal(loader.AppendDataToSortedList(2, new List<double>()), new List<double>() { 29.9, 41.7, 59.9, 89.9, 118.8, 148.8, 178.8, 209.9, 238.8, 269.9, 298.8, 329.9, 389.9, 418.8, 449.9, 478.8, 500.9, 538.8, 557.6 });
         }
         [Fact]
         public void UnsortedStartTest()
         {
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "outoforder.csv");
-            Assert.Equal(loader.AppendSortedStartList(new List<double>()), new List<double>() { 0, 95, 109.5, 119.6, 162.8, 183.1 });
+            Assert.Equal(loader.AppendDataToSortedList(1, new List<double>()), new List<double>() { 0, 95, 109.5, 119.6, 162.8, 183.1 });
         }
         [Fact]
         public void UnsortedEndTest()
         {
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "outoforder.csv");
-            Assert.Equal(loader.AppendSortedEndList(new List<double>()), new List<double>() { 75.3, 103, 118, 158.6, 178.9, 225.3 });
+            Assert.Equal(loader.AppendDataToSortedList(2, new List<double>()), new List<double>() { 75.3, 103, 118, 158.6, 178.9, 225.3 });
         }
         [Fact]
         public void AddStartTest()
@@ -111,8 +111,8 @@ namespace CapstoneUnitTests
             List<double> list = new List<double>();
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "copyTest.csv");
             CSVDatasetLoader loader2 = new CSVDatasetLoader(testFilesLocation + "copyTest2.csv");
-            list = loader.AppendSortedStartList(list);
-            Assert.Equal(loader2.AppendSortedStartList(list), new List<double>() { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
+            list = loader.AppendDataToSortedList(1, list);
+            Assert.Equal(loader2.AppendDataToSortedList(1, list), new List<double>() { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
         }
         [Fact]
         public void AddEndTest()
@@ -120,8 +120,8 @@ namespace CapstoneUnitTests
             List<double> list = new List<double>();
             CSVDatasetLoader loader = new CSVDatasetLoader(testFilesLocation + "copyTest.csv");
             CSVDatasetLoader loader2 = new CSVDatasetLoader(testFilesLocation + "copyTest2.csv");
-            list = loader.AppendSortedEndList(list);
-            Assert.Equal(loader2.AppendSortedEndList(list), new List<double>() { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
+            list = loader.AppendDataToSortedList(1, list);
+            Assert.Equal(loader2.AppendDataToSortedList(1, list), new List<double>() { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 });
         }
         #endregion
         #region GenerateDataset tests
@@ -276,8 +276,7 @@ namespace CapstoneUnitTests
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test5", URL = testFilesLocation + "colourTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = DataManager.CreateListView();
-                DataManager.LoadFile("test1.txt", lviewLoad);
+                ListView lviewLoad = DataManager.FirstLoad("test1.txt");
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count, lviewLoad.Items.Count);
             });
@@ -296,8 +295,7 @@ namespace CapstoneUnitTests
                 DataManager.SaveFile("test1.txt", lview);
                 lview.Items.RemoveAt(3);
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = DataManager.CreateListView();
-                DataManager.LoadFile("test1.txt", lviewLoad);
+                ListView lviewLoad = DataManager.FirstLoad("test1.txt");
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count, lviewLoad.Items.Count);
             });
@@ -313,8 +311,7 @@ namespace CapstoneUnitTests
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "dosentExist.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = DataManager.CreateListView();
-                DataManager.LoadFile("test1.txt", lviewLoad);
+                ListView lviewLoad = DataManager.FirstLoad("test1.txt");
                 File.Delete("test1.txt");
                 Assert.Equal((lviewLoad.Items.GetItemAt(2) as VideoData).Name, "test4");
             });
@@ -330,8 +327,7 @@ namespace CapstoneUnitTests
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "dosentExist.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "EmptyTest.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = DataManager.CreateListView();
-                DataManager.LoadFile("test1.txt", lviewLoad);
+                ListView lviewLoad = DataManager.FirstLoad("test1.txt");
                 File.Delete("test1.txt");
                 Assert.Equal(lview.Items.Count - 1, lviewLoad.Items.Count);
             });
@@ -347,13 +343,13 @@ namespace CapstoneUnitTests
                 lview.Items.Add(new VideoData { Name = "test3", URL = testFilesLocation + "EmptyTest.csv" });
                 lview.Items.Add(new VideoData { Name = "test4", URL = testFilesLocation + "dosentExist.csv" });
                 DataManager.SaveFile("test1.txt", lview);
-                ListView lviewLoad = DataManager.CreateListView();
-                DataManager.LoadFile("test1.txt", lviewLoad);
+                ListView lviewLoad = DataManager.FirstLoad("test1.txt");
                 File.Delete("test1.txt");
                 var exception = Record.Exception(() => lviewLoad.Items.GetItemAt(3));
                 Assert.IsType(typeof(ArgumentOutOfRangeException), exception);
             });
         }
+
         #endregion
         #region ControlBarHelper Tests
         #region PausePlay

@@ -103,8 +103,8 @@ namespace CapstoneLayoutTest
             try
             {
                 CSVDatasetLoader loader = new CSVDatasetLoader(url);
-                startingTimes = loader.AppendSortedStartList(startingTimes);
-                endingTimes = loader.AppendSortedEndList(endingTimes);
+                startingTimes = loader.AppendDataToSortedList(1, startingTimes);
+                endingTimes = loader.AppendDataToSortedList(2, endingTimes);
                 return loader.GenerateDataset(name);
             }
             catch (Exception e)
@@ -271,7 +271,7 @@ namespace CapstoneLayoutTest
             return worker;
         }
 
-        //Background workers
+        #region Background workers
         /// <summary>
         /// USed to update the scrollbar progress as the video is playing
         /// </summary>
@@ -361,8 +361,9 @@ namespace CapstoneLayoutTest
                 if (!HideControlsThread.CancellationPending) Dispatcher.Invoke(() => run = ControlPanel.Height > CONTROLS_MIN_HEIGHT);
             }
         }
+        #endregion
 
-        //Event Handlers
+        #region Event Handlers
         private void mediaElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
             PausePlay();
@@ -463,8 +464,10 @@ namespace CapstoneLayoutTest
                 canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
             }
         }
+        #endregion
     }
 
+    #region converters
     public class InlineCanGraph : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -517,4 +520,5 @@ namespace CapstoneLayoutTest
         }
 
     }
+    #endregion
 }

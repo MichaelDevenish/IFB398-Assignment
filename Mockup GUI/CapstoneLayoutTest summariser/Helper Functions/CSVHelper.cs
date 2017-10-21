@@ -9,6 +9,9 @@ using System.Windows.Media;
 
 namespace CapstoneLayoutTest.Helper_Functions
 {
+    /// <summary>
+    /// Used to load in a compressed zip file to show on the GUI
+    /// </summary>
     public class CSVDatasetLoader
     {
         List<string[]> lines;
@@ -17,20 +20,24 @@ namespace CapstoneLayoutTest.Helper_Functions
             lines = File.ReadAllLines(url).Select(a => a.Split(',')).ToList();
         }
 
-        public List<double> AppendSortedStartList(List<double> start)
+        /// <summary>
+        /// Adds the data at the supplied position in the list string array lines to a supplied list and then sorts the list
+        /// </summary>
+        /// <param name="position">the string position in the string array lines</param>
+        /// <param name="ListToAddTo">the sorted list to add the data to</param>
+        /// <returns>a sorted ListToAddTo list with the added data</returns>
+        public List<double> AppendDataToSortedList(int position, List<double> ListToAddTo)
         {
-            start = start.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(1)))).ToList();
-            start.Sort();
-            return start;
+            ListToAddTo = ListToAddTo.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(position)))).ToList();
+            ListToAddTo.Sort();
+            return ListToAddTo;
         }
 
-        public List<double> AppendSortedEndList(List<double> end)
-        {
-            end = end.Concat(lines.Skip(1).ToList().Select(a => double.Parse(a.ElementAt(2)))).ToList();
-            end.Sort();
-            return end;
-        }
-
+        /// <summary>
+        /// Generates a GraphDataset using SummariserNode points from the data stored in lines
+        /// </summary>
+        /// <param name="name">the name of the GraphDataset</param>
+        /// <returns>the completed dataset</returns>
         public GraphDataset GenerateDataset(string name)
         {
             GraphDataset temp = new GraphDataset(name);
@@ -51,6 +58,12 @@ namespace CapstoneLayoutTest.Helper_Functions
 
             return temp;
         }
+
+        /// <summary>
+        /// creates a brush on a hue range between 0 for red, 50 for yellow and 100 for green
+        /// </summary>
+        /// <param name="percent">the percent between 0 and 100 that represents the colour</param>
+        /// <returns>the desired brush</returns>
         private static Brush PercentToProbabilityColour(double percent)
         {
             double t = ((2 * (percent - 50)) / 100);

@@ -96,7 +96,7 @@
     <Compile Include="Windows\splash.xaml.cs">
       <DependentUpon>splash.xaml</DependentUpon>
     </Compile>
-    <Compile Include="tests.cs" />
+    <Compile Include="TestFiles\tests.cs" />
     <Compile Include="Windows\UploadWindow.xaml.cs">
       <DependentUpon>UploadWindow.xaml</DependentUpon>
     </Compile>
@@ -154,7 +154,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="TestFiles\testfile1.csv" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

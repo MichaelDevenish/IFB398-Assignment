@@ -11,19 +11,12 @@ namespace CapstoneLayoutTest.Helper_Functions
 {
     class DataManager
     {
-        public static ListView CreateListView()
-        {
-            ListView lview = new ListView();
-            GridView gview = new GridView();
-            GridViewColumn gvc1 = new GridViewColumn();
-            gvc1.DisplayMemberBinding = new Binding("Name");
-            gvc1.Header = "Name";
-            gvc1.Width = 350;
-            gview.Columns.Add(gvc1);
-            lview.View = gview;
-            return lview;
-        }
 
+        /// <summary>
+        /// Saves a ListView to a file
+        /// </summary>
+        /// <param name="filePath">the path of the save file</param>
+        /// <param name="saveFrom">the ListView to save</param>
         public static void SaveFile(string filePath, ListView saveFrom)
         {
             VideoData[] items = new VideoData[saveFrom.Items.Count];
@@ -39,7 +32,7 @@ namespace CapstoneLayoutTest.Helper_Functions
         }
 
         /// <summary>
-        /// loads in the processedData list
+        /// loads in the processedData list or a blank dataset if its the first load
         /// </summary>
         /// <returns> the processedData list</returns>
         public static ListView FirstLoad(string file)
@@ -50,6 +43,11 @@ namespace CapstoneLayoutTest.Helper_Functions
             return list;
         }
 
+        /// <summary>
+        /// Loads a listView from a file
+        /// </summary>
+        /// <param name="filePath">the path of the load file</param>
+        /// <param name="loadTo">the ListView to load to</param>
         public static void LoadFile(string filePath, ListView loadTo)
         {
             if (File.Exists(filePath))
@@ -70,5 +68,23 @@ namespace CapstoneLayoutTest.Helper_Functions
                 }
             }
         }
+
+        /// <summary>
+        /// Creates a ListView that matches what is required for the load windows
+        /// </summary>
+        /// <returns>a processed file ListView in the style of VideoData</returns>
+        public static ListView CreateListView()
+        {
+            ListView lview = new ListView();
+            GridView gview = new GridView();
+            GridViewColumn gvc1 = new GridViewColumn();
+            gvc1.DisplayMemberBinding = new Binding("Name");
+            gvc1.Header = "Name";
+            gvc1.Width = 350;
+            gview.Columns.Add(gvc1);
+            lview.View = gview;
+            return lview;
+        }
+
     }
 }
