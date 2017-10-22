@@ -171,9 +171,16 @@ namespace CapstoneLayoutTest
             int segNum = 0;
             while (processing && !processingWorker.CancellationPending)
             {
-                string strCmdText = "python /Model/scripts/run_all_pipeline.py -c  -sn  -sl  -i ";
-                if (segNum == 0) strCmdText = strCmdText.Insert(strCmdText.Length - 14, "y");
-                else strCmdText = strCmdText.Insert(strCmdText.Length - 14, "n");
+                string strCmdText = "python /Model/scripts/run_all_pipeline.py -c ";
+                if (segNum == 0) strCmdText += "y";
+                else strCmdText += "n";
+                strCmdText += " -fd ";
+                Dispatcher.Invoke(() =>
+                {
+                    if (fullDataset.IsChecked == true) strCmdText += "y";
+                    else strCmdText += "n";
+                });
+                strCmdText += " -sn  -sl  -i ";
 
                 string newSegName = itemToProcess.NewDir.Insert(itemToProcess.NewDir.Length - 4, "-" + segNum.ToString());
 

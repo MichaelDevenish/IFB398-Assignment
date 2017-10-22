@@ -25,6 +25,7 @@
         <Label x:Name="label2" Content="Seconds" HorizontalAlignment="Left" Margin="205,77,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="splitCountBox" HorizontalAlignment="Left" Height="23" Margin="149,80,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="56"/>
         <TextBox x:Name="textBox" Visibility="Hidden" Height="300" Margin="10,35,10,-216" TextWrapping="Wrap"  VerticalAlignment="Top" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+        <CheckBox x:Name="fullDataset" Content="Full Dataset" HorizontalAlignment="Left" Margin="308,83,0,0" VerticalAlignment="Top" ToolTip="Computes with the full dataset, Note may cause less accurate data"/>
 
 
     </Grid>

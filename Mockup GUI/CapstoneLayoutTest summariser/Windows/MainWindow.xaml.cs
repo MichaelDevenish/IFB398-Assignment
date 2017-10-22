@@ -464,6 +464,12 @@ namespace CapstoneLayoutTest
                 canGraph.DrawGraph(mediaElement.NaturalDuration.TimeSpan.TotalSeconds);
             }
         }
+        private void Help_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists("./User Guide.pdf"))
+                System.Diagnostics.Process.Start(Directory.GetCurrentDirectory() + "/User Guide.pdf");
+            else MessageBox.Show("User Guide could not be found");
+        }
         #endregion
     }
 
