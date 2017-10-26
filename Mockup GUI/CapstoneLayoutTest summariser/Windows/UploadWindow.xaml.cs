@@ -262,6 +262,7 @@ namespace CapstoneLayoutTest
             Height = SMALLHEIGHT;
             MaxHeight = SMALLHEIGHT;
             leftButton.Content = "More";
+            fullDataset.Visibility = Visibility.Hidden;
             textBox.Visibility = Visibility.Hidden;
             removeButton.Visibility = Visibility.Hidden;
             listBox.Visibility = Visibility.Hidden;
